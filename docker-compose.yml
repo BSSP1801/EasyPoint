@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # Web Server (PHP + Apache)
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+
+  # Database Server (MySQL)
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: easy_point
+      MYSQL_ROOT_PASSWORD: Ba66age
+      MYSQL_USER: project_user
+      MYSQL_PASSWORD: project_password
+    ports:
+      - "3306:3306"
