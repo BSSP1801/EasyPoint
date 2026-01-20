@@ -14,6 +14,7 @@ services:
   # Database Server (MySQL)
   db:
     image: mysql:8.0
+    platform: linux/amd64
     restart: always
     environment:
       MYSQL_DATABASE: easy_point
@@ -26,6 +27,7 @@ services:
   # phpMyAdmin for database management
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    platform: linux/amd64
     restart: always
     ports:
       - "8081:80"
