@@ -69,7 +69,7 @@ switch ($action) {
 
         <div class="sticky-menu">
             <a href="#" class="sticky-login">Log In/Sign Up</a>
-            <a href="#" class="sticky-business-btn">List your business</a>
+            <a href="#" class="sticky-business-btn" onclick="openStoreModal(event)">List your business</a>
         </div>
     </div>
 </div>
@@ -82,7 +82,7 @@ switch ($action) {
                     <span class="user-link">
                         Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
                     </span></a>
-                    <a href="index.php?action=register" class="business-button">List your business</a>
+                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                     <a href="index.php?action=logout" class="logout-link">Logout</a>
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
                     <span class="user-link">
@@ -92,7 +92,7 @@ switch ($action) {
                     <a href="index.php?action=logout" class="logout-link">Logout</a>
                 <?php else: ?>
                     <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
-                    <a href="index.php?action=register" class="business-button">List your business</a>
+                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                 <?php endif; ?>
             </div>
         </nav>
@@ -135,12 +135,12 @@ switch ($action) {
                             <span class="reviews-text">1271 reviews</span>
                         </div>
                     </div>
-                </div>
-                <div class="shop-info">
-                    <h3 class="shop-name">Javier Garcia</h3>
-                    <p class="shop-address">Calle puerta nueva numero 8, 30001, Murcia</p>
-                    <div class="shop-actions">
-                        <div class="action-icon"></div>
+                    <div class="shop-info">
+                        <h3 class="shop-name">Javier Garcia</h3>
+                        <p class="shop-address">Calle puerta nueva numero 8, 30001, Murcia</p>
+                        <div class="shop-actions">
+                            <div class="action-icon"></div>
+                        </div>
                     </div>
                 </article>
 
@@ -258,10 +258,11 @@ switch ($action) {
         <div id="login-view">
             <h2 class="modal-title">Welcome Back</h2>
             <p class="modal-subtitle">Log in to book your next appointment</p>
-            <form action="index.php?action=login" method="POST">
+            <div id="login-error" style="color: red; margin-bottom: 10px; display: none;"></div>
+            <form id="login-form">
                 <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" required class="modal-input">
+                    <label>Email or Username</label>
+                    <input type="text" name="identifier" required class="modal-input">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
@@ -277,10 +278,12 @@ switch ($action) {
         <div id="register-view" class="hidden">
             <h2 class="modal-title">Create Account</h2>
             <p class="modal-subtitle">Join EasyPoint today</p>
-            <form action="index.php?action=register" method="POST">
+            <div id="register-error" style="color: red; margin-bottom: 10px; display: none;"></div>
+            <div id="register-success" style="color: green; margin-bottom: 10px; display: none;"></div>
+            <form id="register-form">
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="name" required class="modal-input">
+                    <label>Username</label>
+                    <input type="text" name="username" required class="modal-input">
                 </div>
                 <div class="form-group">
                     <label>Email</label>
@@ -296,6 +299,44 @@ switch ($action) {
                 Already have an account? <span id="go-to-login">Log In</span>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="store-modal" class="modal-overlay">
+    <div class="modal-box">
+        <span class="close-store-modal" style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer;">&times;</span>
+        
+        <h2 class="modal-title">Register your Business</h2>
+        <p class="modal-subtitle">List your store on EasyPoint</p>
+        <div id="store-error" style="color: red; margin-bottom: 10px; display: none;"></div>
+        <div id="store-success" style="color: green; margin-bottom: 10px; display: none;"></div>
+        <form id="store-register-form">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" required class="modal-input">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" required class="modal-input">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required class="modal-input">
+            </div>
+            <div class="form-group">
+                <label>Business Name</label>
+                <input type="text" name="business_name" required class="modal-input">
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <input type="text" name="address" required class="modal-input">
+            </div>
+            <div class="form-group">
+                <label>Postal Code</label>
+                <input type="text" name="postal_code" class="modal-input">
+            </div>
+            <button type="submit" class="modal-btn">Create Business Account</button>
+        </form>
     </div>
 </div>
 

@@ -14,19 +14,29 @@ class User {
     // Function to create a new user
  public function create($data) {
     try {
+       
+        $checkQuery = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE username = :username OR email = :email";
+        $checkStmt = $this->conn->prepare($checkQuery);
+        $checkStmt->bindParam(":username", $data['username']);
+        $checkStmt->bindParam(":email", $data['email']);
+        $checkStmt->execute();
+
+        if ($checkStmt->fetchColumn() > 0) {
+            throw new Exception("The username or email is already registered.");
+        }
+
+        
         $query = "INSERT INTO " . $this->table_name . " 
                   (username, email, password, role, business_name, address, postal_code, is_confirmed) 
                   VALUES (:username, :email, :password, :role, :business_name, :address, :postal_code, 0)";
         
         $stmt = $this->conn->prepare($query);
 
-        // Limpieza de datos (Sanitization)
         $username = htmlspecialchars(strip_tags($data['username']));
         $email = htmlspecialchars(strip_tags($data['email']));
         $role = $data['role'] ?? 'user';
         $hashed_password = password_hash($data['password'], PASSWORD_BCRYPT);
         
-        // Campos de tienda (pueden ser NULL)
         $business_name = !empty($data['business_name']) ? htmlspecialchars(strip_tags($data['business_name'])) : null;
         $address = !empty($data['address']) ? htmlspecialchars(strip_tags($data['address'])) : null;
         $postal_code = !empty($data['postal_code']) ? htmlspecialchars(strip_tags($data['postal_code'])) : null;
@@ -40,16 +50,12 @@ class User {
         $stmt->bindParam(":postal_code", $postal_code);
 
         return $stmt->execute();
+
     } catch (PDOException $e) {
         error_log("DB Error: " . $e->getMessage());
-        // Manejo de errores duplicados para la rúbrica de DWES
-        if ($e->getCode() == 23000) {
-            throw new Exception("The username or email is already registered.");
-        }
         throw new Exception("A database error occurred.");
     }
 }
-
 public function login($username_or_email, $password) {
     // We check both username or email for better UX
     $query = "SELECT id, username, email, password, role, is_confirmed 

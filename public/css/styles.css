@@ -233,7 +233,7 @@ header {
 }
 
 .shop-info {
-    padding: 12px 0;
+    padding: 12px 15px;
 }
 
 .shop-name {
@@ -241,6 +241,7 @@ header {
     font-weight: bold;
     color: #333;
     margin-bottom: 5px;
+    padding: 0;
 }
 
 .shop-address {
