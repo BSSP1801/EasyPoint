@@ -6,29 +6,153 @@ require_once __DIR__ . '/../models/user.php';
 
 class UserController {
     
-   public function register() {
+  public function register() {
     $error_message = "";
     $success_message = "";
+    $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
-            $username = trim($_POST['username'] ?? '');
-            $email = trim($_POST['email'] ?? '');
-            $password = $_POST['password'] ?? '';
+            // Get role from POST or set default to 'user'
+            $role = $_POST['role'] ?? 'user';
+            
+            // Common fields - safely get and trim values
+            $data = [
+                'username'      => isset($_POST['username']) ? trim($_POST['username']) : '',
+                'email'         => isset($_POST['email']) ? trim($_POST['email']) : '',
+                'password'      => isset($_POST['password']) ? $_POST['password'] : '',
+                'role'          => $role,
+                // Store specific fields (will be null for 'user' role)
+                'business_name' => isset($_POST['business_name']) ? trim($_POST['business_name']) : null,
+                'address'       => isset($_POST['address']) ? trim($_POST['address']) : null,
+                'postal_code'   => isset($_POST['postal_code']) ? trim($_POST['postal_code']) : null
+            ];
 
-            if (empty($username) || empty($email) || empty($password)) {
-                throw new Exception("All fields are required.");
+            // Basic validation for common fields
+            if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
+                throw new Exception("All common fields are required.");
             }
 
+            // Specific validation if the role is 'store'
+            if ($data['role'] === 'store') {
+                if (empty($data['business_name']) || empty($data['address'])) {
+                    throw new Exception("Business name and Address are required for stores.");
+                }
+            } else {
+                // Ensure store fields are null if it's a regular user
+                $data['business_name'] = $data['address'] = $data['postal_code'] = null;
+            }
+
+            error_log("Attempting to create user with role: " . $data['role']);
+            
             $user = new User();
-            if ($user->create($username, $email, $password)) {
-                $success_message = "User registered successfully! Please check your email.";
+            // Important: Pass the whole $data array to the model
+            $result = $user->create($data);
+            
+            error_log("Create result: " . ($result ? "true" : "false"));
+            
+            if ($result) {
+                // Get the created user data to set session
+                $createdUser = $user->login($data['username'], $data['password']);
+                
+                if ($createdUser) {
+                    // Automatically set session after registration
+                    $_SESSION['user_id'] = $createdUser['id'];
+                    $_SESSION['username'] = $createdUser['username'];
+                    $_SESSION['role'] = $createdUser['role'];
+                }
+                
+                $success_message = "Registration successful!";
+                
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => true, 'message' => $success_message, 'role' => $createdUser['role'] ?? null]);
+                    exit();
+                }
+                
+                header("Location: index.php");
+                exit();
+            } else {
+                throw new Exception("Failed to create user. Database operation returned false.");
             }
         } catch (Exception $e) {
             $error_message = $e->getMessage();
+            error_log("Registration error: " . $error_message);
+            
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => $error_message]);
+                exit();
+            }
         }
     }
-    // Pass variables to the view
-    require_once __DIR__ . '/../views/register.php';
+    
 }
+
+public function login() {
+    $error_message = "";
+    $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $identifier = trim($_POST['identifier'] ?? '');
+        $password = $_POST['password'] ?? '';
+
+        if (!empty($identifier) && !empty($password)) {
+            $userModel = new User();
+            $userData = $userModel->login($identifier, $password);
+
+            if ($userData) {
+                // Check if account is confirmed (Requirement DWES Obj. 7)
+             //   if ($userData['is_confirmed'] == 0) {
+             //       $error_message = "Please confirm your account via email first."; uncomment when email confirmation is implemented
+             //   } else {
+                    // Set session variables
+                    $_SESSION['user_id'] = $userData['id'];
+                    $_SESSION['username'] = $userData['username'];
+                    $_SESSION['role'] = $userData['role']; // admin or user
+                    
+                    if ($isAjax) {
+                        header('Content-Type: application/json');
+                        echo json_encode(['success' => true, 'role' => $userData['role']]);
+                        exit();
+                    }
+                    header("Location: index.php");
+                    exit();
+              //  }
+            } else {
+                $error_message = "Invalid username/email or password.";
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    http_response_code(401);
+                    echo json_encode(['success' => false, 'message' => $error_message]);
+                    exit();
+                }
+            }
+        } else {
+            $error_message = "Please fill in all fields.";
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => $error_message]);
+                exit();
+            }
+        }
+    }
+   
+}
+
+public function dashboard() {
+    if (!isset($_SESSION['user_id'])) {
+     
+        exit();
+    }
+
+    $userModel = new User();
+    $userData = $userModel->getById($_SESSION['user_id']);
+
+    require_once __DIR__ . '/../views/dashboard.php';
+}
+
+
 }
