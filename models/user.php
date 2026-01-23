@@ -86,4 +86,28 @@ public function getById($id) {
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+public function saveOpeningHours($userId, $jsonSchedule) {
+    try {
+      
+        // Intenta insertar una nueva fila en business_profiles con el user_id y el horario.
+        //  Si el user_id ya existe (DUPLICATE KEY), simplemente actualiza el campo opening_hours.
+        $query = "INSERT INTO business_profiles (user_id, opening_hours) 
+                  VALUES (:user_id, :opening_hours) 
+                  ON DUPLICATE KEY UPDATE opening_hours = :opening_hours_update";
+        
+        $stmt = $this->conn->prepare($query);
+        
+ 
+        $stmt->bindParam(":user_id", $userId);
+        $stmt->bindParam(":opening_hours", $jsonSchedule);
+        $stmt->bindParam(":opening_hours_update", $jsonSchedule);
+        
+        return $stmt->execute();
+    } catch (PDOException $e) {
+        error_log("DB Error saving schedule: " . $e->getMessage());
+        return false;
+    }
+
+}
+
 }

@@ -157,3 +157,67 @@ function toggleDay(checkbox) {
         closedLabel.style.display = 'block';
     }
 }
+
+/* =========================================
+   3. LÓGICA DE GUARDADO DE HORARIO (AJAX)
+   ========================================= */
+document.addEventListener('DOMContentLoaded', () => {
+    const saveBtn = document.getElementById('save-schedule-btn');
+
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function(e) {
+            e.preventDefault(); // Evitar que el formulario recargue la página
+
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            let schedule = {};
+
+            // Recorrer cada día para construir el objeto JSON
+            days.forEach(day => {
+                const activeCheck = document.getElementById(`${day}-active`);
+                const openInput = document.getElementById(`${day}-open`);
+                const closeInput = document.getElementById(`${day}-close`);
+
+                // Solo añadimos el día si encontramos sus inputs en el HTML
+                if (activeCheck) {
+                    schedule[day] = {
+                        active: activeCheck.checked,
+                        // Si está activo, guardamos la hora; si no, null
+                        open: activeCheck.checked ? (openInput ? openInput.value : null) : null,
+                        close: activeCheck.checked ? (closeInput ? closeInput.value : null) : null
+                    };
+                }
+            });
+
+            // Feedback visual de "Guardando..."
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = 'Saving...';
+            saveBtn.disabled = true;
+
+            // Petición AJAX al servidor
+            fetch('index.php?action=update_schedule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ schedule: schedule })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Schedule updated successfully!');
+                } else {
+                    alert('Error: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('A connection error occurred.');
+            })
+            .finally(() => {
+                // Restaurar botón
+                saveBtn.innerText = originalText;
+                saveBtn.disabled = false;
+            });
+        });
+    }
+});

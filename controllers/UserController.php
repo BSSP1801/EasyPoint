@@ -154,5 +154,36 @@ public function dashboard() {
     require_once __DIR__ . '/../views/dashboard.php';
 }
 
+public function updateSchedule() {
+    // 1. Seguridad: Verificar método POST y sesión activa
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id'])) {
+        header('Content-Type: application/json');
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+        exit();
+    }
+
+    // 2. Obtener el JSON enviado por JS
+    $input = json_decode(file_get_contents('php://input'), true);
+    
+    if (isset($input['schedule'])) {
+        // Convertimos el array de PHP de vuelta a string JSON para guardarlo en la BBDD
+        $scheduleJson = json_encode($input['schedule']);
+        
+        $userModel = new User();
+        
+        if ($userModel->saveOpeningHours($_SESSION['user_id'], $scheduleJson)) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true, 'message' => 'Schedule saved successfully']);
+            exit();
+        }
+    }
+    
+    // Si algo falla
+    header('Content-Type: application/json');
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Database error']);
+    exit();
+}
 
 }

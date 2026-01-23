@@ -24,6 +24,10 @@ switch ($action) {
         $controller->dashboard();
         exit();
         break;
+    case 'update_schedule':
+        $controller->updateSchedule();
+        exit(); 
+        break;    
     case 'logout':
         session_destroy();
         header("Location: index.php");
@@ -69,17 +73,8 @@ switch ($action) {
         </div>
 
         <div class="sticky-menu">
-            <a href="#" class="sticky-login">Log In/Sign Up</a>
-            <a href="#" class="sticky-business-btn" onclick="openStoreModal(event)">List your business</a>
-        </div>
-    </div>
-</div>
-    <header>
-        <nav class="navigation-bar">
-            <div class="logo">EasyPoint</div>
-            <div class="user-menu">
-                <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-                     <a href="index.php?action=logout">
+            <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
+                     <a href="public/dashboard.php">
                     <span class="user-link">
                         Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
                     </span></a>
@@ -89,7 +84,30 @@ switch ($action) {
                     <span class="user-link">
                         Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
                     </span>
-                    <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a>
+                    <a href="index.php?action=logout" class="logout-link">Logout</a>
+                <?php else: ?>
+                    <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
+                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
+                <?php endif; ?>
+        </div>
+    </div>
+</div>
+    <header>
+        <nav class="navigation-bar">
+            <div class="logo">EasyPoint</div>
+            <div class="user-menu">
+                <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
+                     <a href="public/dashboard.php">
+                    <span class="user-link">
+                        Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
+                    </span></a>
+                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
+                    <a href="index.php?action=logout" class="logout-link">Logout</a>
+                <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
+                    <span class="user-link">
+                        Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
+                    </span>
+                    <a href="public/dashboard.php" class="dashboard-link">Dashboard</a>
                     <a href="index.php?action=logout" class="logout-link">Logout</a>
                 <?php else: ?>
                     <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
