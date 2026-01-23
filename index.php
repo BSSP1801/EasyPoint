@@ -40,6 +40,7 @@ switch ($action) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EasyPoint - Appointment System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="public/css/styles.css">
 </head>
 <?php
@@ -69,7 +70,7 @@ switch ($action) {
 
         <div class="sticky-menu">
             <a href="#" class="sticky-login">Log In/Sign Up</a>
-            <a href="#" class="sticky-business-btn">List your business</a>
+            <a href="#" class="sticky-business-btn" onclick="openStoreModal(event)">List your business</a>
         </div>
     </div>
 </div>
@@ -82,7 +83,7 @@ switch ($action) {
                     <span class="user-link">
                         Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
                     </span></a>
-                    <a href="index.php?action=register" class="business-button">List your business</a>
+                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                     <a href="index.php?action=logout" class="logout-link">Logout</a>
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
                     <span class="user-link">
@@ -92,7 +93,7 @@ switch ($action) {
                     <a href="index.php?action=logout" class="logout-link">Logout</a>
                 <?php else: ?>
                     <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
-                    <a href="index.php?action=register" class="business-button">List your business</a>
+                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                 <?php endif; ?>
             </div>
         </nav>
@@ -123,6 +124,7 @@ switch ($action) {
 
         <div class="carousel-container">
             <button class="arrow-button left-arrow">
+                <i class="fa-solid fa-arrow-left"></i>
             </button>
 
             <div class="shops-grid">
@@ -135,12 +137,10 @@ switch ($action) {
                             <span class="reviews-text">1271 reviews</span>
                         </div>
                     </div>
-                </div>
-                <div class="shop-info">
-                    <h3 class="shop-name">Javier Garcia</h3>
-                    <p class="shop-address">Calle puerta nueva numero 8, 30001, Murcia</p>
-                    <div class="shop-actions">
-                        <div class="action-icon"></div>
+                    <div class="shop-info">
+                        <h3 class="shop-name">Javier Garcia</h3>
+                        <p class="shop-address">Calle puerta nueva numero 8, 30001, Murcia</p>
+                        <span class="sponsored-text">Sponsored </span>
                     </div>
                 </article>
 
@@ -155,9 +155,6 @@ switch ($action) {
                     <div class="shop-info">
                         <h3 class="shop-name">Barbería ISMAEL AYALA</h3>
                         <p class="shop-address">Calle Medina, N77, 11402, Jerez de la Frontera</p>
-                        <div class="shop-actions">
-                            <div class="action-icon"></div>
-                        </div>
                         <span class="sponsored-text">Sponsored </span>
                     </div>
                 </article>
@@ -173,9 +170,6 @@ switch ($action) {
                     <div class="shop-info">
                         <h3 class="shop-name">Traditional BarberShop</h3>
                         <p class="shop-address">Carrer de Salvador Baroné, 86, 08840</p>
-                        <div class="shop-actions">
-                            <div class="action-icon"></div>
-                        </div>
                         <span class="sponsored-text">Sponsored </span>
                     </div>
                 </article>
@@ -191,9 +185,6 @@ switch ($action) {
                     <div class="shop-info">
                         <h3 class="shop-name">Mr Mostacho ALCOY</h3>
                         <p class="shop-address">Avenida de la Alameda, 2, 03803, Alcoy</p>
-                        <div class="shop-actions">
-                            <div class="action-icon"></div>
-                        </div>
                         <span class="sponsored-text">Sponsored </span>
                     </div>
                 </article>
@@ -209,9 +200,51 @@ switch ($action) {
                     <div class="shop-info">
                         <h3 class="shop-name">Lafuen Estilistas</h3>
                         <p class="shop-address">Calle ribalta, 23, Madrid</p>
-                        <div class="shop-actions">
-                            <div class="action-icon"></div>
+                        <span class="sponsored-text">Sponsored </span>
+                    </div>
+                </article>
+
+                <article class="shop-card">
+                    <div class="image-container">
+                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
+                        <div class="rating-label">
+                            4.7
+                            <span class="reviews-text">320 reviews</span>
                         </div>
+                    </div>
+                    <div class="shop-info">
+                        <h3 class="shop-name">Lafuen Estilistas</h3>
+                        <p class="shop-address">Calle ribalta, 23, Madrid</p>
+                        <span class="sponsored-text">Sponsored </span>
+                    </div>
+                </article>
+
+                <article class="shop-card">
+                    <div class="image-container">
+                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
+                        <div class="rating-label">
+                            4.7
+                            <span class="reviews-text">320 reviews</span>
+                        </div>
+                    </div>
+                    <div class="shop-info">
+                        <h3 class="shop-name">Lafuen Estilistas</h3>
+                        <p class="shop-address">Calle ribalta, 23, Madrid</p>
+                        <span class="sponsored-text">Sponsored </span>
+                    </div>
+                </article>
+
+                <article class="shop-card">
+                    <div class="image-container">
+                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
+                        <div class="rating-label">
+                            4.7
+                            <span class="reviews-text">320 reviews</span>
+                        </div>
+                    </div>
+                    <div class="shop-info">
+                        <h3 class="shop-name">Lafuen Estilistas</h3>
+                        <p class="shop-address">Calle ribalta, 23, Madrid</p>
                         <span class="sponsored-text">Sponsored </span>
                     </div>
                 </article>
@@ -219,15 +252,13 @@ switch ($action) {
             </div>
 
             <button class="arrow-button right-arrow">
+                <i class="fa-solid fa-arrow-right"></i>
             </button>
         </div>
     </section>
 
 
-        <button class="arrow-button right-arrow">
-        </button>
-    </div>
-</section>
+
 
 <section class="features-section">
     <div class="features-container">
@@ -249,6 +280,73 @@ switch ($action) {
     </div>
 </section>
 
+<section class="features-section">
+    <div class="features-container">
+        <div class="features-content">
+            <h2 class="features-title">Discover and book with the best local talent</h2>
+            
+            <p class="features-text">
+                Explore our platform to find the highest-rated health and beauty businesses available on EasyPoint. We carefully select top-tier professionals to ensure you receive only quality service.
+            </p>
+            
+            <p class="features-text">
+                Make the right choice by checking out business profiles and reading verified reviews from real clients. You can also browse their portfolios to see the results of their work before you commit.
+            </p>
+            
+            <p class="features-text">
+                Save time and skip the stress. With EasyPoint, securing your next appointment is simple, free, and instant, leaving you more time to focus on what matters: you.
+            </p>
+        </div>
+
+        <div class="features-image-wrapper">
+            <img src="public/assets/images/img-resource-2.jpeg" alt="Booking Illustration" class="features-image">
+        </div>
+    </div>
+</section>
+
+
+<footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-brand">
+            <h2 class="footer-logo">EasyPoint</h2>
+            <p class="footer-desc">The easiest way to look and feel your best. Book appointments with top professionals near you.</p>
+            <div class="social-icons">
+                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-links-group">
+            <div class="footer-column">
+                <h3>Company</h3>
+                <a href="#">About Us</a>
+                <a href="#">Careers</a>
+                <a href="#">Press</a>
+                <a href="#">Contact</a>
+            </div>
+
+            <div class="footer-column">
+                <h3>For Business</h3>
+                <a href="#">Partner with us</a>
+                <a href="#">Business App</a>
+                <a href="#">Support</a>
+            </div>
+
+            <div class="footer-column">
+                <h3>Legal</h3>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Cookies Settings</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2026 EasyPoint. All rights reserved.</p>
+    </div>
+</footer>
 
 
 <div id="auth-modal" class="modal-overlay">
@@ -258,10 +356,11 @@ switch ($action) {
         <div id="login-view">
             <h2 class="modal-title">Welcome Back</h2>
             <p class="modal-subtitle">Log in to book your next appointment</p>
-            <form action="index.php?action=login" method="POST">
+            <div id="login-error" style="color: red; margin-bottom: 10px; display: none;"></div>
+            <form id="login-form">
                 <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" required class="modal-input">
+                    <label>Email or Username</label>
+                    <input type="text" name="identifier" required class="modal-input">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
@@ -277,10 +376,12 @@ switch ($action) {
         <div id="register-view" class="hidden">
             <h2 class="modal-title">Create Account</h2>
             <p class="modal-subtitle">Join EasyPoint today</p>
-            <form action="index.php?action=register" method="POST">
+            <div id="register-error" style="color: red; margin-bottom: 10px; display: none;"></div>
+            <div id="register-success" style="color: green; margin-bottom: 10px; display: none;"></div>
+            <form id="register-form">
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="name" required class="modal-input">
+                    <label>Username</label>
+                    <input type="text" name="username" required class="modal-input">
                 </div>
                 <div class="form-group">
                     <label>Email</label>
@@ -296,6 +397,44 @@ switch ($action) {
                 Already have an account? <span id="go-to-login">Log In</span>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="store-modal" class="modal-overlay">
+    <div class="modal-box">
+        <span class="close-store-modal" style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer;">&times;</span>
+        
+        <h2 class="modal-title">Register your Business</h2>
+        <p class="modal-subtitle">List your store on EasyPoint</p>
+        <div id="store-error" style="color: red; margin-bottom: 10px; display: none;"></div>
+        <div id="store-success" style="color: green; margin-bottom: 10px; display: none;"></div>
+        <form id="store-register-form">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" required class="modal-input">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" required class="modal-input">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required class="modal-input">
+            </div>
+            <div class="form-group">
+                <label>Business Name</label>
+                <input type="text" name="business_name" required class="modal-input">
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <input type="text" name="address" required class="modal-input">
+            </div>
+            <div class="form-group">
+                <label>Postal Code</label>
+                <input type="text" name="postal_code" class="modal-input">
+            </div>
+            <button type="submit" class="modal-btn">Create Business Account</button>
+        </form>
     </div>
 </div>
 
