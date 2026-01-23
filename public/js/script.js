@@ -211,3 +211,31 @@ function openStoreModal(e) {
     storeModal.style.display = 'flex';
 }
 
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Seleccionamos los elementos del DOM
+    const carousel = document.querySelector('.shops-grid');
+    const leftBtn = document.querySelector('.left-arrow');
+    const rightBtn = document.querySelector('.right-arrow');
+
+    // Verificamos que los elementos existan antes de ejecutar nada (para evitar errores en otras páginas)
+    if (carousel && leftBtn && rightBtn) {
+
+        // 2. Evento para el botón DERECHO
+        rightBtn.addEventListener('click', () => {
+            carousel.scrollBy({
+                left: 320, // Desplaza 320px (ancho de tarjeta + hueco aprox)
+                behavior: 'smooth' // Hace que el movimiento sea suave
+            });
+        });
+
+        // 3. Evento para el botón IZQUIERDO
+        leftBtn.addEventListener('click', () => {
+            carousel.scrollBy({
+                left: -320, // Desplaza -320px (hacia atrás)
+                behavior: 'smooth'
+            });
+        });
+    }
+});

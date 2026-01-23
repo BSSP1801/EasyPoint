@@ -40,6 +40,7 @@ switch ($action) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EasyPoint - Appointment System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="public/css/styles.css">
 </head>
 <?php
@@ -123,6 +124,7 @@ switch ($action) {
 
         <div class="carousel-container">
             <button class="arrow-button left-arrow">
+                <i class="fa-solid fa-arrow-left"></i>
             </button>
 
             <div class="shops-grid">
@@ -138,9 +140,7 @@ switch ($action) {
                     <div class="shop-info">
                         <h3 class="shop-name">Javier Garcia</h3>
                         <p class="shop-address">Calle puerta nueva numero 8, 30001, Murcia</p>
-                        <div class="shop-actions">
-                            <div class="action-icon"></div>
-                        </div>
+                        <span class="sponsored-text">Sponsored </span>
                     </div>
                 </article>
 
@@ -155,9 +155,6 @@ switch ($action) {
                     <div class="shop-info">
                         <h3 class="shop-name">Barbería ISMAEL AYALA</h3>
                         <p class="shop-address">Calle Medina, N77, 11402, Jerez de la Frontera</p>
-                        <div class="shop-actions">
-                            <div class="action-icon"></div>
-                        </div>
                         <span class="sponsored-text">Sponsored </span>
                     </div>
                 </article>
@@ -173,9 +170,6 @@ switch ($action) {
                     <div class="shop-info">
                         <h3 class="shop-name">Traditional BarberShop</h3>
                         <p class="shop-address">Carrer de Salvador Baroné, 86, 08840</p>
-                        <div class="shop-actions">
-                            <div class="action-icon"></div>
-                        </div>
                         <span class="sponsored-text">Sponsored </span>
                     </div>
                 </article>
@@ -191,9 +185,6 @@ switch ($action) {
                     <div class="shop-info">
                         <h3 class="shop-name">Mr Mostacho ALCOY</h3>
                         <p class="shop-address">Avenida de la Alameda, 2, 03803, Alcoy</p>
-                        <div class="shop-actions">
-                            <div class="action-icon"></div>
-                        </div>
                         <span class="sponsored-text">Sponsored </span>
                     </div>
                 </article>
@@ -209,9 +200,51 @@ switch ($action) {
                     <div class="shop-info">
                         <h3 class="shop-name">Lafuen Estilistas</h3>
                         <p class="shop-address">Calle ribalta, 23, Madrid</p>
-                        <div class="shop-actions">
-                            <div class="action-icon"></div>
+                        <span class="sponsored-text">Sponsored </span>
+                    </div>
+                </article>
+
+                <article class="shop-card">
+                    <div class="image-container">
+                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
+                        <div class="rating-label">
+                            4.7
+                            <span class="reviews-text">320 reviews</span>
                         </div>
+                    </div>
+                    <div class="shop-info">
+                        <h3 class="shop-name">Lafuen Estilistas</h3>
+                        <p class="shop-address">Calle ribalta, 23, Madrid</p>
+                        <span class="sponsored-text">Sponsored </span>
+                    </div>
+                </article>
+
+                <article class="shop-card">
+                    <div class="image-container">
+                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
+                        <div class="rating-label">
+                            4.7
+                            <span class="reviews-text">320 reviews</span>
+                        </div>
+                    </div>
+                    <div class="shop-info">
+                        <h3 class="shop-name">Lafuen Estilistas</h3>
+                        <p class="shop-address">Calle ribalta, 23, Madrid</p>
+                        <span class="sponsored-text">Sponsored </span>
+                    </div>
+                </article>
+
+                <article class="shop-card">
+                    <div class="image-container">
+                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
+                        <div class="rating-label">
+                            4.7
+                            <span class="reviews-text">320 reviews</span>
+                        </div>
+                    </div>
+                    <div class="shop-info">
+                        <h3 class="shop-name">Lafuen Estilistas</h3>
+                        <p class="shop-address">Calle ribalta, 23, Madrid</p>
                         <span class="sponsored-text">Sponsored </span>
                     </div>
                 </article>
@@ -219,15 +252,13 @@ switch ($action) {
             </div>
 
             <button class="arrow-button right-arrow">
+                <i class="fa-solid fa-arrow-right"></i>
             </button>
         </div>
     </section>
 
 
-        <button class="arrow-button right-arrow">
-        </button>
-    </div>
-</section>
+
 
 <section class="features-section">
     <div class="features-container">
@@ -249,6 +280,73 @@ switch ($action) {
     </div>
 </section>
 
+<section class="features-section">
+    <div class="features-container">
+        <div class="features-content">
+            <h2 class="features-title">Discover and book with the best local talent</h2>
+            
+            <p class="features-text">
+                Explore our platform to find the highest-rated health and beauty businesses available on EasyPoint. We carefully select top-tier professionals to ensure you receive only quality service.
+            </p>
+            
+            <p class="features-text">
+                Make the right choice by checking out business profiles and reading verified reviews from real clients. You can also browse their portfolios to see the results of their work before you commit.
+            </p>
+            
+            <p class="features-text">
+                Save time and skip the stress. With EasyPoint, securing your next appointment is simple, free, and instant, leaving you more time to focus on what matters: you.
+            </p>
+        </div>
+
+        <div class="features-image-wrapper">
+            <img src="public/assets/images/img-resource-2.jpeg" alt="Booking Illustration" class="features-image">
+        </div>
+    </div>
+</section>
+
+
+<footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-brand">
+            <h2 class="footer-logo">EasyPoint</h2>
+            <p class="footer-desc">The easiest way to look and feel your best. Book appointments with top professionals near you.</p>
+            <div class="social-icons">
+                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-links-group">
+            <div class="footer-column">
+                <h3>Company</h3>
+                <a href="#">About Us</a>
+                <a href="#">Careers</a>
+                <a href="#">Press</a>
+                <a href="#">Contact</a>
+            </div>
+
+            <div class="footer-column">
+                <h3>For Business</h3>
+                <a href="#">Partner with us</a>
+                <a href="#">Business App</a>
+                <a href="#">Support</a>
+            </div>
+
+            <div class="footer-column">
+                <h3>Legal</h3>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Cookies Settings</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2026 EasyPoint. All rights reserved.</p>
+    </div>
+</footer>
 
 
 <div id="auth-modal" class="modal-overlay">
