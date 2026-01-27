@@ -1,24 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
     
     /* =========================================
-       1. LÓGICA DEL CALENDARIO
+       1. Calendar Widget Logic
        ========================================= */
     const calendar = document.getElementById('calendar');
     
-    // Solo ejecutamos esto si existe el contenedor del calendario
+    // only run if calendar element exists
     if (calendar) {
         const monthYear = document.getElementById('monthYear');
         const prevMonthBtn = document.getElementById('prevMonth');
         const nextMonthBtn = document.getElementById('nextMonth');
         
-        // Fecha inicial: Enero 2026
-        let currentDate = new Date(2026, 0, 1); 
+   
+        let currentDate = new Date(); 
 
         function renderCalendar() {
             calendar.innerHTML = '';
-            const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+          //  const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            const days=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             
-            // 1. Dibujar cabeceras (Lun, Mar, etc.)
+            // Draw day headers
             days.forEach(day => {
                 const dayHeader = document.createElement('div');
                 dayHeader.classList.add('calendar-day-header');
@@ -28,37 +29,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            
-            // 2. Actualizar título del mes
+            const today = currentDate.getDate();
+            // Update month and year display
             if(monthYear) {
-                // Truco para que salga en inglés o español según prefieras. 
-                // Usa 'es-ES' para español o 'en-US' para inglés.
+
+                // Use es-ES for Spanish month names and en-US for English month names
                 monthYear.innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
             }
 
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // 3. Celdas vacías antes del día 1
+            // empyy cells before first day
             for (let i = 0; i < firstDay; i++) {
                 calendar.appendChild(document.createElement('div'));
             }
 
-            // 4. Días del mes
+            // month days
             for (let i = 1; i <= daysInMonth; i++) {
                 const day = document.createElement('div');
                 day.classList.add('calendar-day');
                 day.innerText = i;
                 
-                // Ejemplo: Marcar día 20 como hoy
-                if (i === 20 && month === 0 && year === 2026) {
+                if (i === today && month === new Date().getMonth() && year === new Date().getFullYear()) {
                     day.classList.add('today');
                 }
                 calendar.appendChild(day);
             }
         }
 
-        // Eventos de los botones anterior/siguiente
+        // Event listeners for navigation buttons
         if(prevMonthBtn) {
             prevMonthBtn.addEventListener('click', () => {
                 currentDate.setMonth(currentDate.getMonth() - 1);
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Renderizar por primera vez
+        // Render the calendar for the first time
         renderCalendar();
     }
 });
@@ -157,3 +157,117 @@ function toggleDay(checkbox) {
         closedLabel.style.display = 'block';
     }
 }
+
+/* =========================================
+   3. LÓGICA DE GUARDADO DE HORARIO (AJAX)
+   ========================================= */
+document.addEventListener('DOMContentLoaded', () => {
+    const saveBtn = document.getElementById('save-schedule-btn');
+
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function(e) {
+            e.preventDefault(); // Evitar que el formulario recargue la página
+
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            let schedule = {};
+
+            // Recorrer cada día para construir el objeto JSON
+            days.forEach(day => {
+                const activeCheck = document.getElementById(`${day}-active`);
+                const openInput = document.getElementById(`${day}-open`);
+                const closeInput = document.getElementById(`${day}-close`);
+
+                // Solo añadimos el día si encontramos sus inputs en el HTML
+                if (activeCheck) {
+                    schedule[day] = {
+                        active: activeCheck.checked,
+                        // Si está activo, guardamos la hora; si no, null
+                        open: activeCheck.checked ? (openInput ? openInput.value : null) : null,
+                        close: activeCheck.checked ? (closeInput ? closeInput.value : null) : null
+                    };
+                }
+            });
+
+            // Feedback visual de "Guardando..."
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = 'Saving...';
+            saveBtn.disabled = true;
+
+            // Petición AJAX al servidor
+            fetch('index.php?action=update_schedule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ schedule: schedule })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Schedule updated successfully!');
+                } else {
+                    alert('Error: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('A connection error occurred.');
+            })
+            .finally(() => {
+                // Restaurar botón
+                saveBtn.innerText = originalText;
+                saveBtn.disabled = false;
+            });
+        });
+    }
+});
+
+
+/* =========================================
+   4. Uptade Business Info Logic
+   ========================================= */
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // ... tu código del calendario ...
+
+    // MANEJO DE GUARDADO DE PERFIL DE NEGOCIO
+    const businessForm = document.getElementById('business-form');
+    
+    if (businessForm) {
+        businessForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = businessForm.querySelector('.btn-save');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            submitBtn.disabled = true;
+
+            // Usamos FormData para enviar textos e IMÁGENES
+            const formData = new FormData(businessForm);
+
+            fetch('index.php?action=update_business_info', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Business information updated successfully!');
+                    // Opcional: Recargar para ver las nuevas imágenes
+                    // location.reload(); 
+                } else {
+                    alert('Error: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Connection error');
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+    }
+});

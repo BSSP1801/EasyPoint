@@ -1,323 +1,419 @@
+<?php
+// Ensure session is started if accessed directly
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Debug: Log the session variables
+error_log("Dashboard: user_id=" . ($_SESSION['user_id'] ?? 'NOT SET'));
+error_log("Dashboard: role=" . ($_SESSION['role'] ?? 'NOT SET'));
+
+// Redirect to login if not authenticated
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Dashboard - AgendaPro</title>
-    
+    <title>Dashboard</title>
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/styles-dashboard.css">
+
+    <link rel="stylesheet" href="public/css/styles-dashboard.css">
 </head>
+
 <body>
-<aside class="sidebar">
-    <div class="logo">
-        <i class="fas fa-calendar-check"></i>
-        <span>AgendaPro</span>
-    </div>
-    
-    <nav>
-        <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-dashboard')">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
-        </a>
-        
-        
-        <a href="#" class="menu-item"><i class="far fa-calendar-alt"></i> Calendar</a>
-        <a href="#" class="menu-item"><i class="far fa-clock"></i> Appointments</a>
-        <a href="#" class="menu-item"><i class="far fa-user"></i> Clients</a>
-        <a href="#" class="menu-item"><i class="fas fa-chart-bar"></i> Statistics</a>
-        <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')">
-            <i class="fas fa-cog"></i> Settings
-        </a>
-    </nav>
-</aside>
 
-<main class="content">
+    <aside class="sidebar">
+        <div class="logo" >
+            <i class="fas fa-calendar-check"></i>
+            <span>EasyPoint</span>
+        </div>
+        <div><a href="index.php">Back to Main Page</a></div>
+        <nav>
+            <!-- DEBUG: Show current role -->
+            <div
+                style="font-size: 11px; color: #999; padding: 10px; border-bottom: 1px solid #eee; word-break: break-all;">
+                User: <?php echo $_SESSION['username'] ?? 'N/A'; ?> | Role:
+                <strong><?php echo $_SESSION['role'] ?? 'NOT SET'; ?></strong>
+            </div>
 
-    <div id="view-dashboard" class="main-view">
-        <header class="header">
-            <div class="welcome">Welcome back. Here is a summary of your schedule.</div>
-            <div class="header-tools">
-                <input type="text" placeholder="Search..." class="search-input">
-                <i class="fas fa-bell notification-icon"></i>
-            </div>
-        </header>
+            <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
 
-        <section class="summary-cards">
-            <div class="card">
-                <div class="card-content"><h3>0</h3><p>Appointments Today</p></div>
-                <div class="card-icon card-icon-blue"><i class="far fa-calendar"></i></div>
-            </div>
-            <div class="card">
-                <div class="card-content"><h3>1</h3><p>Pending</p></div>
-                <div class="card-icon card-icon-yellow"><i class="far fa-clock"></i></div>
-            </div>
-            <div class="card">
-                <div class="card-content"><h3>1</h3><p>Confirmed</p></div>
-                <div class="card-icon card-icon-green"><i class="far fa-check-circle"></i></div>
-            </div>
-            <div class="card">
-                <div class="card-content"><h3>2</h3><p>Total Appointments</p></div>
-                <div class="card-icon card-icon-teal"><i class="fas fa-chart-line"></i></div>
-            </div>
-        </section>
+                <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-calendar')"><i
+                        class="far fa-calendar-alt"></i> Calendar</a>
+                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-appointments')"><i
+                        class="far fa-clock"></i> Appointments</a>
+                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')"><i class="fas fa-cog"></i>
+                    Settings</a>
+            <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
+                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-dashboard')"><i
+                        class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-calendar')"><i
+                        class="far fa-calendar-alt"></i> Calendar</a>
+                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-clients')"><i class="far fa-clock"></i>
+                    Clients</a>
+                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin'): ?>
+                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-dashboard')"><i
+                        class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-calendar')"><i
+                        class="far fa-calendar-alt"></i> Calendar</a>
+                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-appointments')"><i
+                        class="far fa-clock"></i> Appointments</a>
+                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-clients')"><i class="far fa-clock"></i>
+                    Clients</a>
+                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+                </a>
+            <?php endif; ?>
 
-        <div class="main-section">
-            <section class="appointments-list">
-                <h2 class="section-title">Upcoming Appointments</h2>
-                <div class="appointment">
-                    <div class="appointment-info">
-                        <h4>Dental Cleaning <span class="status confirmed">Confirmed</span></h4>
-                        <p><i class="far fa-user"></i> Maria Garcia | <i class="fas fa-phone"></i> +54 11 5555-1234 | <i class="far fa-clock"></i> Tue, Jan 20 - 10:00</p>
-                    </div>
+
+
+
+
+            <!-- <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-dashboard')">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+
+
+            <a href="#" class="menu-item"><i class="far fa-calendar-alt"></i> Calendar</a>
+            <a href="#" class="menu-item"><i class="far fa-clock"></i> Appointments</a>
+            <a href="#" class="menu-item"><i class="far fa-user"></i> Clients</a>
+            <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')">
+                <i class="fas fa-cog"></i> Settings
+            </a> -->
+        </nav>
+    </aside>
+
+    <main class="content">
+
+        <div id="view-calendar" class="main-view">
+            <header class="header">
+                <div class="welcome">Welcome back. Here is a summary of your schedule.</div>
+                <div class="header-tools">
+                    <input type="text" placeholder="Search..." class="search-input">
+                    <i class="fas fa-bell notification-icon"></i>
                 </div>
+            </header>
+
+            <section class="summary-cards">
+                <div class="card">
+                    <div class="card-content">
+                        <h3>0</h3>
+                        <p>Appointments Today</p>
+                    </div>
+                    <div class="card-icon card-icon-blue"><i class="far fa-calendar"></i></div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h3>1</h3>
+                        <p>Pending</p>
+                    </div>
+                    <div class="card-icon card-icon-yellow"><i class="far fa-clock"></i></div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h3>1</h3>
+                        <p>Confirmed</p>
+                    </div>
+                    <div class="card-icon card-icon-green"><i class="far fa-check-circle"></i></div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h3>2</h3>
+                        <p>Total Appointments</p>
+                    </div>
+                    <div class="card-icon card-icon-teal"><i class="fas fa-chart-line"></i></div>
+                </div>
+            </section>
+
+            <div class="main-section">
+                <section class="appointments-list">
+                    <h2 class="section-title">Upcoming Appointments</h2>
+                    <div class="appointment">
+                        <div class="appointment-info">
+                            <h4>Dental Cleaning <span class="status confirmed">Confirmed</span></h4>
+                            <p><i class="far fa-user"></i> Maria Garcia | <i class="fas fa-phone"></i> +54 11 5555-1234
+                                | <i class="far fa-clock"></i> Tue, Jan 20 - 10:00</p>
+                        </div>
+                    </div>
                 </section>
 
-            <aside class="right-sidebar">
-                <div class="calendar-widget">
-                    <div class="calendar-header">
-                        <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
-                        <h3 id="monthYear">January 2026</h3>
-                        <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                <aside class="right-sidebar">
+                    <div class="calendar-widget">
+                        <div class="calendar-header">
+                            <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                            <h3 id="monthYear">January 2026</h3>
+                            <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-grid" id="calendar"></div>
                     </div>
-                    <div class="calendar-grid" id="calendar"></div>
-                </div>
-                <div class="quick-actions">
-                    <h2 class="section-title">Quick Actions</h2>
-                    <a href="#" class="quick-action-btn"><i class="fas fa-plus"></i> New Manual Appointment</a>
-                    <a href="#" class="quick-action-btn"><i class="fas fa-external-link-alt"></i> View Booking Page</a>
-                </div>
-            </aside>
-        </div>
-    </div> 
-    <div id="view-settings" class="main-view" style="display: none;">
-        <header class="header">
-            <div class="header-text">
-                <h1 class="page-title">Settings</h1>
-                <p class="page-subtitle">Manage your business configuration</p>
+                    <div class="quick-actions">
+                        <h2 class="section-title">Quick Actions</h2>
+                        <a href="#" class="quick-action-btn"><i class="fas fa-plus"></i> New Manual Appointment</a>
+                        <a href="#" class="quick-action-btn"><i class="fas fa-external-link-alt"></i> View Booking
+                            Page</a>
+                    </div>
+                </aside>
             </div>
-        </header>
-
-        <div class="settings-tabs">
-            <button class="tab-btn active" onclick="openTab(event, 'business')"><i class="fas fa-store"></i> Business</button>
-            <button class="tab-btn" onclick="openTab(event, 'schedule')"><i class="far fa-clock"></i> Schedule</button>
-            <button class="tab-btn" onclick="openTab(event, 'notifications')"><i class="far fa-bell"></i> Notifications</button>
         </div>
+        <div id="view-dashboard" class="main-view" style="display: none;">
+            <header class="header">
+                <div class="header-text">
+                    <h1 class="page-title">Settings</h1>
+                    <p class="page-subtitle">Manage your business configuration</p>
+                </div>
+            </header>
 
-        <div id="business" class="tab-content active-content">
+            <div class="settings-tabs">
+                <button class="tab-btn active" onclick="openTab(event, 'business')"><i class="fas fa-store"></i>
+                    Business</button>
+                <button class="tab-btn" onclick="openTab(event, 'schedule')"><i class="far fa-clock"></i>
+                    Schedule</button>
+                <button class="tab-btn" onclick="openTab(event, 'notifications')"><i class="far fa-bell"></i>
+                    Notifications</button>
+            </div>
+
+           <div id="business" class="tab-content active-content">
     <section class="settings-card">
         <div class="card-header">
             <h3>Business Information</h3>
             <p>Update the business data that your clients will see</p>
         </div>
-        <form class="settings-form">
+        
+        <form class="settings-form" id="business-form" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="form-group half">
                     <label>Business Name</label>
-                    <input type="text" value="Clínica Dental Sonrisas" class="form-input">
+                    <input type="text" name="business_name" 
+                           value="<?php echo htmlspecialchars($userData['business_name'] ?? ''); ?>" 
+                           class="form-input">
                 </div>
                 <div class="form-group half">
                     <label>Phone Number</label>
-                    <input type="text" value="+54 11 1234-5678" class="form-input">
+                    <input type="text" name="phone" 
+                           value="<?php echo htmlspecialchars($userData['phone'] ?? ''); ?>" 
+                           class="form-input">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group half">
                     <label>Contact Email</label>
-                    <input type="email" value="contacto@sonrisas.com" class="form-input">
+                    <input type="email" value="<?php echo htmlspecialchars($userData['email'] ?? ''); ?>" 
+                           class="form-input" readonly style="background: #eee;">
                 </div>
                 <div class="form-group half">
                     <label>Locality</label>
-                    <input type="text" value="Madrid" class="form-input">
+                    <input type="text" name="city" 
+                           value="<?php echo htmlspecialchars($userData['city'] ?? ''); ?>" 
+                           class="form-input">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group half">
                     <label>Address</label>
-                    <input type="text" value="Av. Principal 123" class="form-input">
+                    <input type="text" name="address" 
+                           value="<?php echo htmlspecialchars($userData['address'] ?? ''); ?>" 
+                           class="form-input">
                 </div>
                 <div class="form-group half">
                     <label>Postal Code</label>
-                    <input type="text" value="28001" class="form-input">
+                    <input type="text" name="postal_code" 
+                           value="<?php echo htmlspecialchars($userData['postal_code'] ?? ''); ?>" 
+                           class="form-input">
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Description</label>
-                <textarea rows="4" maxlength="500" class="form-input">We take care of your dental health with the best professionals and latest generation technology.</textarea>
+                <textarea name="description" rows="4" maxlength="500" class="form-input"><?php echo htmlspecialchars($userData['description'] ?? ''); ?></textarea>
             </div>
 
             <div class="form-row">
                 <div class="form-group half">
                     <label>Logo</label>
-                    <input type="file" accept="image/*" class="form-input">
+                    <input type="file" name="logo" accept="image/*" class="form-input">
+                    <?php if(!empty($userData['logo_url'])): ?>
+                        <small>Current: <a href="public/<?php echo $userData['logo_url']; ?>" target="_blank">View Logo</a></small>
+                    <?php endif; ?>
                 </div>
                 <div class="form-group half">
                     <label>Banner Image</label>
-                    <input type="file" accept="image/*" class="form-input">
+                    <input type="file" name="banner" accept="image/*" class="form-input">
+                    <?php if(!empty($userData['banner_url'])): ?>
+                        <small>Current: <a href="public/<?php echo $userData['banner_url']; ?>" target="_blank">View Banner</a></small>
+                    <?php endif; ?>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Gallery Photos</label>
-                <input type="file" accept="image/*" multiple class="form-input">
-            </div>
-
             <div class="form-actions">
-                <button type="button" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
             </div>
         </form>
     </section>
 </div>
 
-        <div id="schedule" class="tab-content" style="display: none;">
-    <section class="settings-card">
-        <div class="card-header">
-            <h3>Opening Hours</h3>
-            <p>Configure the days and hours you accept reservations</p>
+            <div id="schedule" class="tab-content" style="display: none;">
+                <section class="settings-card">
+                    <div class="card-header">
+                        <h3>Opening Hours</h3>
+                        <p>Configure the days and hours you accept reservations</p>
+                    </div>
+
+                    <div class="schedule-container">
+                        <div class="schedule-row">
+                            <div class="day-wrapper">
+                                <label class="switch">
+                                    <input type="checkbox" onchange="toggleDay(this)">
+                                    <span class="slider round"></span>
+                                </label>
+                                <span class="day-name">Sunday</span>
+                            </div>
+                            <div class="time-wrapper">
+                                <span class="closed-label">Closed</span>
+                                <div class="time-inputs" style="display: none;">
+                                    <input type="time" class="form-input time-field" value="09:00">
+                                    <span class="separator">to</span>
+                                    <input type="time" class="form-input time-field" value="18:00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="day-wrapper">
+                                <label class="switch">
+                                    <input type="checkbox" checked onchange="toggleDay(this)">
+                                    <span class="slider round"></span>
+                                </label>
+                                <span class="day-name">Monday</span>
+                            </div>
+                            <div class="time-wrapper">
+                                <span class="closed-label" style="display: none;">Closed</span>
+                                <div class="time-inputs">
+                                    <input type="time" class="form-input time-field" value="09:00">
+                                    <span class="separator">to</span>
+                                    <input type="time" class="form-input time-field" value="18:00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="day-wrapper">
+                                <label class="switch">
+                                    <input type="checkbox" checked onchange="toggleDay(this)">
+                                    <span class="slider round"></span>
+                                </label>
+                                <span class="day-name">Tuesday</span>
+                            </div>
+                            <div class="time-wrapper">
+                                <span class="closed-label" style="display: none;">Closed</span>
+                                <div class="time-inputs">
+                                    <input type="time" class="form-input time-field" value="09:00">
+                                    <span class="separator">to</span>
+                                    <input type="time" class="form-input time-field" value="18:00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="day-wrapper">
+                                <label class="switch">
+                                    <input type="checkbox" checked onchange="toggleDay(this)">
+                                    <span class="slider round"></span>
+                                </label>
+                                <span class="day-name">Wednesday</span>
+                            </div>
+                            <div class="time-wrapper">
+                                <span class="closed-label" style="display: none;">Closed</span>
+                                <div class="time-inputs">
+                                    <input type="time" class="form-input time-field" value="09:00">
+                                    <span class="separator">to</span>
+                                    <input type="time" class="form-input time-field" value="18:00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="day-wrapper">
+                                <label class="switch">
+                                    <input type="checkbox" checked onchange="toggleDay(this)">
+                                    <span class="slider round"></span>
+                                </label>
+                                <span class="day-name">Thursday</span>
+                            </div>
+                            <div class="time-wrapper">
+                                <span class="closed-label" style="display: none;">Closed</span>
+                                <div class="time-inputs">
+                                    <input type="time" class="form-input time-field" value="09:00">
+                                    <span class="separator">to</span>
+                                    <input type="time" class="form-input time-field" value="18:00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="day-wrapper">
+                                <label class="switch">
+                                    <input type="checkbox" checked onchange="toggleDay(this)">
+                                    <span class="slider round"></span>
+                                </label>
+                                <span class="day-name">Friday</span>
+                            </div>
+                            <div class="time-wrapper">
+                                <span class="closed-label" style="display: none;">Closed</span>
+                                <div class="time-inputs">
+                                    <input type="time" class="form-input time-field" value="09:00">
+                                    <span class="separator">to</span>
+                                    <input type="time" class="form-input time-field" value="14:00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="schedule-row">
+                            <div class="day-wrapper">
+                                <label class="switch">
+                                    <input type="checkbox" onchange="toggleDay(this)">
+                                    <span class="slider round"></span>
+                                </label>
+                                <span class="day-name">Saturday</span>
+                            </div>
+                            <div class="time-wrapper">
+                                <span class="closed-label">Closed</span>
+                                <div class="time-inputs" style="display: none;">
+                                    <input type="time" class="form-input time-field" value="10:00">
+                                    <span class="separator">to</span>
+                                    <input type="time" class="form-input time-field" value="14:00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-save"><i class="fas fa-save"></i> Save Schedule</button>
+                    </div>
+                </section>
+            </div>
+
+            <div id="notifications" class="tab-content" style="display: none;">
+                <section class="settings-card">
+                    <div style="padding: 20px;">Notification Settings Content</div>
+                </section>
+            </div>
         </div>
-        
-        <div class="schedule-container">
-            <div class="schedule-row">
-                <div class="day-wrapper">
-                    <label class="switch">
-                        <input type="checkbox" onchange="toggleDay(this)">
-                        <span class="slider round"></span>
-                    </label>
-                    <span class="day-name">Sunday</span>
-                </div>
-                <div class="time-wrapper">
-                    <span class="closed-label">Closed</span>
-                    <div class="time-inputs" style="display: none;">
-                        <input type="time" class="form-input time-field" value="09:00">
-                        <span class="separator">to</span>
-                        <input type="time" class="form-input time-field" value="18:00">
-                    </div>
-                </div>
-            </div>
-
-            <div class="schedule-row">
-                <div class="day-wrapper">
-                    <label class="switch">
-                        <input type="checkbox" checked onchange="toggleDay(this)">
-                        <span class="slider round"></span>
-                    </label>
-                    <span class="day-name">Monday</span>
-                </div>
-                <div class="time-wrapper">
-                    <span class="closed-label" style="display: none;">Closed</span>
-                    <div class="time-inputs">
-                        <input type="time" class="form-input time-field" value="09:00">
-                        <span class="separator">to</span>
-                        <input type="time" class="form-input time-field" value="18:00">
-                    </div>
-                </div>
-            </div>
-
-            <div class="schedule-row">
-                <div class="day-wrapper">
-                    <label class="switch">
-                        <input type="checkbox" checked onchange="toggleDay(this)">
-                        <span class="slider round"></span>
-                    </label>
-                    <span class="day-name">Tuesday</span>
-                </div>
-                <div class="time-wrapper">
-                    <span class="closed-label" style="display: none;">Closed</span>
-                    <div class="time-inputs">
-                        <input type="time" class="form-input time-field" value="09:00">
-                        <span class="separator">to</span>
-                        <input type="time" class="form-input time-field" value="18:00">
-                    </div>
-                </div>
-            </div>
-
-            <div class="schedule-row">
-                <div class="day-wrapper">
-                    <label class="switch">
-                        <input type="checkbox" checked onchange="toggleDay(this)">
-                        <span class="slider round"></span>
-                    </label>
-                    <span class="day-name">Wednesday</span>
-                </div>
-                <div class="time-wrapper">
-                    <span class="closed-label" style="display: none;">Closed</span>
-                    <div class="time-inputs">
-                        <input type="time" class="form-input time-field" value="09:00">
-                        <span class="separator">to</span>
-                        <input type="time" class="form-input time-field" value="18:00">
-                    </div>
-                </div>
-            </div>
-
-            <div class="schedule-row">
-                <div class="day-wrapper">
-                    <label class="switch">
-                        <input type="checkbox" checked onchange="toggleDay(this)">
-                        <span class="slider round"></span>
-                    </label>
-                    <span class="day-name">Thursday</span>
-                </div>
-                <div class="time-wrapper">
-                    <span class="closed-label" style="display: none;">Closed</span>
-                    <div class="time-inputs">
-                        <input type="time" class="form-input time-field" value="09:00">
-                        <span class="separator">to</span>
-                        <input type="time" class="form-input time-field" value="18:00">
-                    </div>
-                </div>
-            </div>
-
-            <div class="schedule-row">
-                <div class="day-wrapper">
-                    <label class="switch">
-                        <input type="checkbox" checked onchange="toggleDay(this)">
-                        <span class="slider round"></span>
-                    </label>
-                    <span class="day-name">Friday</span>
-                </div>
-                <div class="time-wrapper">
-                    <span class="closed-label" style="display: none;">Closed</span>
-                    <div class="time-inputs">
-                        <input type="time" class="form-input time-field" value="09:00">
-                        <span class="separator">to</span>
-                        <input type="time" class="form-input time-field" value="14:00">
-                    </div>
-                </div>
-            </div>
-
-            <div class="schedule-row">
-                <div class="day-wrapper">
-                    <label class="switch">
-                        <input type="checkbox" onchange="toggleDay(this)">
-                        <span class="slider round"></span>
-                    </label>
-                    <span class="day-name">Saturday</span>
-                </div>
-                <div class="time-wrapper">
-                    <span class="closed-label">Closed</span>
-                    <div class="time-inputs" style="display: none;">
-                        <input type="time" class="form-input time-field" value="10:00">
-                        <span class="separator">to</span>
-                        <input type="time" class="form-input time-field" value="14:00">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-actions">
-            <button type="button" class="btn-save"><i class="fas fa-save"></i> Save Schedule</button>
-        </div>
-    </section>
-</div>
-        
-        <div id="notifications" class="tab-content" style="display: none;">
-            <section class="settings-card"><div style="padding: 20px;">Notification Settings Content</div></section>
-        </div>
-    </div>
     </main>
-    <script src="js/script-dashboard.js"></script>
+    <script src="public/js/script-dashboard.js"></script>
+
 </body>
+
 </html>

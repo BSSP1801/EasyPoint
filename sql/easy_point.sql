@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: db
--- Tiempo de generación: 19-01-2026 a las 12:45:02
+-- Tiempo de generación: 27-01-2026 a las 10:36:09
 -- Versión del servidor: 8.0.44
 -- Versión de PHP: 8.3.26
 
@@ -41,6 +41,38 @@ CREATE TABLE `appointments` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `business_gallery`
+--
+
+CREATE TABLE `business_gallery` (
+  `id` int NOT NULL,
+  `business_profile_id` int NOT NULL,
+  `image_url` varchar(255) NOT NULL,
+  `is_main` tinyint(1) DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `business_profiles`
+--
+
+CREATE TABLE `business_profiles` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `description` text,
+  `logo_url` varchar(255) DEFAULT NULL,
+  `banner_url` varchar(255) DEFAULT NULL,
+  `opening_hours` json DEFAULT NULL,
+  `website` varchar(100) DEFAULT NULL,
+  `instagram_link` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `services`
 --
 
@@ -63,18 +95,29 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('admin','user') DEFAULT 'user',
+  `role` enum('admin','user','store') DEFAULT 'user',
   `is_confirmed` tinyint(1) DEFAULT '0',
   `token` varchar(100) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `business_name` varchar(100) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `postal_code` varchar(10) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `is_confirmed`, `token`, `created_at`) VALUES
-(1, 'admin_test', 'admin@easypoint.com', '$2y$10$vI8.D.Yf/Yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv', 'admin', 1, NULL, '2026-01-19 12:44:49');
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `is_confirmed`, `token`, `created_at`, `business_name`, `address`, `postal_code`, `phone`, `city`) VALUES
+(1, 'admin_test', 'admin@easypoint.com', '$2y$10$vI8.D.Yf/Yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv', 'admin', 1, NULL, '2026-01-19 12:44:49', NULL, NULL, NULL, NULL, NULL),
+(2, 'bsalcedo', 'brunosalcedo1801@gmail.com', '$2y$10$deukPQsLWNDQ/KMuDE64LOeeo9yDaCB3L3e63ApoA5Z7DK/IikayO', 'user', 0, NULL, '2026-01-19 13:31:06', NULL, NULL, NULL, NULL, NULL),
+(7, 'jciuperca', 'metracam@gmail.com', '$2y$10$TxVa.PD5Fu6dT5s/GU1KlOuJ346qKKYtTI1sWfvxFL9c8aPitccRK', 'user', 0, NULL, '2026-01-19 13:36:07', NULL, NULL, NULL, NULL, NULL),
+(8, 'buser1', 'bmail1@gmail.com', '$2y$10$a6dBQ2HaQjdM3C48qQ.kluHNrid4Oo5xBdKQR.QdbZimPSLQ7hdbe', 'store', 0, NULL, '2026-01-20 11:01:23', 'bname1', 'baddress1', '4008', NULL, NULL),
+(10, 'user1', 'email1@gmail.com', '$2y$10$seZRXVnGvy3Fsrv4dsxZOuUY2zzJcwkhLSTpIxPOYn7OdjxuOIeH6', 'user', 0, NULL, '2026-01-20 11:04:17', NULL, NULL, NULL, NULL, NULL),
+(11, 'yramirez', 'yerai.ramlin@gmail.com', '$2y$10$uVAsO5Y8BG1xqDz7szFxt.39XWef37wrMK5YYLWPfXgPeZoNpdvtW', 'user', 0, NULL, '2026-01-21 11:10:21', NULL, NULL, NULL, NULL, NULL),
+(61, 'empresa', 'empresa@gmail.com', '$2y$10$ZK8OcEVZ8fCBt5N5aHbYnefQ/.bHRg7K/4YrllTW7RPYtwnfXx.Yq', 'store', 0, NULL, '2026-01-21 12:14:06', 'EmpresaEjemplo', 'calle inventada', '46007', NULL, NULL);
 
 --
 -- Índices para tablas volcadas
@@ -87,6 +130,20 @@ ALTER TABLE `appointments`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `service_id` (`service_id`);
+
+--
+-- Indices de la tabla `business_gallery`
+--
+ALTER TABLE `business_gallery`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_gallery_profile` (`business_profile_id`);
+
+--
+-- Indices de la tabla `business_profiles`
+--
+ALTER TABLE `business_profiles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_user` (`user_id`);
 
 --
 -- Indices de la tabla `services`
@@ -113,6 +170,18 @@ ALTER TABLE `appointments`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `business_gallery`
+--
+ALTER TABLE `business_gallery`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `business_profiles`
+--
+ALTER TABLE `business_profiles`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `services`
 --
 ALTER TABLE `services`
@@ -122,7 +191,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- Restricciones para tablas volcadas
@@ -134,6 +203,18 @@ ALTER TABLE `users`
 ALTER TABLE `appointments`
   ADD CONSTRAINT `appointments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `appointments_ibfk_2` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `business_gallery`
+--
+ALTER TABLE `business_gallery`
+  ADD CONSTRAINT `fk_gallery_profile` FOREIGN KEY (`business_profile_id`) REFERENCES `business_profiles` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `business_profiles`
+--
+ALTER TABLE `business_profiles`
+  ADD CONSTRAINT `fk_business_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
