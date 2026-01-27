@@ -144,14 +144,17 @@ public function login() {
 
 public function dashboard() {
     if (!isset($_SESSION['user_id'])) {
-     
+        header("Location: index.php");
         exit();
     }
 
     $userModel = new User();
     $userData = $userModel->getById($_SESSION['user_id']);
-
-    require_once __DIR__ . '/../views/dashboard.php';
+    
+    // Make sure role is available in the view
+    $userRole = $_SESSION['role'] ?? $userData['role'] ?? 'admin';
+    
+    require_once __DIR__ . '/../public/dashboard.php';
 }
 
 public function updateSchedule() {
@@ -184,6 +187,72 @@ public function updateSchedule() {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Database error']);
     exit();
+}
+
+// En controllers/UserController.php
+
+// public function dashboard() {
+//     if (!isset($_SESSION['user_id'])) {
+//         header("Location: index.php?action=login");
+//         exit();
+//     }
+
+//     $userModel = new User();
+//     // CAMBIO: Usamos el nuevo método que trae datos de ambas tablas
+//     $userData = $userModel->getFullProfile($_SESSION['user_id']);
+
+//     require_once __DIR__ . '/../views/dashboard.php';
+// }
+
+public function updateBusinessInfo() {
+      $userModel = new User();
+    $userData = $userModel->getById($_SESSION['user_id']);
+    
+    // Make sure role is available in the view
+    $userRole = $_SESSION['role'] ?? $userData['role'] ?? 'admin';
+    
+    require_once __DIR__ . '/../public/dashboard.php';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
+        
+        // Recoger datos de texto
+        $data = [
+            'business_name' => $_POST['business_name'] ?? '',
+            'phone'         => $_POST['phone'] ?? '',
+            'address'       => $_POST['address'] ?? '',
+            'city'          => $_POST['city'] ?? '', // Locality
+            'postal_code'   => $_POST['postal_code'] ?? '',
+            'description'   => $_POST['description'] ?? '',
+            'logo_url'      => null,
+            'banner_url'    => null
+        ];
+
+        // Manejo de subida de archivos (Imágenes)
+        $uploadDir = __DIR__ . '/../public/assets/uploads/';
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+        // Función auxiliar para subir ficheros
+        $handleUpload = function($fileKey) use ($uploadDir) {
+            if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                $ext = pathinfo($_FILES[$fileKey]['name'], PATHINFO_EXTENSION);
+                $filename = uniqid('img_') . '.' . $ext;
+                if (move_uploaded_file($_FILES[$fileKey]['tmp_name'], $uploadDir . $filename)) {
+                    return 'assets/uploads/' . $filename; // Ruta relativa para guardar en BD
+                }
+            }
+            return null;
+        };
+
+        $data['logo_url'] = $handleUpload('logo');
+        $data['banner_url'] = $handleUpload('banner');
+
+        $userModel = new User();
+        if ($userModel->updateBusinessProfile($_SESSION['user_id'], $data)) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Database error']);
+        }
+        exit();
+    }
 }
 
 }

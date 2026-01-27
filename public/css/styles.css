@@ -39,6 +39,12 @@ body {
     color: white;
 }
 
+.logout-link {
+    z-index: 11;
+    text-decoration: none;
+    color: white;
+}
+
 .business-button {
     background-color: white;
     color: black;
