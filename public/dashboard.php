@@ -30,7 +30,7 @@ if (!isset($_SESSION['user_id'])) {
 <body>
 
     <aside class="sidebar">
-        <div class="logo" >
+        <div class="logo">
             <i class="fas fa-calendar-check"></i>
             <span>EasyPoint</span>
         </div>
@@ -183,224 +183,156 @@ if (!isset($_SESSION['user_id'])) {
                     Notifications</button>
             </div>
 
-           <div id="business" class="tab-content active-content">
-    <section class="settings-card">
-        <div class="card-header">
-            <h3>Business Information</h3>
-            <p>Update the business data that your clients will see</p>
-        </div>
-        
-        <form class="settings-form" id="business-form" enctype="multipart/form-data">
-            <div class="form-row">
-                <div class="form-group half">
-                    <label>Business Name</label>
-                    <input type="text" name="business_name" 
-                           value="<?php echo htmlspecialchars($userData['business_name'] ?? ''); ?>" 
-                           class="form-input">
-                </div>
-                <div class="form-group half">
-                    <label>Phone Number</label>
-                    <input type="text" name="phone" 
-                           value="<?php echo htmlspecialchars($userData['phone'] ?? ''); ?>" 
-                           class="form-input">
-                </div>
-            </div>
+            <div id="business" class="tab-content active-content">
+                <section class="settings-card">
+                    <div class="card-header">
+                        <h3>Business Information</h3>
+                        <p>Update the business data that your clients will see</p>
+                    </div>
 
-            <div class="form-row">
-                <div class="form-group half">
-                    <label>Contact Email</label>
-                    <input type="email" value="<?php echo htmlspecialchars($userData['email'] ?? ''); ?>" 
-                           class="form-input" readonly style="background: #eee;">
-                </div>
-                <div class="form-group half">
-                    <label>Locality</label>
-                    <input type="text" name="city" 
-                           value="<?php echo htmlspecialchars($userData['city'] ?? ''); ?>" 
-                           class="form-input">
-                </div>
-            </div>
+                    <form class="settings-form" id="business-form" enctype="multipart/form-data">
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Business Name</label>
+                                <input type="text" name="business_name"
+                                    value="<?php echo htmlspecialchars($userData['business_name'] ?? ''); ?>"
+                                    class="form-input">
+                            </div>
+                            <div class="form-group half">
+                                <label>Phone Number</label>
+                                <input type="text" name="phone"
+                                    value="<?php echo htmlspecialchars($userData['phone'] ?? ''); ?>"
+                                    class="form-input">
+                            </div>
+                        </div>
 
-            <div class="form-row">
-                <div class="form-group half">
-                    <label>Address</label>
-                    <input type="text" name="address" 
-                           value="<?php echo htmlspecialchars($userData['address'] ?? ''); ?>" 
-                           class="form-input">
-                </div>
-                <div class="form-group half">
-                    <label>Postal Code</label>
-                    <input type="text" name="postal_code" 
-                           value="<?php echo htmlspecialchars($userData['postal_code'] ?? ''); ?>" 
-                           class="form-input">
-                </div>
-            </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Contact Email</label>
+                                <input type="email" value="<?php echo htmlspecialchars($userData['email'] ?? ''); ?>"
+                                    class="form-input" readonly style="background: #eee;">
+                            </div>
+                            <div class="form-group half">
+                                <label>Locality</label>
+                                <input type="text" name="city"
+                                    value="<?php echo htmlspecialchars($userData['city'] ?? ''); ?>" class="form-input">
+                            </div>
+                        </div>
 
-            <div class="form-group">
-                <label>Description</label>
-                <textarea name="description" rows="4" maxlength="500" class="form-input"><?php echo htmlspecialchars($userData['description'] ?? ''); ?></textarea>
-            </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Address</label>
+                                <input type="text" name="address"
+                                    value="<?php echo htmlspecialchars($userData['address'] ?? ''); ?>"
+                                    class="form-input">
+                            </div>
+                            <div class="form-group half">
+                                <label>Postal Code</label>
+                                <input type="text" name="postal_code"
+                                    value="<?php echo htmlspecialchars($userData['postal_code'] ?? ''); ?>"
+                                    class="form-input">
+                            </div>
+                        </div>
 
-            <div class="form-row">
-                <div class="form-group half">
-                    <label>Logo</label>
-                    <input type="file" name="logo" accept="image/*" class="form-input">
-                    <?php if(!empty($userData['logo_url'])): ?>
-                        <small>Current: <a href="public/<?php echo $userData['logo_url']; ?>" target="_blank">View Logo</a></small>
-                    <?php endif; ?>
-                </div>
-                <div class="form-group half">
-                    <label>Banner Image</label>
-                    <input type="file" name="banner" accept="image/*" class="form-input">
-                    <?php if(!empty($userData['banner_url'])): ?>
-                        <small>Current: <a href="public/<?php echo $userData['banner_url']; ?>" target="_blank">View Banner</a></small>
-                    <?php endif; ?>
-                </div>
-            </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="description" rows="4" maxlength="500"
+                                class="form-input"><?php echo htmlspecialchars($userData['description'] ?? ''); ?></textarea>
+                        </div>
 
-            <div class="form-actions">
-                <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
-            </div>
-        </form>
-    </section>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Logo</label>
+                                <input type="file" name="logo" accept="image/*" class="form-input">
+                                <?php if (!empty($userData['logo_url'])): ?>
+                                    <small>Current: <a href="public/<?php echo $userData['logo_url']; ?>"
+                                            target="_blank">View Logo</a></small>
+                                <?php endif; ?>
+                            </div>
+                            <div class="form-group half">
+                                <label>Banner Image</label>
+                                <input type="file" name="banner" accept="image/*" class="form-input">
+                                <?php if (!empty($userData['banner_url'])): ?>
+                                    <small>Current: <a href="public/<?php echo $userData['banner_url']; ?>"
+                                            target="_blank">View Banner</a></small>
+                                <?php endif; ?>
+                            </div>
+                            <div class="form-group">
+    <label>Visibility Status</label>
+    <div class="day-toggle" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+        <label class="switch">
+            <input type="checkbox" name="is_public" value="1" 
+                <?php echo ($userData['is_public'] ?? 0) == 1 ? 'checked' : ''; ?>>
+            <span class="slider round"></span>
+        </label>
+        <span class="day-name">Public (Visible in Home Carousel)</span>
+    </div>
 </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
 
             <div id="schedule" class="tab-content" style="display: none;">
                 <section class="settings-card">
                     <div class="card-header">
                         <h3>Opening Hours</h3>
-                        <p>Configure the days and hours you accept reservations</p>
+                        <p>Set your weekly availability for appointments</p>
                     </div>
 
+                    <?php
+                    // 1. Decodificar el JSON guardado en la base de datos
+                    $schedule = [];
+                    if (!empty($userData['opening_hours'])) {
+                        $schedule = json_decode($userData['opening_hours'], true);
+                    }
+
+                    // Array de días para generar el HTML en bucle
+                    $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                    ?>
+
                     <div class="schedule-container">
-                        <div class="schedule-row">
-                            <div class="day-wrapper">
-                                <label class="switch">
-                                    <input type="checkbox" onchange="toggleDay(this)">
-                                    <span class="slider round"></span>
-                                </label>
-                                <span class="day-name">Sunday</span>
-                            </div>
-                            <div class="time-wrapper">
-                                <span class="closed-label">Closed</span>
-                                <div class="time-inputs" style="display: none;">
-                                    <input type="time" class="form-input time-field" value="09:00">
-                                    <span class="separator">to</span>
-                                    <input type="time" class="form-input time-field" value="18:00">
-                                </div>
-                            </div>
-                        </div>
+                        <?php foreach ($days as $day): ?>
+                            <?php
+                            // Recuperar valores guardados para este día (si existen)
+                            $dayData = $schedule[$day] ?? [];
+                            $isActive = !empty($dayData['active']) && $dayData['active'] == true;
+                            $openTime = $dayData['open'] ?? '09:00';
+                            $closeTime = $dayData['close'] ?? '20:00';
+                            ?>
 
-                        <div class="schedule-row">
-                            <div class="day-wrapper">
-                                <label class="switch">
-                                    <input type="checkbox" checked onchange="toggleDay(this)">
-                                    <span class="slider round"></span>
-                                </label>
-                                <span class="day-name">Monday</span>
-                            </div>
-                            <div class="time-wrapper">
-                                <span class="closed-label" style="display: none;">Closed</span>
-                                <div class="time-inputs">
-                                    <input type="time" class="form-input time-field" value="09:00">
-                                    <span class="separator">to</span>
-                                    <input type="time" class="form-input time-field" value="18:00">
+                            <div class="schedule-row">
+                                <div class="day-toggle">
+                                    <label class="switch">
+                                        <input type="checkbox" id="<?php echo $day; ?>-active" onchange="toggleDay(this)"
+                                            <?php echo $isActive ? 'checked' : ''; ?>>
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <span class="day-name"><?php echo ucfirst($day); ?></span>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="schedule-row">
-                            <div class="day-wrapper">
-                                <label class="switch">
-                                    <input type="checkbox" checked onchange="toggleDay(this)">
-                                    <span class="slider round"></span>
-                                </label>
-                                <span class="day-name">Tuesday</span>
-                            </div>
-                            <div class="time-wrapper">
-                                <span class="closed-label" style="display: none;">Closed</span>
-                                <div class="time-inputs">
-                                    <input type="time" class="form-input time-field" value="09:00">
-                                    <span class="separator">to</span>
-                                    <input type="time" class="form-input time-field" value="18:00">
+                                <div class="time-inputs" style="display: <?php echo $isActive ? 'flex' : 'none'; ?>;">
+                                    <input type="time" id="<?php echo $day; ?>-open" value="<?php echo $openTime; ?>"
+                                        class="form-input time-input">
+                                    <span>to</span>
+                                    <input type="time" id="<?php echo $day; ?>-close" value="<?php echo $closeTime; ?>"
+                                        class="form-input time-input">
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="schedule-row">
-                            <div class="day-wrapper">
-                                <label class="switch">
-                                    <input type="checkbox" checked onchange="toggleDay(this)">
-                                    <span class="slider round"></span>
-                                </label>
-                                <span class="day-name">Wednesday</span>
-                            </div>
-                            <div class="time-wrapper">
-                                <span class="closed-label" style="display: none;">Closed</span>
-                                <div class="time-inputs">
-                                    <input type="time" class="form-input time-field" value="09:00">
-                                    <span class="separator">to</span>
-                                    <input type="time" class="form-input time-field" value="18:00">
+                                <div class="closed-label" style="display: <?php echo $isActive ? 'none' : 'block'; ?>;">
+                                    Closed
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="schedule-row">
-                            <div class="day-wrapper">
-                                <label class="switch">
-                                    <input type="checkbox" checked onchange="toggleDay(this)">
-                                    <span class="slider round"></span>
-                                </label>
-                                <span class="day-name">Thursday</span>
-                            </div>
-                            <div class="time-wrapper">
-                                <span class="closed-label" style="display: none;">Closed</span>
-                                <div class="time-inputs">
-                                    <input type="time" class="form-input time-field" value="09:00">
-                                    <span class="separator">to</span>
-                                    <input type="time" class="form-input time-field" value="18:00">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="schedule-row">
-                            <div class="day-wrapper">
-                                <label class="switch">
-                                    <input type="checkbox" checked onchange="toggleDay(this)">
-                                    <span class="slider round"></span>
-                                </label>
-                                <span class="day-name">Friday</span>
-                            </div>
-                            <div class="time-wrapper">
-                                <span class="closed-label" style="display: none;">Closed</span>
-                                <div class="time-inputs">
-                                    <input type="time" class="form-input time-field" value="09:00">
-                                    <span class="separator">to</span>
-                                    <input type="time" class="form-input time-field" value="14:00">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="schedule-row">
-                            <div class="day-wrapper">
-                                <label class="switch">
-                                    <input type="checkbox" onchange="toggleDay(this)">
-                                    <span class="slider round"></span>
-                                </label>
-                                <span class="day-name">Saturday</span>
-                            </div>
-                            <div class="time-wrapper">
-                                <span class="closed-label">Closed</span>
-                                <div class="time-inputs" style="display: none;">
-                                    <input type="time" class="form-input time-field" value="10:00">
-                                    <span class="separator">to</span>
-                                    <input type="time" class="form-input time-field" value="14:00">
-                                </div>
-                            </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="btn-save"><i class="fas fa-save"></i> Save Schedule</button>
+                        <button id="save-schedule-btn" class="btn-save"><i class="fas fa-save"></i> Save
+                            Schedule</button>
                     </div>
                 </section>
             </div>
