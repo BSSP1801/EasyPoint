@@ -7,17 +7,22 @@ session_start();
 
 $action = $_GET['action'] ?? 'home';
 $controller = new UserController();
-
+$userModel = new User();
 // --- LOGIC SECTION: Process actions before any HTML is sent ---
 // This allows header("Location: ...") to work correctly
-
+// Initialize an empty array for stores
+$stores = [];
+if ($action === 'home') {
+    $stores = $userModel->getRecommendedStores();
+}
+//Switch case to handle different actions
 switch ($action) {
     case 'register':
-        $controller->register(); // Handles both GET (show form) and POST (process)
+        $controller->register(); 
         exit();
         break;
     case 'login':
-        $controller->login(); // Handles both GET (show form) and POST (process)
+        $controller->login(); 
         exit();
         break;
     case 'dashboard':
@@ -150,126 +155,44 @@ switch ($action) {
             </button>
 
             <div class="shops-grid">
+                
+                <?php if (empty($stores)): ?>
+                    <p style="padding: 20px;">No stores available yet. Be the first to join!</p>
+                <?php else: ?>
+                    
+                    <?php foreach ($stores as $store): ?>
+                        <?php 
+                            // Prepare store data with fallbacks
+                            $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
+                            
+                            // Build full address
+                            $addressParts = [];
+                            if (!empty($store['address'])) $addressParts[] = htmlspecialchars($store['address']);
+                            if (!empty($store['postal_code'])) $addressParts[] = htmlspecialchars($store['postal_code']);
+                            if (!empty($store['city'])) $addressParts[] = htmlspecialchars($store['city']);
+                            $fullAddress = implode(', ', $addressParts);
+                            
+                            // Image handling with default fallback
+                            $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
+                        ?>
 
-                <article class="shop-card">
-                    <div class="image-container">
-                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
-                        <div class="rating-label">
-                            4.9
-                            <span class="reviews-text">1271 reviews</span>
-                        </div>
-                    </div>
-                    <div class="shop-info">
-                        <h3 class="shop-name">Javier Garcia</h3>
-                        <p class="shop-address">Calle puerta nueva numero 8, 30001, Murcia</p>
-                        <span class="sponsored-text">Sponsored </span>
-                    </div>
-                </article>
+                        <article class="shop-card">
+                            <div class="image-container">
+                                <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
+                                <div class="rating-label">
+                                    5.0 <span class="reviews-text">New</span>
+                                </div>
+                            </div>
+                            <div class="shop-info">
+                                <h3 class="shop-name"><?php echo $name; ?></h3>
+                                <p class="shop-address"><?php echo $fullAddress; ?></p>
+                                <span class="sponsored-text">Recommended</span>
+                            </div>
+                        </article>
 
-                <article class="shop-card">
-                    <div class="image-container">
-                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
-                        <div class="rating-label">
-                            4.9
-                            <span class="reviews-text">965 reviews</span>
-                        </div>
-                    </div>
-                    <div class="shop-info">
-                        <h3 class="shop-name">Barbería ISMAEL AYALA</h3>
-                        <p class="shop-address">Calle Medina, N77, 11402, Jerez de la Frontera</p>
-                        <span class="sponsored-text">Sponsored </span>
-                    </div>
-                </article>
-
-                <article class="shop-card">
-                    <div class="image-container">
-                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
-                        <div class="rating-label">
-                            5.0
-                            <span class="reviews-text">497 reviews</span>
-                        </div>
-                    </div>
-                    <div class="shop-info">
-                        <h3 class="shop-name">Traditional BarberShop</h3>
-                        <p class="shop-address">Carrer de Salvador Baroné, 86, 08840</p>
-                        <span class="sponsored-text">Sponsored </span>
-                    </div>
-                </article>
-
-                <article class="shop-card">
-                    <div class="image-container">
-                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
-                        <div class="rating-label">
-                            4.8
-                            <span class="reviews-text">531 reviews</span>
-                        </div>
-                    </div>
-                    <div class="shop-info">
-                        <h3 class="shop-name">Mr Mostacho ALCOY</h3>
-                        <p class="shop-address">Avenida de la Alameda, 2, 03803, Alcoy</p>
-                        <span class="sponsored-text">Sponsored </span>
-                    </div>
-                </article>
-
-                <article class="shop-card">
-                    <div class="image-container">
-                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
-                        <div class="rating-label">
-                            4.7
-                            <span class="reviews-text">320 reviews</span>
-                        </div>
-                    </div>
-                    <div class="shop-info">
-                        <h3 class="shop-name">Lafuen Estilistas</h3>
-                        <p class="shop-address">Calle ribalta, 23, Madrid</p>
-                        <span class="sponsored-text">Sponsored </span>
-                    </div>
-                </article>
-
-                <article class="shop-card">
-                    <div class="image-container">
-                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
-                        <div class="rating-label">
-                            4.7
-                            <span class="reviews-text">320 reviews</span>
-                        </div>
-                    </div>
-                    <div class="shop-info">
-                        <h3 class="shop-name">Lafuen Estilistas</h3>
-                        <p class="shop-address">Calle ribalta, 23, Madrid</p>
-                        <span class="sponsored-text">Sponsored </span>
-                    </div>
-                </article>
-
-                <article class="shop-card">
-                    <div class="image-container">
-                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
-                        <div class="rating-label">
-                            4.7
-                            <span class="reviews-text">320 reviews</span>
-                        </div>
-                    </div>
-                    <div class="shop-info">
-                        <h3 class="shop-name">Lafuen Estilistas</h3>
-                        <p class="shop-address">Calle ribalta, 23, Madrid</p>
-                        <span class="sponsored-text">Sponsored </span>
-                    </div>
-                </article>
-
-                <article class="shop-card">
-                    <div class="image-container">
-                        <img src="public/assets/images/tienda-1.png" alt="Barbershop" class="shop-image">
-                        <div class="rating-label">
-                            4.7
-                            <span class="reviews-text">320 reviews</span>
-                        </div>
-                    </div>
-                    <div class="shop-info">
-                        <h3 class="shop-name">Lafuen Estilistas</h3>
-                        <p class="shop-address">Calle ribalta, 23, Madrid</p>
-                        <span class="sponsored-text">Sponsored </span>
-                    </div>
-                </article>
+                    <?php endforeach; ?>
+                    
+                <?php endif; ?>
 
             </div>
 

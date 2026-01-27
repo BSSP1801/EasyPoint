@@ -61,6 +61,12 @@ body {
     opacity: 1;
 }
 
+.logout-link {
+    z-index: 11;
+    text-decoration: none;
+    color: white;
+}
+
 .business-button {
    background-color: var(--accent);
     color: #2b201e;
@@ -240,15 +246,18 @@ header {
 }
 
 .image-container {
-    position: relative;
+    width: 280px;
     height: 180px;
-    width: 100%;
+    overflow: hidden;
+    position: relative;
 }
 
 .shop-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 280px;          
+    height: 180px;         
+    object-fit: cover;     
+    display: block;        
+    border-radius: 8px 8px 0 0; 
 }
 
 .rating-label {
