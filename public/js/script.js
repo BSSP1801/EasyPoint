@@ -219,21 +219,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const leftBtn = document.querySelector('.left-arrow');
     const rightBtn = document.querySelector('.right-arrow');
 
-    // Verificamos que los elementos existan antes de ejecutar nada (para evitar errores en otras páginas)
+    // Check that elements exist before executing anything (to avoid errors on other pages)
     if (carousel && leftBtn && rightBtn) {
 
-        // 2. Evento para el botón DERECHO
+        // 2. Event for RIGHT button
         rightBtn.addEventListener('click', () => {
             carousel.scrollBy({
-                left: 320, // Desplaza 320px (ancho de tarjeta + hueco aprox)
-                behavior: 'smooth' // Hace que el movimiento sea suave
+                left: 320, // Moves 320px (card width + gap approx)
+                behavior: 'smooth' // Makes movement smooth
             });
         });
 
-        // 3. Evento para el botón IZQUIERDO
+        // 3. Event for LEFT button
         leftBtn.addEventListener('click', () => {
             carousel.scrollBy({
-                left: -320, // Desplaza -320px (hacia atrás)
+                left: -320, // Moves -320px (backward)
                 behavior: 'smooth'
             });
         });

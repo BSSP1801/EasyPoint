@@ -95,8 +95,8 @@ class User
     {
         try {
 
-            // Intenta insertar una nueva fila en business_profiles con el user_id y el horario.
-            //  Si el user_id ya existe (DUPLICATE KEY), simplemente actualiza el campo opening_hours.
+            // Tries to insert a new row in business_profiles with the user_id and schedule.
+            // If the user_id already exists (DUPLICATE KEY), simply updates the opening_hours field.
             $query = "INSERT INTO business_profiles (user_id, opening_hours) 
                   VALUES (:user_id, :opening_hours) 
                   ON DUPLICATE KEY UPDATE opening_hours = :opening_hours_update";
@@ -116,9 +116,9 @@ class User
 
     }
 
-    // En models/User.php
+    // In models/User.php
 
-    // 1. Obtener datos combinados de Usuario y Perfil de Negocio
+    // 1. Get combined data from User and Business Profile
     public function getFullProfile($userId)
     {
 
@@ -135,13 +135,13 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // 2. Actualizar información del negocio
+    // 2. Update business information
     public function updateBusinessProfile($userId, $data)
     {
         try {
             $this->conn->beginTransaction();
 
-            // A. Actualizar datos básicos en tabla USERS
+            // A. Update basic data in USERS table
             $queryUser = "UPDATE users SET 
                       business_name = :bname, 
                       phone = :phone, 
@@ -159,8 +159,9 @@ class User
             $stmtU->bindParam(':id', $userId);
             $stmtU->execute();
 
-            // B. Actualizar perfil extendido (Description, Images) en tabla BUSINESS_PROFILES
-            // Usamos "INSERT ... ON DUPLICATE KEY UPDATE" por si el perfil aún no existe
+            // B. Update extended profile (Description, Images) in BUSINESS_PROFILES table
+            // We use "INSERT ... ON DUPLICATE KEY UPDATE" in case the profile doesn't exist yet
+            // In models/user.php within updateBusinessProfile
             $queryProfile = "INSERT INTO business_profiles (user_id, description, logo_url, banner_url, is_public) 
                  VALUES (:uid, :desc, :logo, :banner, :is_public) 
                  ON DUPLICATE KEY UPDATE 
@@ -169,14 +170,11 @@ class User
                  banner_url = COALESCE(:banner, banner_url),
                  is_public = :is_public";
 
-            $stmtP = $this->conn->prepare($queryProfile);
-            $stmtP->bindParam(':is_public', $data['is_public']);
-        
-
+            $stmtP = $this->conn->prepare($queryProfile); // Prepare only once
             $stmtP->bindParam(':uid', $userId);
             $stmtP->bindParam(':desc', $data['description']);
+            $stmtP->bindParam(':is_public', $data['is_public']); // Bind everything to the same object $stmtP
 
-            // Manejo de nulos para imágenes
             $logo = !empty($data['logo_url']) ? $data['logo_url'] : null;
             $banner = !empty($data['banner_url']) ? $data['banner_url'] : null;
 
@@ -193,13 +191,13 @@ class User
             return false;
         }
     }
-    // En models/User.php
+    // In models/User.php
 
     public function getRecommendedStores()
     {
         try {
 
-            // Usamos LEFT JOIN para traer la tienda aunque aún no haya configurado su perfil completo (logo)
+            // We use LEFT JOIN to get the store even if it hasn't configured its full profile (logo) yet
             $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, bp.logo_url 
                   FROM users u 
                   INNER JOIN business_profiles bp ON u.id = bp.user_id 
