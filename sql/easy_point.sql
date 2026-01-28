@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: db
--- Tiempo de generación: 23-01-2026 a las 10:29:10
+-- Tiempo de generación: 28-01-2026 a las 08:48:09
 -- Versión del servidor: 8.0.44
 -- Versión de PHP: 8.3.26
 
@@ -67,8 +67,16 @@ CREATE TABLE `business_profiles` (
   `website` varchar(100) DEFAULT NULL,
   `instagram_link` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `is_public` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `business_profiles`
+--
+
+INSERT INTO `business_profiles` (`id`, `user_id`, `description`, `logo_url`, `banner_url`, `opening_hours`, `website`, `instagram_link`, `created_at`, `updated_at`, `is_public`) VALUES
+(1, 61, 'asduasdaoisd', 'assets/uploads/img_6979b83a663f5.png', 'assets/uploads/img_6978a245c9128.jpg', '{\"friday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"monday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"sunday\": {\"open\": null, \"close\": null, \"active\": false}, \"tuesday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"saturday\": {\"open\": null, \"close\": null, \"active\": false}, \"thursday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"wednesday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}}', NULL, NULL, '2026-01-27 10:56:58', '2026-01-28 07:18:18', 1);
 
 -- --------------------------------------------------------
 
@@ -101,21 +109,23 @@ CREATE TABLE `users` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `business_name` varchar(100) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
-  `postal_code` varchar(10) DEFAULT NULL
+  `postal_code` varchar(10) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `is_confirmed`, `token`, `created_at`, `business_name`, `address`, `postal_code`) VALUES
-(1, 'admin_test', 'admin@easypoint.com', '$2y$10$vI8.D.Yf/Yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv', 'admin', 1, NULL, '2026-01-19 12:44:49', NULL, NULL, NULL),
-(2, 'bsalcedo', 'brunosalcedo1801@gmail.com', '$2y$10$deukPQsLWNDQ/KMuDE64LOeeo9yDaCB3L3e63ApoA5Z7DK/IikayO', 'user', 0, NULL, '2026-01-19 13:31:06', NULL, NULL, NULL),
-(7, 'jciuperca', 'metracam@gmail.com', '$2y$10$TxVa.PD5Fu6dT5s/GU1KlOuJ346qKKYtTI1sWfvxFL9c8aPitccRK', 'user', 0, NULL, '2026-01-19 13:36:07', NULL, NULL, NULL),
-(8, 'buser1', 'bmail1@gmail.com', '$2y$10$a6dBQ2HaQjdM3C48qQ.kluHNrid4Oo5xBdKQR.QdbZimPSLQ7hdbe', 'store', 0, NULL, '2026-01-20 11:01:23', 'bname1', 'baddress1', '4008'),
-(10, 'user1', 'email1@gmail.com', '$2y$10$seZRXVnGvy3Fsrv4dsxZOuUY2zzJcwkhLSTpIxPOYn7OdjxuOIeH6', 'user', 0, NULL, '2026-01-20 11:04:17', NULL, NULL, NULL),
-(11, 'yramirez', 'yerai.ramlin@gmail.com', '$2y$10$uVAsO5Y8BG1xqDz7szFxt.39XWef37wrMK5YYLWPfXgPeZoNpdvtW', 'user', 0, NULL, '2026-01-21 11:10:21', NULL, NULL, NULL),
-(61, 'empresa', 'empresa@gmail.com', '$2y$10$ZK8OcEVZ8fCBt5N5aHbYnefQ/.bHRg7K/4YrllTW7RPYtwnfXx.Yq', 'store', 0, NULL, '2026-01-21 12:14:06', 'EmpresaEjemplo', 'calle inventada', '46007');
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `is_confirmed`, `token`, `created_at`, `business_name`, `address`, `postal_code`, `phone`, `city`) VALUES
+(1, 'admin_test', 'admin@easypoint.com', '$2y$10$vI8.D.Yf/Yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv.1yv', 'admin', 1, NULL, '2026-01-19 12:44:49', NULL, NULL, NULL, NULL, NULL),
+(2, 'bsalcedo', 'brunosalcedo1801@gmail.com', '$2y$10$deukPQsLWNDQ/KMuDE64LOeeo9yDaCB3L3e63ApoA5Z7DK/IikayO', 'user', 0, NULL, '2026-01-19 13:31:06', NULL, NULL, NULL, NULL, NULL),
+(7, 'jciuperca', 'metracam@gmail.com', '$2y$10$TxVa.PD5Fu6dT5s/GU1KlOuJ346qKKYtTI1sWfvxFL9c8aPitccRK', 'user', 0, NULL, '2026-01-19 13:36:07', NULL, NULL, NULL, NULL, NULL),
+(8, 'buser1', 'bmail1@gmail.com', '$2y$10$a6dBQ2HaQjdM3C48qQ.kluHNrid4Oo5xBdKQR.QdbZimPSLQ7hdbe', 'store', 0, NULL, '2026-01-20 11:01:23', 'bname1', 'baddress1', '4008', NULL, NULL),
+(10, 'user1', 'email1@gmail.com', '$2y$10$seZRXVnGvy3Fsrv4dsxZOuUY2zzJcwkhLSTpIxPOYn7OdjxuOIeH6', 'user', 0, NULL, '2026-01-20 11:04:17', NULL, NULL, NULL, NULL, NULL),
+(11, 'yramirez', 'yerai.ramlin@gmail.com', '$2y$10$uVAsO5Y8BG1xqDz7szFxt.39XWef37wrMK5YYLWPfXgPeZoNpdvtW', 'user', 0, NULL, '2026-01-21 11:10:21', NULL, NULL, NULL, NULL, NULL),
+(61, 'empresa', 'empresa@gmail.com', '$2y$10$ZK8OcEVZ8fCBt5N5aHbYnefQ/.bHRg7K/4YrllTW7RPYtwnfXx.Yq', 'store', 0, NULL, '2026-01-21 12:14:06', 'EmpresaEjemplo', 'Calle cuenca', '46007', '+555555', 'Valencia');
 
 --
 -- Índices para tablas volcadas
@@ -177,7 +187,7 @@ ALTER TABLE `business_gallery`
 -- AUTO_INCREMENT de la tabla `business_profiles`
 --
 ALTER TABLE `business_profiles`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `services`
