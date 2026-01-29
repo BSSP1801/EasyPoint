@@ -137,60 +137,67 @@ class User
 
     // 2. Update business information
     public function updateBusinessProfile($userId, $data)
-    {
-        try {
-            $this->conn->beginTransaction();
+{
+    try {
+        $this->conn->beginTransaction();
 
-            // A. Update basic data in USERS table
-            $queryUser = "UPDATE users SET 
-                      business_name = :bname, 
-                      phone = :phone, 
-                      address = :address, 
-                      city = :city, 
-                      postal_code = :zip 
-                      WHERE id = :id";
+        $queryUser = "UPDATE users SET 
+                  business_name = :bname, 
+                  phone = :phone, 
+                  address = :address, 
+                  city = :city, 
+                  postal_code = :zip 
+                  WHERE id = :id";
 
-            $stmtU = $this->conn->prepare($queryUser);
-            $stmtU->bindParam(':bname', $data['business_name']);
-            $stmtU->bindParam(':phone', $data['phone']);
-            $stmtU->bindParam(':address', $data['address']);
-            $stmtU->bindParam(':city', $data['city']);
-            $stmtU->bindParam(':zip', $data['postal_code']);
-            $stmtU->bindParam(':id', $userId);
-            $stmtU->execute();
+        $stmtU = $this->conn->prepare($queryUser);
+        $stmtU->bindParam(':bname', $data['business_name']);
+        $stmtU->bindParam(':phone', $data['phone']);
+        $stmtU->bindParam(':address', $data['address']);
+        $stmtU->bindParam(':city', $data['city']);
+        $stmtU->bindParam(':zip', $data['postal_code']);
+        $stmtU->bindParam(':id', $userId);
+        $stmtU->execute();
 
-            // B. Update extended profile (Description, Images) in BUSINESS_PROFILES table
-            // We use "INSERT ... ON DUPLICATE KEY UPDATE" in case the profile doesn't exist yet
-            // In models/user.php within updateBusinessProfile
-            $queryProfile = "INSERT INTO business_profiles (user_id, description, logo_url, banner_url, is_public) 
-                 VALUES (:uid, :desc, :logo, :banner, :is_public) 
-                 ON DUPLICATE KEY UPDATE 
-                 description = :desc,
-                 logo_url = COALESCE(:logo, logo_url),
-                 banner_url = COALESCE(:banner, banner_url),
-                 is_public = :is_public";
+        $queryProfile = "INSERT INTO business_profiles 
+             (user_id, description, logo_url, banner_url, is_public, website, instagram_link, facebook_link, twitter_link, tiktok_link) 
+             VALUES (:uid, :desc, :logo, :banner, :is_public, :web, :insta, :fb, :tw, :tk) 
+             ON DUPLICATE KEY UPDATE 
+             description = :desc,
+             logo_url = COALESCE(:logo, logo_url),
+             banner_url = COALESCE(:banner, banner_url),
+             is_public = :is_public,
+             website = :web,
+             instagram_link = :insta,
+             facebook_link = :fb,
+             twitter_link = :tw,
+             tiktok_link = :tk";
 
-            $stmtP = $this->conn->prepare($queryProfile); // Prepare only once
-            $stmtP->bindParam(':uid', $userId);
-            $stmtP->bindParam(':desc', $data['description']);
-            $stmtP->bindParam(':is_public', $data['is_public']); // Bind everything to the same object $stmtP
+        $stmtP = $this->conn->prepare($queryProfile);
+        $stmtP->bindParam(':uid', $userId);
+        $stmtP->bindParam(':desc', $data['description']);
+        $stmtP->bindParam(':is_public', $data['is_public']);
+        $stmtP->bindParam(':web', $data['website']);
+        $stmtP->bindParam(':insta', $data['instagram']);
+        $stmtP->bindParam(':fb', $data['facebook']);
+        $stmtP->bindParam(':tw', $data['twitter']);
+        $stmtP->bindParam(':tk', $data['tiktok']);
 
-            $logo = !empty($data['logo_url']) ? $data['logo_url'] : null;
-            $banner = !empty($data['banner_url']) ? $data['banner_url'] : null;
+        $logo = !empty($data['logo_url']) ? $data['logo_url'] : null;
+        $banner = !empty($data['banner_url']) ? $data['banner_url'] : null;
 
-            $stmtP->bindParam(':logo', $logo);
-            $stmtP->bindParam(':banner', $banner);
-            $stmtP->execute();
+        $stmtP->bindParam(':logo', $logo);
+        $stmtP->bindParam(':banner', $banner);
+        $stmtP->execute();
 
-            $this->conn->commit();
-            return true;
+        $this->conn->commit();
+        return true;
 
-        } catch (Exception $e) {
-            $this->conn->rollBack();
-            error_log("Error updating profile: " . $e->getMessage());
-            return false;
-        }
+    } catch (Exception $e) {
+        $this->conn->rollBack();
+        error_log("Error updating profile: " . $e->getMessage());
+        return false;
     }
+}
     // In models/User.php
 
     public function getRecommendedStores()

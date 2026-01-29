@@ -2,6 +2,7 @@
 // view/business-service.php
 session_start();
 require_once '../models/User.php';
+require_once '../models/Service.php';
 
 // 1. Verificar si recibimos un ID
 if (!isset($_GET['id'])) {
@@ -22,11 +23,21 @@ if (!$store) {
     exit();
 }
 
+$serviceModel = new Service();
+$storeServices = $serviceModel->getAllByUserId($storeId);
+
 // 3. Preparar la URL del logo
 // Nota: Como estamos en la carpeta 'view/', debemos salir un nivel (../) para entrar a 'public/'
+// ... código anterior ...
 $logoUrl = !empty($store['logo_url']) 
     ? '../public/' . htmlspecialchars($store['logo_url']) 
-    : '../public/assets/images/tienda-1.png'; // Imagen por defecto
+    : '../public/assets/images/tienda-1.png';
+
+// NUEVO: Lógica para el banner
+$bannerUrl = !empty($store['banner_url']) 
+    ? '../public/' . htmlspecialchars($store['banner_url']) 
+    : '../public/assets/images/img-resource-1.jpeg'; // Imagen de fondo por defecto
+// ...
 
 $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre');
 ?>
@@ -121,18 +132,13 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
     <div class="main-container">
         
         <div class="left-panel">
-            <div class="main-img">
-    <i class="far fa-heart" style="position: absolute; top: 15px; right: 15px; font-size: 20px;"></i>
-    <div style="text-align: center;">
-        
-            <img src="<?php echo $logoUrl; ?>" alt="Logo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
-            
-            <h2 style="margin-top: 10px; text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
-                <?php echo $businessName; ?>
-            </h2>
-
-        </div>
-    </div>
+            <div class="main-img" style="padding: 0; height: 250px; overflow: hidden; position: relative; border-radius: 12px;">
+                
+                <i class="far fa-heart" style="position: absolute; top: 20px; right: 20px; font-size: 24px; color: white; text-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10; cursor: pointer;"></i>
+                
+                <img src="<?php echo $bannerUrl; ?>" alt="Banner" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                
+            </div>
 
             <div class="gallery-thumbs">
                 <div class="thumb"><i class="fas fa-cut"></i></div>
@@ -158,47 +164,67 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
 
             <div>
                 <h2 class="section-title">Services</h2>
-                <h3 style="font-size: 16px; margin-bottom: 10px;">Popular Services</h3>
                 
-                <div class="service-row">
-                    <h4>Haircut</h4>
-                    <div style="display: flex; align-items: center;">
-                        <div class="service-details">
-                            <span class="price-tag">14,00 €</span>
-                            <span class="duration-tag">30min</span>
-                        </div>
-                        <button class="book-btn">Book</button>
-                    </div>
-                </div>
+                <?php if (empty($storeServices)): ?>
+                    <p style="color: #888; font-style: italic;">No services listed yet.</p>
+                <?php else: ?>
+                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                        <?php foreach ($storeServices as $service): ?>
+                            <div class="service-row" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                                
+                                <h4 style="margin: 0; font-size: 16px; color: #333; flex: 1;">
+                                    <?php echo htmlspecialchars($service['name']); ?>
+                                </h4>
+                                
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div class="service-details" style="text-align: right;">
+                                        <span class="price-tag" style="display: block; font-weight: bold; font-size: 15px;">
+                                            <?php echo htmlspecialchars($service['price']); ?> €
+                                        </span>
+                                        <span class="duration-tag" style="font-size: 12px; color: #888;">
+                                            <?php echo htmlspecialchars($service['duration']); ?> min
+                                        </span>
+                                    </div>
+                                    
+                                    <button class="book-btn" style="background-color: #000; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                                        Book
+                                    </button>
+                                </div>
 
-                <div class="service-row">
-                    <h4>Haircut & Beard</h4>
-                    <div style="display: flex; align-items: center;">
-                        <div class="service-details">
-                            <span class="price-tag">22,00 €</span>
-                            <span class="duration-tag">45min</span>
-                        </div>
-                        <button class="book-btn">Book</button>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
-                </div>
-
-                <div class="service-row">
-                    <h4>Beard</h4>
-                    <div style="display: flex; align-items: center;">
-                        <div class="service-details">
-                            <span class="price-tag">9,00 €</span>
-                            <span class="duration-tag">15min</span>
-                        </div>
-                        <button class="book-btn">Book</button>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
 
         <div class="right-panel">
-            <div class="map-box">
-                <i class="fas fa-map-marker-alt" style="font-size: 30px; margin-right: 10px;"></i>
-                <span>Valencia Map</span>
+            <div class="map-box" style="padding: 0; overflow: hidden; height: 300px; border-radius: 12px; border: 1px solid #e0e0e0;">
+                <?php 
+                    $mapParts = [];
+                    // Limpiamos la dirección de espacios extra
+                    if (!empty($store['address'])) $mapParts[] = trim($store['address']);
+                    if (!empty($store['postal_code'])) $mapParts[] = trim($store['postal_code']);
+                    if (!empty($store['city'])) $mapParts[] = trim($store['city']);
+                    
+                    // AÑADIDO: Agregamos el país al final para evitar confusiones
+                    if (!empty($mapParts)) {
+                        $addressString = implode(', ', $mapParts) . ", España";
+                    } else {
+                        $addressString = "Valencia, España";
+                    }
+                    
+                    $encodedAddress = urlencode($addressString);
+                ?>
+                
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    style="border:0;" 
+                    loading="lazy" 
+                    allowfullscreen 
+                    src="https://maps.google.com/maps?q=<?php echo $encodedAddress; ?>&t=&z=15&ie=UTF8&iwloc=&output=embed">
+                </iframe>
             </div>
 
             <div>

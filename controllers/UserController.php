@@ -235,6 +235,11 @@ class UserController
                 'postal_code'   => $_POST['postal_code'] ?? '',
                 'description'   => $_POST['description'] ?? '',
                 'is_public'     => isset($_POST['is_public']) ? 1 : 0,
+                'website' => $_POST['website'] ?? '',
+                'instagram' => $_POST['instagram'] ?? '',
+                'facebook' => $_POST['facebook'] ?? '',
+                'twitter' => $_POST['twitter'] ?? '',
+                'tiktok' => $_POST['tiktok'] ?? '',
                 'logo_url'      => $handleUpload('logo'),
                 'banner_url'    => $handleUpload('banner')
             ];

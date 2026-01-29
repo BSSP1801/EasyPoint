@@ -1,18 +1,19 @@
 <?php
-// Ensure session is started if accessed directly
+// Solo iniciamos sesión si no hay una activa
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Debug: Log the session variables
-error_log("Dashboard: user_id=" . ($_SESSION['user_id'] ?? 'NOT SET'));
-error_log("Dashboard: role=" . ($_SESSION['role'] ?? 'NOT SET'));
-
-// Redirect to login if not authenticated
+// Verificación de seguridad
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
     exit();
 }
+
+require_once dirname(__DIR__) . '/models/Service.php';
+
+$serviceModel = new Service();
+$myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -180,7 +181,7 @@ if (!isset($_SESSION['user_id'])) {
                 <button class="tab-btn" onclick="openTab(event, 'schedule')"><i class="far fa-clock"></i>
                     Schedule</button>
                 <button class="tab-btn" onclick="openTab(event, 'notifications')"><i class="far fa-bell"></i>
-                    Notifications</button>
+                    Services</button>
             </div>
 
             <div id="business" class="tab-content active-content">
@@ -280,7 +281,9 @@ if (!isset($_SESSION['user_id'])) {
                         <div class="form-actions">
                             <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
                         </div>
-                    </form>
+                    </form> 
+
+
                 </section>
             </div>
 
@@ -344,11 +347,86 @@ if (!isset($_SESSION['user_id'])) {
                 </section>
             </div>
 
-            <div id="notifications" class="tab-content" style="display: none;">
-                <section class="settings-card">
-                    <div style="padding: 20px;">Notification Settings Content</div>
-                </section>
+            <div id="notifications" class="content-section" style="display:none;">
+    
+    <h2 style="margin-bottom: 20px;">Manage Services</h2>
+
+    <div style="background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 30px;">
+        <h3 style="margin-top: 0; margin-bottom: 20px; color: #333;">Add New Service</h3>
+        
+        <form action="../index.php?action=add_service" method="POST">
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px; align-items: end;">
+                
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: #555;">Service Name</label>
+                    <input type="text" name="service_name" placeholder="e.g. Haircut & Beard" required 
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                </div>
+                
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: #555;">Price (€)</label>
+                    <input type="number" step="0.01" name="service_price" placeholder="0.00" required 
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                </div>
+
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: #555;">Duration (min)</label>
+                    <input type="number" name="service_duration" placeholder="30" required 
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                </div>
+
+                <div>
+                    <button type="submit" 
+                            style="background: #000; color: white; border: none; padding: 11px 25px; border-radius: 6px; cursor: pointer; font-weight: 600; height: 42px;">
+                        Add
+                    </button>
+                </div>
             </div>
+        </form>
+    </div>
+
+    <h3 style="color: #333; margin-bottom: 15px;">Your Services List</h3>
+    
+    <?php if (empty($myServices)): ?>
+        <div style="text-align: center; padding: 40px; background: #f9f9f9; border-radius: 10px; color: #777;">
+            <i class="fas fa-cut" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+            You haven't added any services yet.
+        </div>
+    <?php else: ?>
+        <div style="display: grid; gap: 15px;">
+            <?php foreach ($myServices as $service): ?>
+                <div style="background: white; border: 1px solid #eee; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                    
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="background: #f0f0f0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-cut" style="color: #555;"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; font-size: 16px; color: #333;"><?php echo htmlspecialchars($service['name']); ?></h4>
+                            <span style="font-size: 13px; color: #777;">
+                                <i class="far fa-clock"></i> <?php echo htmlspecialchars($service['duration']); ?> min
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <span style="font-weight: bold; font-size: 18px; color: #000;">
+                            <?php echo htmlspecialchars($service['price']); ?> €
+                        </span>
+                        
+                        <a href="../index.php?action=delete_service&id=<?php echo $service['id']; ?>" 
+                           onclick="return confirm('Are you sure you want to delete this service?');" 
+                           style="color: #ff4d4d; background: #fff0f0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px; text-decoration: none; transition: 0.2s;">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </div>
+
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
+</div>
         </div>
     </main>
     <script src="public/js/script-dashboard.js"></script>
