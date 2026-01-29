@@ -2,6 +2,7 @@
 // public/index.php
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
+require_once __DIR__ . '/models/Service.php';
 
 session_start();
 
