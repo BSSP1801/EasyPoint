@@ -95,8 +95,8 @@ class User
     {
         try {
 
-            // Intenta insertar una nueva fila en business_profiles con el user_id y el horario.
-            //  Si el user_id ya existe (DUPLICATE KEY), simplemente actualiza el campo opening_hours.
+            // Tries to insert a new row in business_profiles with the user_id and schedule.
+            // If the user_id already exists (DUPLICATE KEY), simply updates the opening_hours field.
             $query = "INSERT INTO business_profiles (user_id, opening_hours) 
                   VALUES (:user_id, :opening_hours) 
                   ON DUPLICATE KEY UPDATE opening_hours = :opening_hours_update";
@@ -116,9 +116,9 @@ class User
 
     }
 
-    // En models/User.php
+    // In models/User.php
 
-    // 1. Obtener datos combinados de Usuario y Perfil de Negocio
+    // 1. Get combined data from User and Business Profile
     public function getFullProfile($userId)
     {
 
@@ -135,71 +135,76 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // 2. Actualizar información del negocio
+    // 2. Update business information
     public function updateBusinessProfile($userId, $data)
-    {
-        try {
-            $this->conn->beginTransaction();
+{
+    try {
+        $this->conn->beginTransaction();
 
-            // A. Actualizar datos básicos en tabla USERS
-            $queryUser = "UPDATE users SET 
-                      business_name = :bname, 
-                      phone = :phone, 
-                      address = :address, 
-                      city = :city, 
-                      postal_code = :zip 
-                      WHERE id = :id";
+        $queryUser = "UPDATE users SET 
+                  business_name = :bname, 
+                  phone = :phone, 
+                  address = :address, 
+                  city = :city, 
+                  postal_code = :zip 
+                  WHERE id = :id";
 
-            $stmtU = $this->conn->prepare($queryUser);
-            $stmtU->bindParam(':bname', $data['business_name']);
-            $stmtU->bindParam(':phone', $data['phone']);
-            $stmtU->bindParam(':address', $data['address']);
-            $stmtU->bindParam(':city', $data['city']);
-            $stmtU->bindParam(':zip', $data['postal_code']);
-            $stmtU->bindParam(':id', $userId);
-            $stmtU->execute();
+        $stmtU = $this->conn->prepare($queryUser);
+        $stmtU->bindParam(':bname', $data['business_name']);
+        $stmtU->bindParam(':phone', $data['phone']);
+        $stmtU->bindParam(':address', $data['address']);
+        $stmtU->bindParam(':city', $data['city']);
+        $stmtU->bindParam(':zip', $data['postal_code']);
+        $stmtU->bindParam(':id', $userId);
+        $stmtU->execute();
 
-            // B. Actualizar perfil extendido (Description, Images) en tabla BUSINESS_PROFILES
-            // Usamos "INSERT ... ON DUPLICATE KEY UPDATE" por si el perfil aún no existe
-            $queryProfile = "INSERT INTO business_profiles (user_id, description, logo_url, banner_url, is_public) 
-                 VALUES (:uid, :desc, :logo, :banner, :is_public) 
-                 ON DUPLICATE KEY UPDATE 
-                 description = :desc,
-                 logo_url = COALESCE(:logo, logo_url),
-                 banner_url = COALESCE(:banner, banner_url),
-                 is_public = :is_public";
+        $queryProfile = "INSERT INTO business_profiles 
+             (user_id, description, logo_url, banner_url, is_public, website, instagram_link, facebook_link, twitter_link, tiktok_link) 
+             VALUES (:uid, :desc, :logo, :banner, :is_public, :web, :insta, :fb, :tw, :tk) 
+             ON DUPLICATE KEY UPDATE 
+             description = :desc,
+             logo_url = COALESCE(:logo, logo_url),
+             banner_url = COALESCE(:banner, banner_url),
+             is_public = :is_public,
+             website = :web,
+             instagram_link = :insta,
+             facebook_link = :fb,
+             twitter_link = :tw,
+             tiktok_link = :tk";
 
-            $stmtP = $this->conn->prepare($queryProfile);
-            $stmtP->bindParam(':is_public', $data['is_public']);
-        
+        $stmtP = $this->conn->prepare($queryProfile);
+        $stmtP->bindParam(':uid', $userId);
+        $stmtP->bindParam(':desc', $data['description']);
+        $stmtP->bindParam(':is_public', $data['is_public']);
+        $stmtP->bindParam(':web', $data['website']);
+        $stmtP->bindParam(':insta', $data['instagram']);
+        $stmtP->bindParam(':fb', $data['facebook']);
+        $stmtP->bindParam(':tw', $data['twitter']);
+        $stmtP->bindParam(':tk', $data['tiktok']);
 
-            $stmtP->bindParam(':uid', $userId);
-            $stmtP->bindParam(':desc', $data['description']);
+        $logo = !empty($data['logo_url']) ? $data['logo_url'] : null;
+        $banner = !empty($data['banner_url']) ? $data['banner_url'] : null;
 
-            // Manejo de nulos para imágenes
-            $logo = !empty($data['logo_url']) ? $data['logo_url'] : null;
-            $banner = !empty($data['banner_url']) ? $data['banner_url'] : null;
+        $stmtP->bindParam(':logo', $logo);
+        $stmtP->bindParam(':banner', $banner);
+        $stmtP->execute();
 
-            $stmtP->bindParam(':logo', $logo);
-            $stmtP->bindParam(':banner', $banner);
-            $stmtP->execute();
+        $this->conn->commit();
+        return true;
 
-            $this->conn->commit();
-            return true;
-
-        } catch (Exception $e) {
-            $this->conn->rollBack();
-            error_log("Error updating profile: " . $e->getMessage());
-            return false;
-        }
+    } catch (Exception $e) {
+        $this->conn->rollBack();
+        error_log("Error updating profile: " . $e->getMessage());
+        return false;
     }
-    // En models/User.php
+}
+    // In models/User.php
 
     public function getRecommendedStores()
     {
         try {
 
-            // Usamos LEFT JOIN para traer la tienda aunque aún no haya configurado su perfil completo (logo)
+            // We use LEFT JOIN to get the store even if it hasn't configured its full profile (logo) yet
             $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, bp.logo_url 
                   FROM users u 
                   INNER JOIN business_profiles bp ON u.id = bp.user_id 
@@ -213,6 +218,30 @@ class User
             error_log("Error fetching stores: " . $e->getMessage());
             return [];
         }
+    }
+
+    public function addGalleryImages($profileId, $imagePaths)
+    {
+        $query = "INSERT INTO business_gallery (business_profile_id, image_url) VALUES (:pid, :url)";
+        $stmt = $this->conn->prepare($query);
+
+        foreach ($imagePaths as $path) {
+            $stmt->bindParam(':pid', $profileId);
+            $stmt->bindParam(':url', $path);
+            $stmt->execute();
+        }
+    }
+
+    // También actualiza getFullProfile para traer la galería
+    public function getBusinessGallery($userId)
+    {
+        $query = "SELECT bg.image_url FROM business_gallery bg 
+              JOIN business_profiles bp ON bg.business_profile_id = bp.id 
+              WHERE bp.user_id = :uid";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':uid', $userId);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 }
