@@ -2,6 +2,7 @@
 // public/index.php
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
+require_once __DIR__ . '/models/Service.php';
 
 session_start();
 
@@ -66,7 +67,7 @@ switch ($action) {
 <body>
     <div class="sticky-header">
         <div class="sticky-container">
-            <a href="index.php" ><div class="sticky-logo">EasyPoint</div></a> 
+            <div class="sticky-logo">EasyPoint</div>
 
             <div class="sticky-search-bar">
                 <div class="search-field">
@@ -102,8 +103,7 @@ switch ($action) {
     </div>
     <header>
         <nav class="navigation-bar">
-           <a href="index.php" >  <div class="logo">EasyPoint</div></a>
-
+            <div class="logo">EasyPoint</div>
             <div class="user-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
                     <a href="index.php?action=dashboard">
@@ -172,7 +172,7 @@ switch ($action) {
                 $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
             ?>
 
-           <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
+            <a href="view/business-service.php?id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
                 <article class="shop-card">
                     <div class="image-container">
                         <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
