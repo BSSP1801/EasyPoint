@@ -2,44 +2,31 @@
 // view/business-service.php
 session_start();
 require_once '../models/User.php';
-require_once '../models/Service.php';
+require_once '../models/Service.php'; // Importante: cargar modelo de servicios
 
-// 1. Verificar si recibimos un ID
+// Verificar ID
 if (!isset($_GET['id'])) {
-    // Si no hay ID, redirigir al home o mostrar error
     header("Location: ../index.php");
     exit();
 }
 
 $storeId = $_GET['id'];
 $userModel = new User();
-
-// 2. Obtener datos de la tienda usando el método que ya tenías
 $store = $userModel->getFullProfile($storeId);
 
-// Si no existe la tienda, redirigir
+// Si la tienda no existe, volver al inicio
 if (!$store) {
     header("Location: ../index.php");
     exit();
 }
 
+// OBTENER SERVICIOS
 $serviceModel = new Service();
 $storeServices = $serviceModel->getAllByUserId($storeId);
 
-// 3. Preparar la URL del logo
-// Nota: Como estamos en la carpeta 'view/', debemos salir un nivel (../) para entrar a 'public/'
-// ... código anterior ...
-$logoUrl = !empty($store['logo_url']) 
-    ? '../public/' . htmlspecialchars($store['logo_url']) 
-    : '../public/assets/images/tienda-1.png';
-
-// NUEVO: Lógica para el banner
-$bannerUrl = !empty($store['banner_url']) 
-    ? '../public/' . htmlspecialchars($store['banner_url']) 
-    : '../public/assets/images/img-resource-1.jpeg'; // Imagen de fondo por defecto
-// ...
-
-$businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre');
+// Preparar datos visuales
+$logoUrl = !empty($store['logo_url']) ? '../public/' . htmlspecialchars($store['logo_url']) : '../public/assets/images/tienda-1.png';
+$bannerUrl = !empty($store['banner_url']) ? '../public/' . htmlspecialchars($store['banner_url']) : '../public/assets/images/img-resource-1.jpeg';
 ?>
 
 <!DOCTYPE html>
@@ -166,19 +153,21 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                 <h2 class="section-title">Services</h2>
                 
                 <?php if (empty($storeServices)): ?>
-                    <p style="color: #888; font-style: italic;">No services listed yet.</p>
+                    <p style="color: #666; font-style: italic; padding: 20px 0;">No services available yet.</p>
                 <?php else: ?>
                     <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
                         <?php foreach ($storeServices as $service): ?>
                             <div class="service-row" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px;">
                                 
-                                <h4 style="margin: 0; font-size: 16px; color: #333; flex: 1;">
-                                    <?php echo htmlspecialchars($service['name']); ?>
-                                </h4>
+                                <div style="flex: 1;">
+                                    <h4 style="margin: 0; font-size: 16px; color: #333;">
+                                        <?php echo htmlspecialchars($service['name']); ?>
+                                    </h4>
+                                    </div>
                                 
-                                <div style="display: flex; align-items: center; gap: 15px;">
+                                <div style="display: flex; align-items: center; gap: 20px;">
                                     <div class="service-details" style="text-align: right;">
-                                        <span class="price-tag" style="display: block; font-weight: bold; font-size: 15px;">
+                                        <span class="price-tag" style="display: block; font-weight: bold; font-size: 16px;">
                                             <?php echo htmlspecialchars($service['price']); ?> €
                                         </span>
                                         <span class="duration-tag" style="font-size: 12px; color: #888;">
@@ -186,11 +175,10 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                                         </span>
                                     </div>
                                     
-                                    <button class="book-btn" style="background-color: #000; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                                    <button class="book-btn" style="background-color: #000; color: #fff; border: none; padding: 8px 18px; border-radius: 4px; cursor: pointer; font-size: 14px;">
                                         Book
                                     </button>
                                 </div>
-
                             </div>
                         <?php endforeach; ?>
                     </div>

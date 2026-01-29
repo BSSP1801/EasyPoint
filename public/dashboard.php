@@ -1,15 +1,18 @@
 <?php
-// Solo iniciamos sesión si no hay una activa
+// public/dashboard.php
+
+// 1. Iniciar sesión si hace falta
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Verificación de seguridad
+// 2. Seguridad: Si no está logueado, fuera
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
     exit();
 }
 
+// 3. Cargar datos necesarios para el HTML
 require_once dirname(__DIR__) . '/models/Service.php';
 
 $serviceModel = new Service();
@@ -46,16 +49,16 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
 
             <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
 
-                <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-calendar')"><i
+                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-calendar')"><i
                         class="far fa-calendar-alt"></i> Calendar</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-appointments')"><i
                         class="far fa-clock"></i> Appointments</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')"><i class="fas fa-cog"></i>
                     Settings</a>
             <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
-                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-dashboard')"><i
+                <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-dashboard')"><i
                         class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-calendar')"><i
+                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-calendar')"><i
                         class="far fa-calendar-alt"></i> Calendar</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-clients')"><i class="far fa-clock"></i>
                     Clients</a>
@@ -176,13 +179,18 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
             </header>
 
             <div class="settings-tabs">
-                <button class="tab-btn active" onclick="openTab(event, 'business')"><i class="fas fa-store"></i>
-                    Business</button>
-                <button class="tab-btn" onclick="openTab(event, 'schedule')"><i class="far fa-clock"></i>
-                    Schedule</button>
-                <button class="tab-btn" onclick="openTab(event, 'notifications')"><i class="far fa-bell"></i>
-                    Services</button>
-            </div>
+    <button class="tab-btn active" data-tab="business" onclick="openTab(event, 'business')">
+        <i class="fas fa-store"></i> Business
+    </button>
+    
+    <button class="tab-btn" data-tab="schedule" onclick="openTab(event, 'schedule')">
+        <i class="far fa-clock"></i> Schedule
+    </button>
+    
+    <button class="tab-btn" data-tab="notifications" onclick="openTab(event, 'notifications')">
+        <i class="far fa-bell"></i> Services
+    </button>
+</div>
 
             <div id="business" class="tab-content active-content">
                 <section class="settings-card">
@@ -354,7 +362,7 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
     <div style="background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 30px;">
         <h3 style="margin-top: 0; margin-bottom: 20px; color: #333;">Add New Service</h3>
         
-        <form action="../index.php?action=add_service" method="POST">
+        <form id="add-service-form" onsubmit="submitService(event)">
             <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px; align-items: end;">
                 
                 <div>
@@ -376,10 +384,9 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                 </div>
 
                 <div>
-                    <button type="submit" 
-                            style="background: #000; color: white; border: none; padding: 11px 25px; border-radius: 6px; cursor: pointer; font-weight: 600; height: 42px;">
-                        Add
-                    </button>
+                    <button type="submit" style="background: #000; color: white; border: none; padding: 11px 25px; border-radius: 6px; cursor: pointer; font-weight: 600; height: 42px;">
+    Add
+</button>
                 </div>
             </div>
         </form>
@@ -387,15 +394,15 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
 
     <h3 style="color: #333; margin-bottom: 15px;">Your Services List</h3>
     
-    <?php if (empty($myServices)): ?>
-        <div style="text-align: center; padding: 40px; background: #f9f9f9; border-radius: 10px; color: #777;">
-            <i class="fas fa-cut" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-            You haven't added any services yet.
-        </div>
-    <?php else: ?>
-        <div style="display: grid; gap: 15px;">
+    <div id="services-list" style="display: grid; gap: 15px;">
+        <?php if (empty($myServices)): ?>
+            <div id="no-services-msg" style="text-align: center; padding: 40px; background: #f9f9f9; border-radius: 10px; color: #777;">
+                <i class="fas fa-cut" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                You haven't added any services yet.
+            </div>
+        <?php else: ?>
             <?php foreach ($myServices as $service): ?>
-                <div style="background: white; border: 1px solid #eee; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div class="service-item" style="background: white; border: 1px solid #eee; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                     
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <div style="background: #f0f0f0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
@@ -414,23 +421,20 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                             <?php echo htmlspecialchars($service['price']); ?> €
                         </span>
                         
-                        <a href="../index.php?action=delete_service&id=<?php echo $service['id']; ?>" 
-                           onclick="return confirm('Are you sure you want to delete this service?');" 
-                           style="color: #ff4d4d; background: #fff0f0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px; text-decoration: none; transition: 0.2s;">
+                        <a href="#" 
+                           onclick="deleteService(<?php echo $service['id']; ?>, this); return false;" 
+                           style="color: #ff4d4d; background: #fff0f0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px; text-decoration: none;">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </div>
 
                 </div>
             <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-
+        <?php endif; ?>
+    </div>
 </div>
         </div>
     </main>
     <script src="public/js/script-dashboard.js"></script>
-
 </body>
-
 </html>
