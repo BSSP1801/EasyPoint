@@ -172,7 +172,7 @@ switch ($action) {
                 $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
             ?>
 
-            <a href="view/business-service.php?id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
+            <a href="views/business-service.php?id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
                 <article class="shop-card">
                     <div class="image-container">
                         <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
