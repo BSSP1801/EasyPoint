@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function renderCalendar() {
             calendar.innerHTML = '';
-          //  const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+          //  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             const days=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             
             // Draw day headers
@@ -79,55 +79,55 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================================
-   2. LÓGICA DE NAVEGACIÓN (Funciones Globales)
+   2. NAVIGATION LOGIC (Global Functions)
    ========================================= */
 
-// Función para cambiar entre Dashboard y Settings (Menú Lateral)
+// Function to switch between Dashboard and Settings (Sidebar Menu)
 function switchMainView(evt, viewId) {
     if(evt) evt.preventDefault();
 
-    // Ocultar todas las vistas principales
+    // Hide all main views
     const views = document.querySelectorAll('.main-view');
     views.forEach(view => {
         view.style.display = 'none';
     });
 
-    // Quitar clase 'active' del menú lateral
+    // Remove 'active' class from sidebar menu
     const menuItems = document.querySelectorAll('.menu-item');
     menuItems.forEach(item => {
         item.classList.remove('active');
     });
 
-    // Mostrar la vista seleccionada
+    // Show selected view
     const selectedView = document.getElementById(viewId);
     if(selectedView) {
         selectedView.style.display = 'block';
     }
 
-    // Activar el botón del menú pulsado
+    // Activate the clicked menu button
     if(evt) {
         evt.currentTarget.classList.add('active');
     }
 }
 
-// Función para las pestañas dentro de Settings
+// Function for tabs within Settings
 function openTab(evt, tabName) {
     if(evt) evt.preventDefault();
 
-    // Ocultar contenidos de pestañas
+    // Hide tab contents
     const tabContents = document.getElementsByClassName("tab-content");
     for (let i = 0; i < tabContents.length; i++) {
         tabContents[i].style.display = "none";
         tabContents[i].classList.remove("active-content");
     }
 
-    // Desactivar botones de pestañas
+    // Deactivate tab buttons
     const tabLinks = document.getElementsByClassName("tab-btn");
     for (let i = 0; i < tabLinks.length; i++) {
         tabLinks[i].classList.remove("active");
     }
 
-    // Mostrar contenido seleccionado
+    // Show selected content
     const selectedTab = document.getElementById(tabName);
     if (selectedTab) {
         selectedTab.style.display = "block";
@@ -136,7 +136,7 @@ function openTab(evt, tabName) {
         }, 10);
     }
     
-    // Activar botón pulsado
+    // Activate clicked button
     if(evt) {
         evt.currentTarget.classList.add("active");
     }
@@ -159,41 +159,41 @@ function toggleDay(checkbox) {
 }
 
 /* =========================================
-   3. LÓGICA DE GUARDADO DE HORARIO (AJAX)
+   3. SCHEDULE SAVING LOGIC (AJAX)
    ========================================= */
 document.addEventListener('DOMContentLoaded', () => {
     const saveBtn = document.getElementById('save-schedule-btn');
 
     if (saveBtn) {
         saveBtn.addEventListener('click', function(e) {
-            e.preventDefault(); // Evitar que el formulario recargue la página
+            e.preventDefault(); // Prevent form reload
 
             const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
             let schedule = {};
 
-            // Recorrer cada día para construir el objeto JSON
+            // Loop through each day to build JSON object
             days.forEach(day => {
                 const activeCheck = document.getElementById(`${day}-active`);
                 const openInput = document.getElementById(`${day}-open`);
                 const closeInput = document.getElementById(`${day}-close`);
 
-                // Solo añadimos el día si encontramos sus inputs en el HTML
+                // Only add day if we find its inputs in HTML
                 if (activeCheck) {
                     schedule[day] = {
                         active: activeCheck.checked,
-                        // Si está activo, guardamos la hora; si no, null
+                        // If active, save time; if not, null
                         open: activeCheck.checked ? (openInput ? openInput.value : null) : null,
                         close: activeCheck.checked ? (closeInput ? closeInput.value : null) : null
                     };
                 }
             });
 
-            // Feedback visual de "Guardando..."
+            // Visual feedback "Saving..."
             const originalText = saveBtn.innerText;
             saveBtn.innerText = 'Saving...';
             saveBtn.disabled = true;
 
-            // Petición AJAX al servidor
+            // AJAX request to server
             fetch('index.php?action=update_schedule', {
                 method: 'POST',
                 headers: {
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('A connection error occurred.');
             })
             .finally(() => {
-                // Restaurar botón
+                // Restore button
                 saveBtn.innerText = originalText;
                 saveBtn.disabled = false;
             });
@@ -224,14 +224,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 /* =========================================
-   4. Uptade Business Info Logic
+   4. Update Business Info Logic
    ========================================= */
 
 document.addEventListener('DOMContentLoaded', function() {
     
-    // ... tu código del calendario ...
+    // ... your calendar code ...
 
-    // MANEJO DE GUARDADO DE PERFIL DE NEGOCIO
+    // BUSINESS PROFILE SAVE HANDLING
     const businessForm = document.getElementById('business-form');
     
     if (businessForm) {
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             submitBtn.disabled = true;
 
-            // Usamos FormData para enviar textos e IMÁGENES
+            // Use FormData to send text and IMAGES
             const formData = new FormData(businessForm);
 
             fetch('index.php?action=update_business_info', {
@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     alert('Business information updated successfully!');
-                    // Opcional: Recargar para ver las nuevas imágenes
+                    // Optional: Reload to see new images
                     // location.reload(); 
                 } else {
                     alert('Error: ' + (data.message || 'Unknown error'));

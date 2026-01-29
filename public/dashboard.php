@@ -270,6 +270,13 @@ if (!isset($_SESSION['user_id'])) {
 </div>
                         </div>
 
+                        <div class="form-group">
+    <label>Gallery Photos (You can select multiple)</label>
+    <input type="file" name="gallery[]" accept="image/*" multiple class="form-input">
+    <div id="gallery-preview" class="gallery-preview-container">
+        </div>
+</div>
+
                         <div class="form-actions">
                             <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
                         </div>
@@ -285,20 +292,20 @@ if (!isset($_SESSION['user_id'])) {
                     </div>
 
                     <?php
-                    // 1. Decodificar el JSON guardado en la base de datos
+                    // 1. Decode the JSON saved in the database
                     $schedule = [];
                     if (!empty($userData['opening_hours'])) {
                         $schedule = json_decode($userData['opening_hours'], true);
                     }
 
-                    // Array de días para generar el HTML en bucle
+                    // Array of days to generate HTML in loop
                     $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
                     ?>
 
                     <div class="schedule-container">
                         <?php foreach ($days as $day): ?>
                             <?php
-                            // Recuperar valores guardados para este día (si existen)
+                            // Retrieve saved values for this day (if any)
                             $dayData = $schedule[$day] ?? [];
                             $isActive = !empty($dayData['active']) && $dayData['active'] == true;
                             $openTime = $dayData['open'] ?? '09:00';

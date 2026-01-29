@@ -268,6 +268,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     storeError.textContent = 'Error: ' + error.message;
                     storeError.style.display = 'block';
                 }
+                })
+                .catch(error => {
+                    console.error('Store register Error:', error);
+                  
+                });
+            });
+        }
+    });
+
+// Global function to open store registration modal
+function openStoreModal(e) {
+    e.preventDefault();
+    const storeModal = document.getElementById('store-modal');
+    storeModal.style.display = 'flex';
+}
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Seleccionamos los elementos del DOM
+    const carousel = document.querySelector('.shops-grid');
+    const leftBtn = document.querySelector('.left-arrow');
+    const rightBtn = document.querySelector('.right-arrow');
+
+    // Check that elements exist before executing anything (to avoid errors on other pages)
+    if (carousel && leftBtn && rightBtn) {
+
+        // 2. Event for RIGHT button
+        rightBtn.addEventListener('click', () => {
+            carousel.scrollBy({
+                left: 320, // Moves 320px (card width + gap approx)
+                behavior: 'smooth' // Makes movement smooth
+            });
+        });
+
+        // 3. Event for LEFT button
+        leftBtn.addEventListener('click', () => {
+            carousel.scrollBy({
+                left: -320, // Moves -320px (backward)
+                behavior: 'smooth'
             });
         });
     }

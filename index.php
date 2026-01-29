@@ -18,11 +18,11 @@ if ($action === 'home') {
 //Switch case to handle different actions
 switch ($action) {
     case 'register':
-        $controller->register(); 
+        $controller->register();
         exit();
         break;
     case 'login':
-        $controller->login(); 
+        $controller->login();
         exit();
         break;
     case 'dashboard':
@@ -34,8 +34,11 @@ switch ($action) {
         exit();
         break;
     case 'update_business_info':
-    $controller->updateBusinessInfo();
-    exit();    
+        $controller->updateBusinessInfo();
+        exit();
+    case 'view_business':
+        $controller->viewBusiness();
+        exit();
     case 'logout':
         session_destroy();
         $_SESSION = array(); // Clear the session array
@@ -88,7 +91,7 @@ switch ($action) {
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
                     <span class="user-link">
                         Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                    </span> 
+                    </span>
                     <a href="index.php?action=logout" class="logout-link">Logout</a>
                 <?php else: ?>
                     <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>

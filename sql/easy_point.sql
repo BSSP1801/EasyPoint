@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: db
--- Tiempo de generación: 28-01-2026 a las 08:48:09
+-- Tiempo de generación: 28-01-2026 a las 12:11:38
 -- Versión del servidor: 8.0.44
 -- Versión de PHP: 8.3.26
 
@@ -76,7 +76,7 @@ CREATE TABLE `business_profiles` (
 --
 
 INSERT INTO `business_profiles` (`id`, `user_id`, `description`, `logo_url`, `banner_url`, `opening_hours`, `website`, `instagram_link`, `created_at`, `updated_at`, `is_public`) VALUES
-(1, 61, 'asduasdaoisd', 'assets/uploads/img_6979b83a663f5.png', 'assets/uploads/img_6978a245c9128.jpg', '{\"friday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"monday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"sunday\": {\"open\": null, \"close\": null, \"active\": false}, \"tuesday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"saturday\": {\"open\": null, \"close\": null, \"active\": false}, \"thursday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"wednesday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}}', NULL, NULL, '2026-01-27 10:56:58', '2026-01-28 07:18:18', 1);
+(1, 61, 'asduasdaoisd', 'assets/uploads/img_6979cff56df83.jpg', 'assets/uploads/img_6978a245c9128.jpg', '{\"friday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"monday\": {\"open\": null, \"close\": null, \"active\": false}, \"sunday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"tuesday\": {\"open\": null, \"close\": null, \"active\": false}, \"saturday\": {\"open\": null, \"close\": null, \"active\": false}, \"thursday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"wednesday\": {\"open\": null, \"close\": null, \"active\": false}}', NULL, NULL, '2026-01-27 10:56:58', '2026-01-28 08:59:52', 1);
 
 -- --------------------------------------------------------
 
@@ -125,7 +125,8 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `is_confirme
 (8, 'buser1', 'bmail1@gmail.com', '$2y$10$a6dBQ2HaQjdM3C48qQ.kluHNrid4Oo5xBdKQR.QdbZimPSLQ7hdbe', 'store', 0, NULL, '2026-01-20 11:01:23', 'bname1', 'baddress1', '4008', NULL, NULL),
 (10, 'user1', 'email1@gmail.com', '$2y$10$seZRXVnGvy3Fsrv4dsxZOuUY2zzJcwkhLSTpIxPOYn7OdjxuOIeH6', 'user', 0, NULL, '2026-01-20 11:04:17', NULL, NULL, NULL, NULL, NULL),
 (11, 'yramirez', 'yerai.ramlin@gmail.com', '$2y$10$uVAsO5Y8BG1xqDz7szFxt.39XWef37wrMK5YYLWPfXgPeZoNpdvtW', 'user', 0, NULL, '2026-01-21 11:10:21', NULL, NULL, NULL, NULL, NULL),
-(61, 'empresa', 'empresa@gmail.com', '$2y$10$ZK8OcEVZ8fCBt5N5aHbYnefQ/.bHRg7K/4YrllTW7RPYtwnfXx.Yq', 'store', 0, NULL, '2026-01-21 12:14:06', 'EmpresaEjemplo', 'Calle cuenca', '46007', '+555555', 'Valencia');
+(61, 'empresa', 'empresa@gmail.com', '$2y$10$ZK8OcEVZ8fCBt5N5aHbYnefQ/.bHRg7K/4YrllTW7RPYtwnfXx.Yq', 'store', 0, NULL, '2026-01-21 12:14:06', 'EmpresaEjemplo', 'Calle cuenca', '46007', '+555555', 'Valencia'),
+(66, 'BarberiaLucas', 'phathompro@gmail.com', '$2y$10$VZ7/DdJo3Glx1B.5vFtAeeTc1mynYLDl2s.AE85ji38I7NXjhZgku', 'store', 0, NULL, '2026-01-28 12:09:28', 'BarberiaLucas', 'Calle cuenca', '46007', NULL, NULL);
 
 --
 -- Índices para tablas volcadas
@@ -187,7 +188,7 @@ ALTER TABLE `business_gallery`
 -- AUTO_INCREMENT de la tabla `business_profiles`
 --
 ALTER TABLE `business_profiles`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `services`
@@ -199,7 +200,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- Restricciones para tablas volcadas
