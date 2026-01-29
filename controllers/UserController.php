@@ -143,39 +143,28 @@ class UserController
         require_once __DIR__ . '/../public/dashboard.php';
     }
 
-    public function updateSchedule()
-    {
-        // 1. Security: Verify POST method and active session
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id'])) {
+  public function updateSchedule()
+{
+    // 1. Leer el JSON crudo enviado por fetch()
+    $json = file_get_contents('php://input');
+    $data = json_decode($json, true);
+
+    if (isset($_SESSION['user_id']) && isset($data['schedule'])) {
+        $userModel = new User();
+        
+        // 2. Convertir el array a string JSON para guardarlo en la DB
+        $scheduleString = json_encode($data['schedule']);
+
+        if ($userModel->saveOpeningHours($_SESSION['user_id'], $scheduleString)) {
             header('Content-Type: application/json');
-            http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-            exit();
+            echo json_encode(['success' => true]);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Error en la base de datos']);
         }
-
-        // 2. Get the JSON sent by JS
-        $input = json_decode(file_get_contents('php://input'), true);
-
-        if (isset($input['schedule'])) {
-            // Convert the PHP array back to JSON string to save it in the database
-            $scheduleJson = json_encode($input['schedule']);
-
-            $userModel = new User();
-
-            if ($userModel->saveOpeningHours($_SESSION['user_id'], $scheduleJson)) {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => true, 'message' => 'Schedule saved successfully']);
-                exit();
-            }
-        }
-
-        // If something fails
-        header('Content-Type: application/json');
-        http_response_code(500);
-        echo json_encode(['success' => false, 'message' => 'Database error']);
         exit();
     }
-
+}
 
 
     // public function dashboard() {
@@ -191,33 +180,18 @@ class UserController
     //     require_once __DIR__ . '/../views/dashboard.php';
     // }
 
-  public function updateBusinessInfo()
+public function updateBusinessInfo()
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
-        $userModel = new User();
+        $userModel = new User(); // Definimos el modelo al inicio
         $uploadDir = __DIR__ . '/../public/assets/uploads/';
         
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
-        // 1. Función auxiliar para archivos individuales (Logo/Banner)
         $handleUpload = function ($fileKey) use ($uploadDir) {
             if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                $maxFileSize = 2 * 1024 * 1024;
-                if ($_FILES[$fileKey]['size'] > $maxFileSize) {
-                    throw new Exception("File $fileKey is too large (Max 2MB).");
-                }
-
-                $imageInfo = getimagesize($_FILES[$fileKey]['tmp_name']);
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-                if (!$imageInfo || !in_array($imageInfo['mime'], $allowedTypes)) {
-                    throw new Exception("Invalid format for $fileKey.");
-                }
-
                 $ext = pathinfo($_FILES[$fileKey]['name'], PATHINFO_EXTENSION);
                 $filename = uniqid('img_') . '.' . $ext;
-
                 if (move_uploaded_file($_FILES[$fileKey]['tmp_name'], $uploadDir . $filename)) {
                     return 'assets/uploads/' . $filename;
                 }
@@ -226,32 +200,28 @@ class UserController
         };
 
         try {
-            // 2. Recoger datos de texto
-            $data = [
-                'business_name' => $_POST['business_name'] ?? '',
-                'phone'         => $_POST['phone'] ?? '',
-                'address'       => $_POST['address'] ?? '',
-                'city'          => $_POST['city'] ?? '',
-                'postal_code'   => $_POST['postal_code'] ?? '',
-                'description'   => $_POST['description'] ?? '',
-                'is_public'     => isset($_POST['is_public']) ? 1 : 0,
-                'logo_url'      => $handleUpload('logo'),
-                'banner_url'    => $handleUpload('banner')
-            ];
+          $data = [
+    'business_name' => $_POST['business_name'] ?? '',
+    'phone'         => $_POST['phone'] ?? '',
+    'address'       => $_POST['address'] ?? '',
+    'city'          => $_POST['city'] ?? '',
+    'postal_code'   => $_POST['postal_code'] ?? '',
+    'description'   => $_POST['description'] ?? '',
+    'is_public'     => isset($_POST['is_public']) ? 1 : 0, 
+    'logo_url'      => $handleUpload('logo'),
+    'banner_url'    => $handleUpload('banner')
+];
 
-            // 3. Actualizar perfil básico
-            if (!$userModel->updateBusinessProfile($_SESSION['user_id'], $data)) {
-                throw new Exception("Database error updating profile.");
-            }
+            // 1. Actualizar perfil base
+            $userModel->updateBusinessProfile($_SESSION['user_id'], $data);
 
-            // 4. Lógica de la GALERÍA (Múltiples archivos)
+            // 2. Procesar Galería (Gallery)
             if (isset($_FILES['gallery']) && !empty($_FILES['gallery']['name'][0])) {
                 $galleryPaths = [];
                 foreach ($_FILES['gallery']['name'] as $key => $val) {
                     if ($_FILES['gallery']['error'][$key] === UPLOAD_ERR_OK) {
                         $ext = pathinfo($_FILES['gallery']['name'][$key], PATHINFO_EXTENSION);
                         $filename = uniqid('gal_') . '.' . $ext;
-                        
                         if (move_uploaded_file($_FILES['gallery']['tmp_name'][$key], $uploadDir . $filename)) {
                             $galleryPaths[] = 'assets/uploads/' . $filename;
                         }
@@ -259,13 +229,14 @@ class UserController
                 }
 
                 if (!empty($galleryPaths)) {
-                    // Obtenemos el perfil completo para tener el ID de la tabla business_profiles
+                    // Obtenemos el profile_id necesario para la tabla business_gallery
                     $profile = $userModel->getFullProfile($_SESSION['user_id']);
-                    $userModel->addGalleryImages($profile['id'], $galleryPaths);
+                    if (isset($profile['profile_id'])) {
+                        $userModel->addGalleryImages($profile['profile_id'], $galleryPaths);
+                    }
                 }
             }
 
-            // 5. Respuesta final
             header('Content-Type: application/json');
             echo json_encode(['success' => true]);
             exit();
@@ -279,26 +250,22 @@ class UserController
 }
 
 
-    public function viewBusiness()
-    {
-        $businessId = $_GET['id'] ?? null;
-        if (!$businessId) {
-            header("Location: index.php");
-            exit();
-        }
+   public function viewBusiness() {
+    $businessId = $_GET['id'] ?? null;
+    if (!$businessId) { header("Location: index.php"); exit(); }
 
-        $userModel = new User();
-        // Get the full profile including business info
-        $businessData = $userModel->getFullProfile($businessId);
+    $userModel = new User();
+    // 1. Obtenemos los datos del perfil
+    $businessData = $userModel->getFullProfile($businessId);
 
-        if (!$businessData || $businessData['role'] !== 'store') {
-            header("Location: index.php");
-            exit();
-        }
+    if (!$businessData) { header("Location: index.php"); exit(); }
 
+    // 2. Obtenemos las imágenes de la galería específicamente
+    $galleryImages = $userModel->getBusinessGallery($businessData['user_id']);
 
-        require_once __DIR__ . '/../views/business-service.php';
-    }
+    // 3. Cargamos la vista (las variables $businessData y $galleryImages estarán disponibles allí)
+    require_once __DIR__ . '/../views/business-service.php';
+}
 
 
     // Function to send email using PHPMailer

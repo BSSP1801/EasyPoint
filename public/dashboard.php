@@ -258,16 +258,16 @@ if (!isset($_SESSION['user_id'])) {
                                 <?php endif; ?>
                             </div>
                             <div class="form-group">
-    <label>Visibility Status</label>
-    <div class="day-toggle" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-        <label class="switch">
-            <input type="checkbox" name="is_public" value="1" 
-                <?php echo ($userData['is_public'] ?? 0) == 1 ? 'checked' : ''; ?>>
-            <span class="slider round"></span>
-        </label>
-        <span class="day-name">Public (Visible in Home Carousel)</span>
-    </div>
-</div>
+                                <label>Visibility Status</label>
+                                <div class="day-toggle" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                                    <label class="switch">
+                                     <input type="checkbox" name="is_public" id="is_public" 
+                                  <?php echo (isset($userData['is_public']) && $userData['is_public'] == 1) ? 'checked' : ''; ?>>
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <span class="day-name">Public (Visible in Home Carousel)</span>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="form-group">

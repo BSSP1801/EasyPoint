@@ -405,12 +405,7 @@ header {
     align-items: center;
 }
 
-.sticky-logo {
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
+
 
 .sticky-search-bar {
     display: flex;
@@ -727,3 +722,18 @@ header {
     justify-content: center;
     align-items: center;
 }
+.sticky-logo {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+     text-decoration: none;
+      & a{
+            text-decoration: none;
+      }
+}
+
+.sticky-logo a{
+     text-decoration: none;
+}
+*{text-decoration: none;}
