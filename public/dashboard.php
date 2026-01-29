@@ -270,6 +270,13 @@ if (!isset($_SESSION['user_id'])) {
 </div>
                         </div>
 
+                        <div class="form-group">
+    <label>Gallery Photos (You can select multiple)</label>
+    <input type="file" name="gallery[]" accept="image/*" multiple class="form-input">
+    <div id="gallery-preview" class="gallery-preview-container">
+        </div>
+</div>
+
                         <div class="form-actions">
                             <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
                         </div>

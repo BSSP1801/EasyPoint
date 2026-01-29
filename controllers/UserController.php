@@ -191,89 +191,92 @@ class UserController
     //     require_once __DIR__ . '/../views/dashboard.php';
     // }
 
-    public function updateBusinessInfo()
-    {
-        // CORRECTION: We remove the view and model loading from above.
-        // We only process if it's POST and there is a session.
+  public function updateBusinessInfo()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
+        $userModel = new User();
+        $uploadDir = __DIR__ . '/../public/assets/uploads/';
+        
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
+        // 1. Función auxiliar para archivos individuales (Logo/Banner)
+        $handleUpload = function ($fileKey) use ($uploadDir) {
+            if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                $maxFileSize = 2 * 1024 * 1024;
+                if ($_FILES[$fileKey]['size'] > $maxFileSize) {
+                    throw new Exception("File $fileKey is too large (Max 2MB).");
+                }
 
-            // Collect text data
+                $imageInfo = getimagesize($_FILES[$fileKey]['tmp_name']);
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (!$imageInfo || !in_array($imageInfo['mime'], $allowedTypes)) {
+                    throw new Exception("Invalid format for $fileKey.");
+                }
+
+                $ext = pathinfo($_FILES[$fileKey]['name'], PATHINFO_EXTENSION);
+                $filename = uniqid('img_') . '.' . $ext;
+
+                if (move_uploaded_file($_FILES[$fileKey]['tmp_name'], $uploadDir . $filename)) {
+                    return 'assets/uploads/' . $filename;
+                }
+            }
+            return null;
+        };
+
+        try {
+            // 2. Recoger datos de texto
             $data = [
                 'business_name' => $_POST['business_name'] ?? '',
-                'phone' => $_POST['phone'] ?? '',
-                'address' => $_POST['address'] ?? '',
-                'city' => $_POST['city'] ?? '',
-                'postal_code' => $_POST['postal_code'] ?? '',
-                'description' => $_POST['description'] ?? '',
-                'is_public' => isset($_POST['is_public']) ? 1 : 0,
-                'logo_url' => null,
-                'banner_url' => null
+                'phone'         => $_POST['phone'] ?? '',
+                'address'       => $_POST['address'] ?? '',
+                'city'          => $_POST['city'] ?? '',
+                'postal_code'   => $_POST['postal_code'] ?? '',
+                'description'   => $_POST['description'] ?? '',
+                'is_public'     => isset($_POST['is_public']) ? 1 : 0,
+                'logo_url'      => $handleUpload('logo'),
+                'banner_url'    => $handleUpload('banner')
             ];
 
-            // File upload handling (Images)
-            $uploadDir = __DIR__ . '/../public/assets/uploads/';
-            if (!is_dir($uploadDir))
-                mkdir($uploadDir, 0777, true);
-
-            // Helper function to upload files
-            $handleUpload = function ($fileKey) use ($uploadDir) {
-                if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-
-                    // 1. Validate file size (Example: 2MB maximum)
-                    $maxFileSize = 2 * 1024 * 1024; // 2 Megabytes
-                    if ($_FILES[$fileKey]['size'] > $maxFileSize) {
-                        throw new Exception("File is too large (Maximum 2MB).");
-                    }
-
-                    // 2. Validate dimensions (Optional, requires active GD extension)
-                    $imageInfo = getimagesize($_FILES[$fileKey]['tmp_name']);
-                    $maxWidth = 1200;
-                    $maxHeight = 1200;
-                    if ($imageInfo[0] > $maxWidth || $imageInfo[1] > $maxHeight) {
-                        throw new Exception("Image exceeds allowed dimensions (Maximum 1200x1200px).");
-                    }
-
-                    // 3. Validate file type
-                    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-                    if (!in_array($imageInfo['mime'], $allowedTypes)) {
-                        throw new Exception("Image format not allowed (Use JPG, PNG or WebP).");
-                    }
-
-                    $ext = pathinfo($_FILES[$fileKey]['name'], PATHINFO_EXTENSION);
-                    $filename = uniqid('img_') . '.' . $ext;
-
-                    if (move_uploaded_file($_FILES[$fileKey]['tmp_name'], $uploadDir . $filename)) {
-                        return 'assets/uploads/' . $filename;
-                    }
-                }
-                return null;
-            };
-
-            try {
-                $data['logo_url'] = $handleUpload('logo');
-                $data['banner_url'] = $handleUpload('banner');
-                $userModel = new User();
-                // Call the model
-                if ($userModel->updateBusinessProfile($_SESSION['user_id'], $data)) {
-                    // Return only clean JSON
-                    header('Content-Type: application/json');
-                    echo json_encode(['success' => true]);
-                } else {
-                    header('Content-Type: application/json');
-                    echo json_encode(['success' => false, 'message' => 'Database error']);
-                }
-                exit(); // Important: Stop execution here
-
-            } catch (Exception $e) {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => false, 'message' => $e->getMessage()]);
-                exit();
+            // 3. Actualizar perfil básico
+            if (!$userModel->updateBusinessProfile($_SESSION['user_id'], $data)) {
+                throw new Exception("Database error updating profile.");
             }
 
+            // 4. Lógica de la GALERÍA (Múltiples archivos)
+            if (isset($_FILES['gallery']) && !empty($_FILES['gallery']['name'][0])) {
+                $galleryPaths = [];
+                foreach ($_FILES['gallery']['name'] as $key => $val) {
+                    if ($_FILES['gallery']['error'][$key] === UPLOAD_ERR_OK) {
+                        $ext = pathinfo($_FILES['gallery']['name'][$key], PATHINFO_EXTENSION);
+                        $filename = uniqid('gal_') . '.' . $ext;
+                        
+                        if (move_uploaded_file($_FILES['gallery']['tmp_name'][$key], $uploadDir . $filename)) {
+                            $galleryPaths[] = 'assets/uploads/' . $filename;
+                        }
+                    }
+                }
 
+                if (!empty($galleryPaths)) {
+                    // Obtenemos el perfil completo para tener el ID de la tabla business_profiles
+                    $profile = $userModel->getFullProfile($_SESSION['user_id']);
+                    $userModel->addGalleryImages($profile['id'], $galleryPaths);
+                }
+            }
+
+            // 5. Respuesta final
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true]);
+            exit();
+
+        } catch (Exception $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            exit();
         }
     }
+}
 
 
     public function viewBusiness()

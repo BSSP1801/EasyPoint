@@ -213,4 +213,28 @@ class User
         }
     }
 
+    public function addGalleryImages($profileId, $imagePaths)
+    {
+        $query = "INSERT INTO business_gallery (business_profile_id, image_url) VALUES (:pid, :url)";
+        $stmt = $this->conn->prepare($query);
+
+        foreach ($imagePaths as $path) {
+            $stmt->bindParam(':pid', $profileId);
+            $stmt->bindParam(':url', $path);
+            $stmt->execute();
+        }
+    }
+
+    // También actualiza getFullProfile para traer la galería
+    public function getBusinessGallery($userId)
+    {
+        $query = "SELECT bg.image_url FROM business_gallery bg 
+              JOIN business_profiles bp ON bg.business_profile_id = bp.id 
+              WHERE bp.user_id = :uid";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':uid', $userId);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }
