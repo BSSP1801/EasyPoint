@@ -6,24 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const stickyHeader = document.querySelector('.sticky-header');
     if (stickyHeader) {
         window.addEventListener('scroll', function() {
-            if (window.scrollY > 400) {
+            if (window.scrollY > 100) {
                 stickyHeader.classList.add('visible');
             } else {
                 stickyHeader.classList.remove('visible');
             }
-        });
-    }
-
-    const carousel = document.querySelector('.shops-grid');
-    const leftBtn = document.querySelector('.left-arrow');
-    const rightBtn = document.querySelector('.right-arrow');
-
-    if (carousel && leftBtn && rightBtn) {
-        rightBtn.addEventListener('click', () => {
-            carousel.scrollBy({ left: 320, behavior: 'smooth' });
-        });
-        leftBtn.addEventListener('click', () => {
-            carousel.scrollBy({ left: -320, behavior: 'smooth' });
         });
     }
 
@@ -156,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const formData = new FormData(this);
             
-            fetch('index.php?action=login', {
+            fetch('../index.php?action=login', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -167,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(data => {
                 if (data.success) {
-                    window.location.href = 'index.php';
+                    window.location.reload();
                 } else {
                     if(loginError) {
                         loginError.textContent = data.message;
@@ -193,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(this);
             formData.append('role', 'user');
             
-            fetch('index.php?action=register', {
+            fetch('../index.php?action=register', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -237,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(this);
             formData.append('role', 'store');
             
-            fetch('index.php?action=register', {
+            fetch('../index.php?action=register', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -268,47 +255,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     storeError.textContent = 'Error: ' + error.message;
                     storeError.style.display = 'block';
                 }
-                })
-                .catch(error => {
-                    console.error('Store register Error:', error);
-                  
-                });
-            });
-        }
-    });
-
-// Global function to open store registration modal
-function openStoreModal(e) {
-    e.preventDefault();
-    const storeModal = document.getElementById('store-modal');
-    storeModal.style.display = 'flex';
-}
-
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Seleccionamos los elementos del DOM
-    const carousel = document.querySelector('.shops-grid');
-    const leftBtn = document.querySelector('.left-arrow');
-    const rightBtn = document.querySelector('.right-arrow');
-
-    // Check that elements exist before executing anything (to avoid errors on other pages)
-    if (carousel && leftBtn && rightBtn) {
-
-        // 2. Event for RIGHT button
-        rightBtn.addEventListener('click', () => {
-            carousel.scrollBy({
-                left: 320, // Moves 320px (card width + gap approx)
-                behavior: 'smooth' // Makes movement smooth
-            });
-        });
-
-        // 3. Event for LEFT button
-        leftBtn.addEventListener('click', () => {
-            carousel.scrollBy({
-                left: -320, // Moves -320px (backward)
-                behavior: 'smooth'
             });
         });
     }
 });
+
+

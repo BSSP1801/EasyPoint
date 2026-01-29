@@ -1,69 +1,47 @@
 <?php
-// public/index.php
-require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/controllers/UserController.php';
-
+// view/business-service.php
 session_start();
+require_once '../models/User.php';
 
-$action = $_GET['action'] ?? 'home';
-$controller = new UserController();
+// 1. Verificar si recibimos un ID
+if (!isset($_GET['id'])) {
+    // Si no hay ID, redirigir al home o mostrar error
+    header("Location: ../index.php");
+    exit();
+}
+
+$storeId = $_GET['id'];
 $userModel = new User();
-// --- LOGIC SECTION: Process actions before any HTML is sent ---
-// This allows header("Location: ...") to work correctly
-// Initialize an empty array for stores
-$stores = [];
-if ($action === 'home') {
-    $stores = $userModel->getRecommendedStores();
-}
-//Switch case to handle different actions
-switch ($action) {
-    case 'register':
-        $controller->register();
-        exit();
-        break;
-    case 'login':
-        $controller->login();
-        exit();
-        break;
-    case 'dashboard':
-        $controller->dashboard();
-        exit();
-        break;
-    case 'update_schedule':
-        $controller->updateSchedule();
-        exit();
-        break;
-    case 'update_business_info':
-        $controller->updateBusinessInfo();
-        exit();
-    case 'view_business':
-        $controller->viewBusiness();
-        exit();
-    case 'logout':
-        session_destroy();
-        $_SESSION = array(); // Clear the session array
-        header("Location: index.php");
-        exit();
-        break;
+
+// 2. Obtener datos de la tienda usando el método que ya tenías
+$store = $userModel->getFullProfile($storeId);
+
+// Si no existe la tienda, redirigir
+if (!$store) {
+    header("Location: ../index.php");
+    exit();
 }
 
-// --- VIEW SECTION: Start HTML output after all logic is done ---
+// 3. Preparar la URL del logo
+// Nota: Como estamos en la carpeta 'view/', debemos salir un nivel (../) para entrar a 'public/'
+$logoUrl = !empty($store['logo_url']) 
+    ? '../public/' . htmlspecialchars($store['logo_url']) 
+    : '../public/assets/images/tienda-1.png'; // Imagen por defecto
+
+$businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre');
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EasyPoint - Appointment System</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="public/css/styles.css">
+    <title>EasyPoint</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/styles-business-service.css">
 </head>
-<?php
-
-?>
-
 <body>
+
     <div class="sticky-header">
         <div class="sticky-container">
             <div class="sticky-logo">EasyPoint</div>
@@ -87,14 +65,14 @@ switch ($action) {
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
                         </span></a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
-                    <a href="index.php?action=logout" class="logout-link">Logout</a>
+                    <a href="../index.php?action=logout" class="logout-link">Logout</a>
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
                     <span class="user-link">
                         Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                    </span>
-                    <a href="index.php?action=logout" class="logout-link">Logout</a>
+                    </span> 
+                    <a href="../index.php?action=logout" class="logout-link">Logout</a>
                 <?php else: ?>
-                    <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
+                    <a href="../index.php?action=login" class="login-link">Log In/Sign Up</a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                 <?php endif; ?>
             </div>
@@ -103,35 +81,31 @@ switch ($action) {
     <header>
         <nav class="navigation-bar">
             <div class="logo">EasyPoint</div>
+
+            <div class="search-bar">
+                   <input type="text" class="search-input" placeholder="Search services or businesses">
+               </div>
+
             <div class="user-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-                    <a href="index.php?action=dashboard">
+                    <a href="../index.php?action=dashboard">
                         <span class="user-link">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
                         </span></a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
-                    <a href="index.php?action=logout" class="logout-link">Logout</a>
+                    <a href="../index.php?action=logout" class="logout-link">Logout</a>
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
                     <span class="user-link">
                         Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
                     </span>
-                    <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a>
-                    <a href="index.php?action=logout" class="logout-link">Logout</a>
+                    <a href="../index.php?action=dashboard" class="dashboard-link">Dashboard</a>
+                    <a href="../index.php?action=logout" class="logout-link">Logout</a>
                 <?php else: ?>
-                    <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
+                    <a href="../index.php?action=login" class="login-link">Log In/Sign Up</a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                 <?php endif; ?>
             </div>
         </nav>
-
-        <div class="central-content">
-            <h1 class="main-title">Believe in yourself</h1>
-            <p class="subtitle">Discover and book an appointment with beauty and wellness professionals near you</p>
-
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="Search services or businesses">
-            </div>
-
             <ul class="category-list">
                 <li>Hair Salon</li>
                 <li>Barbershop</li>
@@ -142,114 +116,142 @@ switch ($action) {
                 <li>Massage</li>
                 <li>Makeup</li>
             </ul>
-        </div>
     </header>
 
-    <section class="recommended-section">
-        <h2 class="section-title">Recommended</h2>
+    <div class="main-container">
+        
+        <div class="left-panel">
+            <div class="main-img">
+    <i class="far fa-heart" style="position: absolute; top: 15px; right: 15px; font-size: 20px;"></i>
+    <div style="text-align: center;">
+        
+            <img src="<?php echo $logoUrl; ?>" alt="Logo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+            
+            <h2 style="margin-top: 10px; text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                <?php echo $businessName; ?>
+            </h2>
 
-        <div class="carousel-container">
-            <button class="arrow-button left-arrow">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
+        </div>
+    </div>
 
-            <div class="shops-grid">
-    <?php if (empty($stores)): ?>
-        <p style="padding: 20px;">No stores available yet. Be the first to join!</p>
-    <?php else: ?>
-        <?php foreach ($stores as $store): ?>
-            <?php 
-                // Preparar datos (sin cambios)
-                $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
+            <div class="gallery-thumbs">
+                <div class="thumb"><i class="fas fa-cut"></i></div>
+                <div class="thumb"><i class="fas fa-cut"></i></div>
+                <div class="thumb"><i class="fas fa-cut"></i></div>
+            </div>
+
+            <div class="business-title">
+                <h1><?php echo htmlspecialchars($store['business_name']); ?></h1>
+                <p>
+                    <?php 
+                    $parts = [];
+                    if (!empty($store['address'])) $parts[] = $store['address'];
+                    if (!empty($store['postal_code'])) $parts[] = $store['postal_code'];
+                    if (!empty($store['city'])) $parts[] = $store['city'];
+                    echo htmlspecialchars(implode(', ', $parts));
+                    ?>
+                </p>
+                <div class="stars">
+                    <i class="fas fa-star"></i> 5.0 <span style="color:#b0a8a6">(New)</span>
+                </div>
+            </div>
+
+            <div>
+                <h2 class="section-title">Services</h2>
+                <h3 style="font-size: 16px; margin-bottom: 10px;">Popular Services</h3>
                 
-                $addressParts = [];
-                if (!empty($store['address'])) $addressParts[] = htmlspecialchars($store['address']);
-                if (!empty($store['postal_code'])) $addressParts[] = htmlspecialchars($store['postal_code']);
-                if (!empty($store['city'])) $addressParts[] = htmlspecialchars($store['city']);
-                $fullAddress = implode(', ', $addressParts);
-                
-                $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
-            ?>
-
-            <a href="view/business-service.php?id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
-                <article class="shop-card">
-                    <div class="image-container">
-                        <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
-                        <div class="rating-label">
-                            5.0 <span class="reviews-text">New</span>
+                <div class="service-row">
+                    <h4>Haircut</h4>
+                    <div style="display: flex; align-items: center;">
+                        <div class="service-details">
+                            <span class="price-tag">14,00 €</span>
+                            <span class="duration-tag">30min</span>
                         </div>
+                        <button class="book-btn">Book</button>
                     </div>
-                    <div class="shop-info">
-                        <h3 class="shop-name"><?php echo $name; ?></h3>
-                        <p class="shop-address"><?php echo $fullAddress; ?></p>
-                        <span class="sponsored-text">Recommended</span>
+                </div>
+
+                <div class="service-row">
+                    <h4>Haircut & Beard</h4>
+                    <div style="display: flex; align-items: center;">
+                        <div class="service-details">
+                            <span class="price-tag">22,00 €</span>
+                            <span class="duration-tag">45min</span>
+                        </div>
+                        <button class="book-btn">Book</button>
                     </div>
-                </article>
-            </a>
+                </div>
 
-        <?php endforeach; ?>
-    <?php endif; ?>
-</div>
-
-            <button class="arrow-button right-arrow">
-                <i class="fa-solid fa-arrow-right"></i>
-            </button>
-        </div>
-    </section>
-
-
-
-
-    <section class="features-section">
-        <div class="features-container">
-            <div class="features-image-wrapper">
-                <img src="public/assets/images/img-resource-1.jpeg" alt="Beauty Experience" class="features-image">
-            </div>
-            <div class="features-content">
-                <h2 class="features-title">Book with top professionals near you</h2>
-                <p class="features-text">
-                    Navigate through our platform to discover the finest health and beauty businesses available on
-                    EasyPoint. We curate the best local professionals to ensure high-quality service.
-                </p>
-                <p class="features-text">
-                    Check out business profiles and read verified reviews from other users to make an informed decision.
-                    You can also explore their portfolios to see the real results of their work before you book.
-                </p>
-                <p class="features-text">
-                    Save time and leave the stress behind. With EasyPoint, booking your next beauty appointment is free,
-                    easy, and fast, giving you more time to focus on yourself.
-                </p>
+                <div class="service-row">
+                    <h4>Beard</h4>
+                    <div style="display: flex; align-items: center;">
+                        <div class="service-details">
+                            <span class="price-tag">9,00 €</span>
+                            <span class="duration-tag">15min</span>
+                        </div>
+                        <button class="book-btn">Book</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </section>
 
-    <section class="features-section">
-        <div class="features-container">
-            <div class="features-content">
-                <h2 class="features-title">Discover and book with the best local talent</h2>
+        <div class="right-panel">
+            <div class="map-box">
+                <i class="fas fa-map-marker-alt" style="font-size: 30px; margin-right: 10px;"></i>
+                <span>Valencia Map</span>
+            </div>
 
-                <p class="features-text">
-                    Explore our platform to find the highest-rated health and beauty businesses available on EasyPoint.
-                    We carefully select top-tier professionals to ensure you receive only quality service.
-                </p>
-
-                <p class="features-text">
-                    Make the right choice by checking out business profiles and reading verified reviews from real
-                    clients. You can also browse their portfolios to see the results of their work before you commit.
-                </p>
-
-                <p class="features-text">
-                    Save time and skip the stress. With EasyPoint, securing your next appointment is simple, free, and
-                    instant, leaving you more time to focus on what matters: you.
+            <div>
+                <h3 class="info-header">About Us</h3>
+                <p style="font-size: 14px; line-height: 1.5;">
+                    <?php echo nl2br(htmlspecialchars($store['description'] ?? 'No description available.')); ?>
                 </p>
             </div>
 
-            <div class="features-image-wrapper">
-                <img src="public/assets/images/img-resource-2.jpeg" alt="Booking Illustration" class="features-image">
+            <div>
+                <h3 class="info-header">Schedule</h3>
+                <div>
+                    <?php 
+                    $schedule = json_decode($store['opening_hours'] ?? '', true);
+                    
+                    $orderedDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                    
+                    if ($schedule && is_array($schedule)): 
+                        foreach ($orderedDays as $day):
+                            if (isset($schedule[$day])):
+                                $dayData = $schedule[$day];
+                                
+                                $hoursText = "Closed";
+                                
+                                $isActive = !empty($dayData['active']) && $dayData['active'] == true;
+                                
+                                if ($isActive) {
+                                    $open = $dayData['open'] ?? '';
+                                    $close = $dayData['close'] ?? '';            
+                                    if ($open && $close) {
+                                        $hoursText = $open . ' - ' . $close;
+                                    }
+                                }
+                            ?>
+                            <div class="schedule-row">
+                                <span><?php echo htmlspecialchars(ucfirst($day)); ?></span> 
+                                <span><?php echo htmlspecialchars($hoursText); ?></span>
+                            </div>
+                        <?php 
+                            endif;
+                        endforeach; 
+                    else: ?>
+                        <p style="font-size: 13px; color: #666;">Schedule not available.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="info-header">Social Media</h3>
+                <i class="fab fa-instagram" style="font-size: 20px;"></i>
             </div>
         </div>
-    </section>
-
+    </div>
 
     <footer class="main-footer">
         <div class="footer-container">
@@ -294,7 +296,6 @@ switch ($action) {
             <p>&copy; 2026 EasyPoint. All rights reserved.</p>
         </div>
     </footer>
-
 
     <div id="auth-modal" class="modal-overlay">
         <div class="modal-box">
@@ -385,8 +386,6 @@ switch ($action) {
             </form>
         </div>
     </div>
-
-    <script src="public/js/script.js"></script>
+    <script src="../public/js/styles-business-service.js"></script>
 </body>
-
 </html>
