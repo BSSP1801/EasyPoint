@@ -78,6 +78,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+
+/* 
+   5. Sidebar toggle (responsive)
+    */
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.getElementById('sidebarToggle');
+
+    if (!sidebar || !toggleBtn) return;
+
+    // Apply default state based on width: solo colapsa en tablet/móvil
+    function applyDefaultState() {
+        if (window.innerWidth <= 900) {
+            sidebar.classList.add('collapsed');
+            sidebar.classList.remove('open');
+        } else {
+            // En desktop, siempre abierto por defecto
+            sidebar.classList.remove('collapsed');
+            sidebar.classList.add('open');
+        }
+    }
+
+    applyDefaultState();
+
+    // Toggle on button click: funciona en todas las vistas
+    toggleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (sidebar.classList.contains('collapsed')) {
+            sidebar.classList.remove('collapsed');
+            sidebar.classList.add('open');
+        } else {
+            sidebar.classList.add('collapsed');
+            sidebar.classList.remove('open');
+        }
+    });
+
+    // Adjust on resize
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            applyDefaultState();
+        }, 120);
+    });
+});
+
 /* =========================================
    2. LÓGICA DE NAVEGACIÓN (Funciones Globales)
    ========================================= */

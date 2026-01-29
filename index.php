@@ -83,16 +83,11 @@ switch ($action) {
 
             <div class="sticky-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-                    <a href="public/dashboard.php">
-                        <span class="user-link">
-                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                        </span></a>
+                    <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                     <a href="index.php?action=logout" class="logout-link">Logout</a>
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
-                    <span class="user-link">
-                        Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                    </span> 
+                    <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a> 
                     <a href="index.php?action=logout" class="logout-link">Logout</a>
                 <?php else: ?>
                     <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
