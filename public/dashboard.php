@@ -11,9 +11,15 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once dirname(__DIR__) . '/models/Service.php';
+// IMPORTANTE: Asegúrate de requerir el modelo de Usuario
+require_once dirname(__DIR__) . '/models/user.php'; 
 
 $serviceModel = new Service();
 $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
+
+// NUEVO: Obtener los datos del usuario/tienda para llenar el formulario
+$userModel = new User();
+$userData = $userModel->getFullProfile($_SESSION['user_id']); // Ajusta el nombre del método según tu modelo user.php
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -263,8 +269,8 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
     <label>Visibility Status</label>
     <div class="day-toggle" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
         <label class="switch">
-            <input type="checkbox" name="is_public" value="1" 
-                <?php echo ($userData['is_public'] ?? 0) == 1 ? 'checked' : ''; ?>>
+            <input type="checkbox" name="is_public" id="is_public" 
+       <?php echo (isset($userData['is_public']) && $userData['is_public'] == 1) ? 'checked' : ''; ?>>
             <span class="slider round"></span>
         </label>
         <span class="day-name">Public (Visible in Home Carousel)</span>

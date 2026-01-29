@@ -119,21 +119,17 @@ class User
     // In models/User.php
 
     // 1. Get combined data from User and Business Profile
-    public function getFullProfile($userId)
-    {
-
-        $query = "SELECT u.*, 
-                     bp.description, bp.logo_url, bp.banner_url, bp.website, bp.instagram_link,
-                     bp.opening_hours 
-              FROM " . $this->table_name . " u 
-              LEFT JOIN business_profiles bp ON u.id = bp.user_id 
+   public function getFullProfile($id) {
+   $query = "SELECT u.id AS user_id, u.business_name, u.address, u.city, u.postal_code, 
+                     bp.description, bp.logo_url, bp.banner_url, bp.opening_hours
+              FROM users u
+              LEFT JOIN business_profiles bp ON u.id = bp.user_id
               WHERE u.id = :id LIMIT 1";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $userId);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
     // 2. Update business information
     public function updateBusinessProfile($userId, $data)
@@ -233,15 +229,14 @@ class User
     }
 
     // También actualiza getFullProfile para traer la galería
-    public function getBusinessGallery($userId)
-    {
-        $query = "SELECT bg.image_url FROM business_gallery bg 
+  public function getBusinessGallery($userId) {
+    $query = "SELECT bg.image_url 
+              FROM business_gallery bg 
               JOIN business_profiles bp ON bg.business_profile_id = bp.id 
               WHERE bp.user_id = :uid";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':uid', $userId);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':uid', $userId);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }

@@ -258,6 +258,43 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+
+
+function moveCarousel(direction) {
+    const track = document.getElementById('carouselTrack');
+    const width = track.offsetWidth;
+    track.scrollBy({
+        left: direction * width,
+        behavior: 'smooth'
+    });
+    updateDots();
+}
+
+function currentSlide(index) {
+    const track = document.getElementById('carouselTrack');
+    const width = track.offsetWidth;
+    track.scrollTo({
+        left: index * width,
+        behavior: 'smooth'
+    });
+    updateDots();
+}
+
+// Opcional: Actualizar los puntos activos al hacer scroll manual
+function updateDots() {
+    const track = document.getElementById('carouselTrack');
+    const dots = document.querySelectorAll('.dot');
+    const index = Math.round(track.scrollLeft / track.offsetWidth);
+    
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+    });
+}
+
+// Escuchar el evento scroll para actualizar puntos
+document.getElementById('carouselTrack')?.addEventListener('scroll', updateDots);
+
 });
 
 

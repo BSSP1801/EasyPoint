@@ -319,7 +319,7 @@ header {
     margin: 40px auto;
     padding: 0 20px;
     display: grid;
-    grid-template-columns: 45% 50%;
+    grid-template-columns: 60% 35%;
     gap: 5%;
 }
 
@@ -662,3 +662,88 @@ header {
 .hidden {
     display: none;
 }
+
+/* Contenedor principal del carrusel */
+.gallery-carousel-wrapper {
+    width: 100%;
+    margin: 0 0 30px 0; /* Quitamos márgenes laterales para que use todo el ancho */
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000; /* Fondo negro para que no se vea blanco si la imagen carga lento */
+}
+
+.carousel-main {
+    position: relative;
+    /* Bajamos la altura de 500px a 400px o 450px para que no parezca tan estrecha */
+    height: 420px; 
+    width: 100%;
+}
+
+/* El carril donde se mueven las fotos */
+.carousel-track {
+    display: flex;
+    height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none; /* Ocultar scrollbar en IE */
+    scrollbar-width: none;    /* Ocultar scrollbar en Firefox */
+}
+
+.carousel-track::-webkit-scrollbar {
+    display: none; /* Ocultar scrollbar en Chrome/Safari */
+}
+
+.carousel-slide {
+    min-width: 100%;
+    height: 100%;
+    scroll-snap-align: start;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    /* Mantén cover, pero ahora con menos altura se verá más porción de los lados */
+    object-fit: cover; 
+    display: block;
+}
+
+/* Botones de navegación */
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.7);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    z-index: 10;
+    transition: background 0.3s;
+}
+
+.carousel-control:hover { background: white; }
+.carousel-control.prev { left: 20px; }
+.carousel-control.next { right: 20px; }
+
+/* Puntos indicadores */
+.carousel-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.dot.active { background: white; width: 25px; border-radius: 10px; }
