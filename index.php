@@ -74,10 +74,6 @@ switch ($action) {
                     <span class="search-icon">📍</span>
                     <input type="text" placeholder="Where?">
                 </div>
-                <div class="search-field border-left">
-                    <span class="search-icon">🕒</span>
-                    <input type="text" placeholder="When?">
-                </div>
                 <button class="sticky-search-btn">Search</button>
             </div>
 
