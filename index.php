@@ -151,46 +151,42 @@ switch ($action) {
             </button>
 
             <div class="shops-grid">
+    <?php if (empty($stores)): ?>
+        <p style="padding: 20px;">No stores available yet. Be the first to join!</p>
+    <?php else: ?>
+        <?php foreach ($stores as $store): ?>
+            <?php 
+                // Preparar datos (sin cambios)
+                $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
                 
-                <?php if (empty($stores)): ?>
-                    <p style="padding: 20px;">No stores available yet. Be the first to join!</p>
-                <?php else: ?>
-                    
-                    <?php foreach ($stores as $store): ?>
-                        <?php 
-                            // Prepare store data with fallbacks
-                            $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
-                            
-                            // Build full address
-                            $addressParts = [];
-                            if (!empty($store['address'])) $addressParts[] = htmlspecialchars($store['address']);
-                            if (!empty($store['postal_code'])) $addressParts[] = htmlspecialchars($store['postal_code']);
-                            if (!empty($store['city'])) $addressParts[] = htmlspecialchars($store['city']);
-                            $fullAddress = implode(', ', $addressParts);
-                            
-                            // Image handling with default fallback
-                            $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
-                        ?>
+                $addressParts = [];
+                if (!empty($store['address'])) $addressParts[] = htmlspecialchars($store['address']);
+                if (!empty($store['postal_code'])) $addressParts[] = htmlspecialchars($store['postal_code']);
+                if (!empty($store['city'])) $addressParts[] = htmlspecialchars($store['city']);
+                $fullAddress = implode(', ', $addressParts);
+                
+                $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
+            ?>
 
-                        <article class="shop-card">
-                            <div class="image-container">
-                                <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
-                                <div class="rating-label">
-                                    5.0 <span class="reviews-text">New</span>
-                                </div>
-                            </div>
-                            <div class="shop-info">
-                                <h3 class="shop-name"><?php echo $name; ?></h3>
-                                <p class="shop-address"><?php echo $fullAddress; ?></p>
-                                <span class="sponsored-text">Recommended</span>
-                            </div>
-                        </article>
+            <a href="view/business-service.php?id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
+                <article class="shop-card">
+                    <div class="image-container">
+                        <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
+                        <div class="rating-label">
+                            5.0 <span class="reviews-text">New</span>
+                        </div>
+                    </div>
+                    <div class="shop-info">
+                        <h3 class="shop-name"><?php echo $name; ?></h3>
+                        <p class="shop-address"><?php echo $fullAddress; ?></p>
+                        <span class="sponsored-text">Recommended</span>
+                    </div>
+                </article>
+            </a>
 
-                    <?php endforeach; ?>
-                    
-                <?php endif; ?>
-
-            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
 
             <button class="arrow-button right-arrow">
                 <i class="fa-solid fa-arrow-right"></i>
