@@ -92,13 +92,11 @@ switch ($action) {
 
             <div class="sticky-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-                    <a href="public/dashboard.php">
-                        <span class="user-link">
-                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                        </span></a>
+                    <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                     <a href="index.php?action=logout" class="logout-link">Logout</a>
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
+                    <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a> 
                     <span class="user-link">
                         Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
                     </span>
@@ -181,7 +179,7 @@ switch ($action) {
                 $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
             ?>
 
-            <a href="view/business-service.php?id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
+            <a href="views/business-service.php?id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
                 <article class="shop-card">
                     <div class="image-container">
                         <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">

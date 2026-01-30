@@ -36,7 +36,7 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
     <aside class="sidebar">
         <div class="logo">
             <i class="fas fa-calendar-check"></i>
-            <span>EasyPoint</span>
+            <span class="logo-text">EasyPoint</span>
         </div>
         <div><a href="index.php">Back to Main Page</a></div>
         <nav>
@@ -52,30 +52,30 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-calendar')"><i
                         class="far fa-calendar-alt"></i> Calendar</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-appointments')"><i
-                        class="far fa-clock"></i> Appointments</a>
+                    class="far fa-clock"></i><span class="menu-text">Appointments</span></a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')"><i class="fas fa-cog"></i>
-                    Settings</a>
+                    <span class="menu-text">Settings</span></a>
             <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
                 <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-dashboard')"><i
                         class="fas fa-tachometer-alt"></i> Dashboard</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-calendar')"><i
                         class="far fa-calendar-alt"></i> Calendar</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-clients')"><i class="far fa-clock"></i>
-                    Clients</a>
+                    <span class="menu-text">Clients</span></a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')">
-                    <i class="fas fa-cog"></i> Settings
+                    <i class="fas fa-cog"></i><span class="menu-text">Settings</span>
                 </a>
             <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin'): ?>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-dashboard')"><i
-                        class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    class="fas fa-tachometer-alt"></i><span class="menu-text">Dashboard</span></a>
                 <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-calendar')"><i
-                        class="far fa-calendar-alt"></i> Calendar</a>
+                    class="far fa-calendar-alt"></i><span class="menu-text">Calendar</span></a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-appointments')"><i
-                        class="far fa-clock"></i> Appointments</a>
+                    class="far fa-clock"></i><span class="menu-text">Appointments</span></a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-clients')"><i class="far fa-clock"></i>
-                    Clients</a>
+                    <span class="menu-text">Clients</span></a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')">
-                    <i class="fas fa-cog"></i> Settings
+                    <i class="fas fa-cog"></i><span class="menu-text">Settings</span>
                 </a>
                 </a>
             <?php endif; ?>
@@ -104,6 +104,7 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
             <header class="header">
                 <div class="welcome">Welcome back. Here is a summary of your schedule.</div>
                 <div class="header-tools">
+                    <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle sidebar"><i class="fas fa-bars"></i></button>
                     <input type="text" placeholder="Search..." class="search-input">
                     <i class="fas fa-bell notification-icon"></i>
                 </div>
@@ -219,7 +220,7 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                             <div class="form-group half">
                                 <label>Contact Email</label>
                                 <input type="email" value="<?php echo htmlspecialchars($userData['email'] ?? ''); ?>"
-                                    class="form-input" readonly style="background: #eee;">
+                                    class="form-input" readonly >
                             </div>
                             <div class="form-group half">
                                 <label>Locality</label>
