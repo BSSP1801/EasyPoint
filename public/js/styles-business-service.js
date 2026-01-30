@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    
+
     // ==========================================
     // 1. STICKY HEADER & CARRUSEL
     // ==========================================
@@ -259,5 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
 
