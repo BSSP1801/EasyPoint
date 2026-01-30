@@ -663,35 +663,35 @@ header {
     display: none;
 }
 
-/* Contenedor principal del carrusel */
+/* Main carousel container */
 .gallery-carousel-wrapper {
     width: 100%;
-    margin: 0 0 30px 0; /* Quitamos márgenes laterales para que use todo el ancho */
+    margin: 0 0 30px 0; /* Remove side margins to use full width */
     border-radius: 12px;
     overflow: hidden;
-    background: #000; /* Fondo negro para que no se vea blanco si la imagen carga lento */
+    background: #000; /* Black background so it doesn't show white if the image loads slowly */
 }
 
 .carousel-main {
     position: relative;
-    /* Bajamos la altura de 500px a 400px o 450px para que no parezca tan estrecha */
+    /* Lower the height from 500px to 400px or 450px so it doesn't look so narrow */
     height: 420px; 
     width: 100%;
 }
 
-/* El carril donde se mueven las fotos */
+/* The track where the photos move */
 .carousel-track {
     display: flex;
     height: 100%;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
-    -ms-overflow-style: none; /* Ocultar scrollbar en IE */
-    scrollbar-width: none;    /* Ocultar scrollbar en Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar in IE */
+    scrollbar-width: none;    /* Hide scrollbar in Firefox */
 }
 
 .carousel-track::-webkit-scrollbar {
-    display: none; /* Ocultar scrollbar en Chrome/Safari */
+    display: none; /* Hide scrollbar in Chrome/Safari */
 }
 
 .carousel-slide {
@@ -703,12 +703,12 @@ header {
 .carousel-slide img {
     width: 100%;
     height: 100%;
-    /* Mantén cover, pero ahora con menos altura se verá más porción de los lados */
+    /* Keep cover, but now with less height more of the sides will be seen */
     object-fit: cover; 
     display: block;
 }
 
-/* Botones de navegación */
+/* Navigation buttons */
 .carousel-control {
     position: absolute;
     top: 50%;
@@ -728,7 +728,7 @@ header {
 .carousel-control.prev { left: 20px; }
 .carousel-control.next { right: 20px; }
 
-/* Puntos indicadores */
+/* Indicator dots */
 .carousel-dots {
     position: absolute;
     bottom: 20px;

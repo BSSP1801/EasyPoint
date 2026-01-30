@@ -1,12 +1,23 @@
 <?php
 // view/business-service.php
-session_start();
-require_once '../models/User.php';
-require_once '../models/Service.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../models/Service.php';
+require_once __DIR__ . '/../models/user.php';
 
-// 1. Verificar si recibimos un ID
+// 1. Check if we received an ID
 if (!isset($_GET['id'])) {
-    // Si no hay ID, redirigir al home o mostrar error
+    // If there is no ID, redirect to home or show error
+    header("Location: ../index.php");
+    exit();
+}
+
+if (isset($businessData)) {
+    // Asignamos $businessData a $userData para que el resto de tu HTML funcione sin cambios
+    $userData = $businessData;
+} else {
+    // Si alguien entra directo al archivo sin pasar por el controlador, lo expulsamos
     header("Location: ../index.php");
     exit();
 }
@@ -14,10 +25,10 @@ if (!isset($_GET['id'])) {
 $storeId = $_GET['id'];
 $userModel = new User();
 
-// 2. Obtener datos de la tienda usando el método que ya tenías
+// 2. Get store data using the method you already had
 $store = $userModel->getFullProfile($storeId);
 
-// Si no existe la tienda, redirigir
+// If the store does not exist, redirect
 if (!$store) {
     header("Location: ../index.php");
     exit();
@@ -25,7 +36,7 @@ if (!$store) {
 
 $serviceModel = new Service();
 $storeServices = $serviceModel->getAllByUserId($storeId);
-
+$targetUserId = $userData['user_id'] ?? $userData['id'];
 // 3. Preparar la URL del logo
 // Nota: Como estamos en la carpeta 'view/', debemos salir un nivel (../) para entrar a 'public/'
 // ... código anterior ...
@@ -133,20 +144,36 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
 
     <div class="main-container">
 
-        <div class="left-panel">
-           <div class="gallery-grid">
-    <?php if (!empty($galleryImages)): ?>
-        <?php foreach ($galleryImages as $image): ?>
-            <div class="gallery-item">
-                <img src="/EasyPoint/public/<?php echo htmlspecialchars($image['image_url']); ?>" 
-                     alt="Imagen de la galería" 
-                     class="gallery-img">
+<div class="left-panel">
+    <div class="gallery-carousel-wrapper">
+        <div class="carousel-main">
+                    
+                    <button class="carousel-control prev" id="btnPrev">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-control next" id="btnNext">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+
+                    <div class="carousel-track" id="carouselTrack">
+                        <?php if (!empty($galleryImages)): ?>
+                            <?php foreach ($galleryImages as $image): ?>
+                                <div class="carousel-slide">
+                                    <img src="/public/<?php echo htmlspecialchars($image['image_url']); ?>" 
+                                         alt="Gallery Image">
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="carousel-slide">
+                                <img src="../public/assets/images/img-resource-1.jpeg" alt="Default Image">
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="carousel-dots" id="carouselDots">
+                        </div>
+                </div>
             </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <p class="no-images">Este establecimiento aún no ha subido fotos a su galería.</p>
-    <?php endif; ?>
-</div>
             <div class="business-title">
                 <h1><?php echo htmlspecialchars($store['business_name']); ?></h1>
                 <p>
@@ -268,7 +295,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                                     <span><?php echo htmlspecialchars(ucfirst($day)); ?></span>
                                     <span><?php echo htmlspecialchars($hoursText); ?></span>
                                 </div>
-                            <?php
+                                <?php
                             endif;
                         endforeach;
                     else: ?>
@@ -417,7 +444,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
             </form>
         </div>
     </div>
-    <script src="/public/js/styles-business-service.js"></script>
+<script src="../public/js/styles-business-service.js"></script>
 </body>
 
 </html>

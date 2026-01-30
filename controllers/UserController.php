@@ -201,7 +201,7 @@ class UserController
             mkdir($uploadDir, 0777, true);
         }
 
-        // 1. Función auxiliar para archivos individuales (Logo/Banner)
+        // 1. Helper function for individual files (Logo/Banner)
         $handleUpload = function ($fileKey) use ($uploadDir) {
             if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
                 $maxFileSize = 2 * 1024 * 1024;
@@ -226,7 +226,7 @@ class UserController
         };
 
         try {
-            // 2. Recoger datos de texto y procesar Logo/Banner
+            // 2. Collect text data and process Logo/Banner
             $data = [
                 'business_name' => $_POST['business_name'] ?? '',
                 'phone'         => $_POST['phone'] ?? '',
@@ -244,12 +244,12 @@ class UserController
                 'banner_url'    => $handleUpload('banner')
             ];
 
-            // 3. Actualizar perfil básico en la base de datos
+            // 3. Update basic profile in the database
             if (!$userModel->updateBusinessProfile($_SESSION['user_id'], $data)) {
                 throw new Exception("Database error updating profile.");
             }
 
-            // 4. Lógica de la GALERÍA (Múltiples archivos)
+            // 4. GALLERY logic (Multiple files)
             if (isset($_FILES['gallery']) && !empty($_FILES['gallery']['name'][0])) {
                 $galleryPaths = [];
                 foreach ($_FILES['gallery']['name'] as $key => $val) {
@@ -263,9 +263,9 @@ class UserController
                     }
                 }
 
-                // SI hay fotos nuevas, las guardamos usando el ID del perfil
+                // IF there are new photos, we save them using the profile ID
                 if (!empty($galleryPaths)) {
-                    // Importante: Usar el método que devuelve el ID de 'business_profiles'
+                    // Important: Use the method that returns the ID of 'business_profiles'
                     $profile = $userModel->getBusinessProfileByUserId($_SESSION['user_id']);
                     
                     if ($profile && isset($profile['id'])) {
@@ -276,7 +276,7 @@ class UserController
                 }
             }
 
-            // 5. Respuesta final exitosa
+            // 5. Final successful response
             header('Content-Type: application/json');
             echo json_encode(['success' => true]);
             exit();
@@ -295,7 +295,7 @@ class UserController
     $userModel = new User();
     
     $businessData = $userModel->getFullProfile($businessId);
-    // AQUÍ: Obtenemos las imágenes y las pasamos a la vista
+    // HERE: We get the images and pass them to the view
     $galleryImages = $userModel->getBusinessGallery($businessId); 
 
     if (!$businessData) {

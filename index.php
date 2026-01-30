@@ -1,5 +1,7 @@
 <?php
 // public/index.php
+
+
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
 require_once __DIR__ . '/models/Service.php';
@@ -155,7 +157,7 @@ switch ($action) {
     <?php else: ?>
         <?php foreach ($stores as $store): ?>
             <?php 
-                // Preparar datos (sin cambios)
+                // Prepare data (no changes)
                 $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
                 
                 $addressParts = [];
@@ -167,7 +169,7 @@ switch ($action) {
                 $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
             ?>
 
-            <a href="views/business-service.php?id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
+            <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
                 <article class="shop-card">
                     <div class="image-container">
                         <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
