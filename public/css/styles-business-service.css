@@ -406,16 +406,6 @@ header {
     color: #b0a8a6;
 }
 
-.book-btn {
-    background-color: #bcaaa4;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    color: #2c2321;
-}
-
 .right-panel {
     display: flex;
     flex-direction: column;

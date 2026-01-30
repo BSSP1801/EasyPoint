@@ -36,13 +36,12 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
     <aside class="sidebar">
         <div class="logo">
             <i class="fas fa-calendar-check"></i>
-            <span class="logo-text">EasyPoint</span>
+            <span>EasyPoint</span>
         </div>
         <div><a href="index.php">Back to Main Page</a></div>
         <nav>
             <!-- DEBUG: Show current role -->
-            <div
-                style="font-size: 11px; color: #999; padding: 10px; border-bottom: 1px solid #eee; word-break: break-all;">
+            <div class="debug-info">
                 User: <?php echo $_SESSION['username'] ?? 'N/A'; ?> | Role:
                 <strong><?php echo $_SESSION['role'] ?? 'NOT SET'; ?></strong>
             </div>
@@ -52,30 +51,30 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-calendar')"><i
                         class="far fa-calendar-alt"></i> Calendar</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-appointments')"><i
-                    class="far fa-clock"></i><span class="menu-text">Appointments</span></a>
+                        class="far fa-clock"></i> Appointments</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')"><i class="fas fa-cog"></i>
-                    <span class="menu-text">Settings</span></a>
+                    Settings</a>
             <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
                 <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-dashboard')"><i
                         class="fas fa-tachometer-alt"></i> Dashboard</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-calendar')"><i
                         class="far fa-calendar-alt"></i> Calendar</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-clients')"><i class="far fa-clock"></i>
-                    <span class="menu-text">Clients</span></a>
+                    Clients</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')">
-                    <i class="fas fa-cog"></i><span class="menu-text">Settings</span>
+                    <i class="fas fa-cog"></i> Settings
                 </a>
             <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin'): ?>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-dashboard')"><i
-                    class="fas fa-tachometer-alt"></i><span class="menu-text">Dashboard</span></a>
+                        class="fas fa-tachometer-alt"></i> Dashboard</a>
                 <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-calendar')"><i
-                    class="far fa-calendar-alt"></i><span class="menu-text">Calendar</span></a>
+                        class="far fa-calendar-alt"></i> Calendar</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-appointments')"><i
-                    class="far fa-clock"></i><span class="menu-text">Appointments</span></a>
+                        class="far fa-clock"></i> Appointments</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-clients')"><i class="far fa-clock"></i>
-                    <span class="menu-text">Clients</span></a>
+                    Clients</a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')">
-                    <i class="fas fa-cog"></i><span class="menu-text">Settings</span>
+                    <i class="fas fa-cog"></i> Settings
                 </a>
                 </a>
             <?php endif; ?>
@@ -104,7 +103,6 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
             <header class="header">
                 <div class="welcome">Welcome back. Here is a summary of your schedule.</div>
                 <div class="header-tools">
-                    <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle sidebar"><i class="fas fa-bars"></i></button>
                     <input type="text" placeholder="Search..." class="search-input">
                     <i class="fas fa-bell notification-icon"></i>
                 </div>
@@ -171,7 +169,7 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                 </aside>
             </div>
         </div>
-        <div id="view-dashboard" class="main-view" style="display: none;">
+        <div id="view-dashboard" class="main-view hidden">
             <header class="header">
                 <div class="header-text">
                     <h1 class="page-title">Settings</h1>
@@ -220,7 +218,7 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                             <div class="form-group half">
                                 <label>Contact Email</label>
                                 <input type="email" value="<?php echo htmlspecialchars($userData['email'] ?? ''); ?>"
-                                    class="form-input" readonly >
+                                    class="form-input" readonly>
                             </div>
                             <div class="form-group half">
                                 <label>Locality</label>
@@ -255,7 +253,7 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                                 <label>Logo</label>
                                 <input type="file" name="logo" accept="image/*" class="form-input">
                                 <?php if (!empty($userData['logo_url'])): ?>
-                                    <small>Current: <a href="public/<?php echo $userData['logo_url']; ?>"
+                                    <small>Current: <a href="<?php echo $userData['logo_url']; ?>" 
                                             target="_blank">View Logo</a></small>
                                 <?php endif; ?>
                             </div>
@@ -263,13 +261,13 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                                 <label>Banner Image</label>
                                 <input type="file" name="banner" accept="image/*" class="form-input">
                                 <?php if (!empty($userData['banner_url'])): ?>
-                                    <small>Current: <a href="public/<?php echo $userData['banner_url']; ?>"
+                                    <small>Current: <a href="<?php echo $userData['banner_url']; ?>" 
                                             target="_blank">View Banner</a></small>
                                 <?php endif; ?>
                             </div>
                             <div class="form-group">
     <label>Visibility Status</label>
-    <div class="day-toggle" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+    <div class="day-toggle">
         <label class="switch">
             <input type="checkbox" name="is_public" value="1" 
                 <?php echo ($userData['is_public'] ?? 0) == 1 ? 'checked' : ''; ?>>
@@ -296,7 +294,7 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                 </section>
             </div>
 
-            <div id="schedule" class="tab-content" style="display: none;">
+            <div id="schedule" class="tab-content hidden">
                 <section class="settings-card">
                     <div class="card-header">
                         <h3>Opening Hours</h3>
@@ -334,7 +332,7 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                                     <span class="day-name"><?php echo ucfirst($day); ?></span>
                                 </div>
 
-                                <div class="time-inputs" style="display: <?php echo $isActive ? 'flex' : 'none'; ?>;">
+                                <div class="time-inputs <?php echo $isActive ? 'active-time' : 'hidden'; ?>">
                                     <input type="time" id="<?php echo $day; ?>-open" value="<?php echo $openTime; ?>"
                                         class="form-input time-input">
                                     <span>to</span>
@@ -342,7 +340,7 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                                         class="form-input time-input">
                                 </div>
 
-                                <div class="closed-label" style="display: <?php echo $isActive ? 'none' : 'block'; ?>;">
+                                <div class="closed-label <?php echo $isActive ? 'hidden' : ''; ?>">
                                     Closed
                                 </div>
                             </div>
@@ -356,36 +354,36 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
                 </section>
             </div>
 
-            <div id="notifications" class="content-section" style="display:none;">
+            <div id="notifications" class="content-section hidden">
     
-    <h2 style="margin-bottom: 20px;">Manage Services</h2>
+    <h2 class="section-heading">Manage Services</h2>
 
-    <div style="background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 30px;">
-        <h3 style="margin-top: 0; margin-bottom: 20px; color: #333;">Add New Service</h3>
+    <div class="card-panel">
+        <h3 class="card-title">Add New Service</h3>
         
         <form id="add-service-form" onsubmit="submitService(event)">
-            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px; align-items: end;">
+            <div class="grid-form">
                 
                 <div>
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: #555;">Service Name</label>
+                    <label class="form-label">Service Name</label>
                     <input type="text" name="service_name" placeholder="e.g. Haircut & Beard" required 
-                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                           class="form-field">
                 </div>
                 
                 <div>
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: #555;">Price (€)</label>
+                    <label class="form-label">Price (€)</label>
                     <input type="number" step="0.01" name="service_price" placeholder="0.00" required 
-                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                           class="form-field">
                 </div>
 
                 <div>
-                    <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: #555;">Duration (min)</label>
+                    <label class="form-label">Duration (min)</label>
                     <input type="number" name="service_duration" placeholder="30" required 
-                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                           class="form-field">
                 </div>
 
                 <div>
-                    <button type="submit" style="background: #000; color: white; border: none; padding: 11px 25px; border-radius: 6px; cursor: pointer; font-weight: 600; height: 42px;">
+                    <button type="submit" class="btn-add">
     Add
 </button>
                 </div>
@@ -393,38 +391,38 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
         </form>
     </div>
 
-    <h3 style="color: #333; margin-bottom: 15px;">Your Services List</h3>
+    <h3 class="section-subtitle">Your Services List</h3>
     
-    <div id="services-list" style="display: grid; gap: 15px;">
+    <div id="services-list" class="services-grid">
         <?php if (empty($myServices)): ?>
-            <div id="no-services-msg" style="text-align: center; padding: 40px; background: #f9f9f9; border-radius: 10px; color: #777;">
-                <i class="fas fa-cut" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+            <div id="no-services-msg" class="no-services-msg">
+                <i class="fas fa-cut no-services-icon"></i>
                 You haven't added any services yet.
             </div>
         <?php else: ?>
             <?php foreach ($myServices as $service): ?>
-                <div class="service-item" style="background: white; border: 1px solid #eee; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div class="service-item">
                     
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <div style="background: #f0f0f0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-cut" style="color: #555;"></i>
+                    <div class="service-main">
+                        <div class="service-icon">
+                            <i class="fas fa-cut service-icon-i"></i>
                         </div>
                         <div>
-                            <h4 style="margin: 0; font-size: 16px; color: #333;"><?php echo htmlspecialchars($service['name']); ?></h4>
-                            <span style="font-size: 13px; color: #777;">
+                            <h4 class="service-name"><?php echo htmlspecialchars($service['name']); ?></h4>
+                            <span class="service-meta">
                                 <i class="far fa-clock"></i> <?php echo htmlspecialchars($service['duration']); ?> min
                             </span>
                         </div>
                     </div>
 
-                    <div style="display: flex; align-items: center; gap: 20px;">
-                        <span style="font-weight: bold; font-size: 18px; color: #000;">
+                    <div class="service-actions">
+                        <span class="service-price">
                             <?php echo htmlspecialchars($service['price']); ?> €
                         </span>
                         
                         <a href="#" 
                            onclick="deleteService(<?php echo $service['id']; ?>, this); return false;" 
-                           style="color: #ff4d4d; background: #fff0f0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px; text-decoration: none;">
+                           class="service-delete-btn">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </div>

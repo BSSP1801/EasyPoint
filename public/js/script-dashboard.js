@@ -210,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function renderCalendar() {
             calendar.innerHTML = '';
-          //  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             const days=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             
             days.forEach(day => {
@@ -260,143 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         renderCalendar();
     }
-});
-
-
-/* 
-   5. Sidebar toggle (responsive)
-    */
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.querySelector('.sidebar');
-    const toggleBtn = document.getElementById('sidebarToggle');
-
-    if (!sidebar || !toggleBtn) return;
-
-    // Apply default state based on width: solo colapsa en tablet/móvil
-    function applyDefaultState() {
-        if (window.innerWidth <= 900) {
-            sidebar.classList.add('collapsed');
-            sidebar.classList.remove('open');
-        } else {
-            // En desktop, siempre abierto por defecto
-            sidebar.classList.remove('collapsed');
-            sidebar.classList.add('open');
-        }
-    }
-
-    applyDefaultState();
-
-    // Toggle on button click: funciona en todas las vistas
-    toggleBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (sidebar.classList.contains('collapsed')) {
-            sidebar.classList.remove('collapsed');
-            sidebar.classList.add('open');
-        } else {
-            sidebar.classList.add('collapsed');
-            sidebar.classList.remove('open');
-        }
-    });
-
-    // Adjust on resize
-    let resizeTimer;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            applyDefaultState();
-        }, 120);
-    });
-});
-
-/* =========================================
-   2. NAVIGATION LOGIC (Global Functions)
-   ========================================= */
-
-// Function to switch between Dashboard and Settings (Sidebar Menu)
-function switchMainView(evt, viewId) {
-    if(evt) evt.preventDefault();
-
-    // Hide all main views
-    const views = document.querySelectorAll('.main-view');
-    views.forEach(view => {
-        view.style.display = 'none';
-    });
-
-    // Remove 'active' class from sidebar menu
-    const menuItems = document.querySelectorAll('.menu-item');
-    menuItems.forEach(item => {
-        item.classList.remove('active');
-    });
-
-    // Show selected view
-    const selectedView = document.getElementById(viewId);
-    if(selectedView) {
-        selectedView.style.display = 'block';
-    }
-
-    // Activate the clicked menu button
-    if(evt) {
-        evt.currentTarget.classList.add('active');
-    }
-}
-
-// Function for tabs within Settings
-function openTab(evt, tabName) {
-    if(evt) evt.preventDefault();
-
-    // Hide tab contents
-    const tabContents = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < tabContents.length; i++) {
-        tabContents[i].style.display = "none";
-        tabContents[i].classList.remove("active-content");
-    }
-
-    // Deactivate tab buttons
-    const tabLinks = document.getElementsByClassName("tab-btn");
-    for (let i = 0; i < tabLinks.length; i++) {
-        tabLinks[i].classList.remove("active");
-    }
-
-    // Show selected content
-    const selectedTab = document.getElementById(tabName);
-    if (selectedTab) {
-        selectedTab.style.display = "block";
-        setTimeout(() => {
-            selectedTab.classList.add("active-content");
-        }, 10);
-    }
-    
-    // Activate clicked button
-    if(evt) {
-        evt.currentTarget.classList.add("active");
-    }
-}
-
-
-
-function toggleDay(checkbox) {
-    const row = checkbox.closest('.schedule-row');
-    const timeInputs = row.querySelector('.time-inputs');
-    const closedLabel = row.querySelector('.closed-label');
-
-    if (checkbox.checked) {
-        timeInputs.style.display = 'flex';
-        closedLabel.style.display = 'none';
-    } else {
-        timeInputs.style.display = 'none';
-        closedLabel.style.display = 'block';
-    }
-}
-
-/* =========================================
-   3. SCHEDULE SAVING LOGIC (AJAX)
-   ========================================= */
-document.addEventListener('DOMContentLoaded', () => {
-    const saveBtn = document.getElementById('save-schedule-btn');
-
-    if (saveBtn) {
-        saveBtn.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent form reload
 
     // 3. GUARDAR HORARIO (SCHEDULE)
     const saveScheduleBtn = document.getElementById('save-schedule-btn');
@@ -407,17 +269,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
             let schedule = {};
 
-            // Loop through each day to build JSON object
             days.forEach(day => {
                 const activeCheck = document.getElementById(`${day}-active`);
                 const openInput = document.getElementById(`${day}-open`);
                 const closeInput = document.getElementById(`${day}-close`);
 
-                // Only add day if we find its inputs in HTML
-                if (activeCheck) {
-                    schedule[day] = {
-                        active: activeCheck.checked,
-                        // If active, save time; if not, null
                 if (activeCheck) {
                     schedule[day] = {
                         active: activeCheck.checked,
@@ -427,13 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Visual feedback "Saving..."
-            const originalText = saveBtn.innerText;
-            saveBtn.innerText = 'Saving...';
-            saveBtn.disabled = true;
-
-            // AJAX request to server
-            fetch('index.php?action=update_schedule', {
             const originalText = saveScheduleBtn.innerText;
             saveScheduleBtn.innerText = 'Saving...';
             saveScheduleBtn.disabled = true;
@@ -450,24 +299,6 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => { console.error(error); alert('Connection error'); })
             .finally(() => {
-                // Restore button
-                saveBtn.innerText = originalText;
-                saveBtn.disabled = false;
-            });
-        });
-    }
-});
-
-
-/* =========================================
-   4. Update Business Info Logic
-   ========================================= */
-
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // ... your calendar code ...
-
-    // BUSINESS PROFILE SAVE HANDLING
                 saveScheduleBtn.innerText = originalText;
                 saveScheduleBtn.disabled = false;
             });
@@ -485,7 +316,6 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             submitBtn.disabled = true;
 
-            // Use FormData to send text and IMAGES
             const formData = new FormData(businessForm);
 
             fetch('../index.php?action=update_business_info', {
@@ -495,9 +325,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Business information updated successfully!');
-                    // Optional: Reload to see new images
-                    // location.reload(); 
                     alert('Business information updated!');
                     localStorage.setItem('activeDashboardTab', 'business'); // Mantenemos en business
                     window.location.reload(); 

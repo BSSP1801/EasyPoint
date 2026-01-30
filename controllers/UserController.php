@@ -215,13 +215,6 @@ class UserController
                     throw new Exception("Invalid format for $fileKey.");
                 }
 
-
-                $imageInfo = getimagesize($_FILES[$fileKey]['tmp_name']);
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-                if (!$imageInfo || !in_array($imageInfo['mime'], $allowedTypes)) {
-                    throw new Exception("Invalid format for $fileKey.");
-                }
-
                 $ext = pathinfo($_FILES[$fileKey]['name'], PATHINFO_EXTENSION);
                 $filename = uniqid('img_') . '.' . $ext;
 
@@ -312,19 +305,6 @@ class UserController
         require_once __DIR__ . '/../views/business-service.php';
     }
 
-        $userModel = new User();
-        // Get the full profile including business info
-        $businessData = $userModel->getFullProfile($businessId);
-
-        if (!$businessData || $businessData['role'] !== 'store') {
-            header("Location: index.php");
-            exit();
-        }
-
-
-        require_once __DIR__ . '/../views/business-service.php';
-    }
-
 
     // Function to send email using PHPMailer
     private function sendEmail($to, $subject, $body)
@@ -393,34 +373,6 @@ class UserController
     {
         header('Content-Type: application/json');
 
-    // Function to send email using PHPMailer
-    private function sendEmail($to, $subject, $body)
-    {
-        $mail = new PHPMailer(true);
-        try {
-         
-        $mail->isSMTP();
-        $mail->Host = 'sandbox.smtp.mailtrap.io'; 
-        $mail->SMTPAuth = true;
-        $mail->Port = 2525; 
-        $mail->Username = '83b8fc135d6989'; 
-        $mail->Password = 'f5a90f6cf9f62a'; 
-        
-        $mail->Timeout = 3; // seting a timeout of 3 seconds
-        
-        $mail->setFrom('support@easypoint.com', 'EasyPoint Support');
-        $mail->addAddress($to);
-
-        $mail->isHTML(true);
-        $mail->Subject = $subject;
-        $mail->Body = $body;
-
-        $mail->send();
-        return true;
-        } catch (Exception $e) {
-            // We save the error in the log but allow the user to see their success on the web
-            error_log("PHPMailer Error: " . $mail->ErrorInfo);
-            return false;
         if (isset($_GET['id']) && isset($_SESSION['user_id'])) {
             $serviceModel = new Service();
             

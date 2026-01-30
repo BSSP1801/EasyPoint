@@ -175,7 +175,7 @@ $bannerUrl = !empty($store['banner_url']) ? '../public/' . htmlspecialchars($sto
                                         </span>
                                     </div>
                                     
-                                    <button class="book-btn" id="test">
+                                    <button class="book-btn">
                                         Book
                                     </button>
                                 </div>
@@ -400,7 +400,6 @@ $bannerUrl = !empty($store['banner_url']) ? '../public/' . htmlspecialchars($sto
             </form>
         </div>
     </div>
-
-    <script src="/public/js/styles-business-service.js"></script>
+    <script src="../public/js/styles-business-service.js"></script>
 </body>
 </html>
