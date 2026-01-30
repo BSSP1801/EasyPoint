@@ -157,10 +157,10 @@ $bannerUrl = !empty($store['banner_url']) ? '../public/' . htmlspecialchars($sto
                 <?php else: ?>
                     <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
                         <?php foreach ($storeServices as $service): ?>
-                            <div class="service-row" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                            <div class="service-row" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #5d4e48; padding-bottom: 15px;">
                                 
                                 <div style="flex: 1;">
-                                    <h4 style="margin: 0; font-size: 16px; color: #333;">
+                                    <h4 style="margin: 0; font-size: 16px; color: #ffffff;">
                                         <?php echo htmlspecialchars($service['name']); ?>
                                     </h4>
                                     </div>
@@ -175,7 +175,7 @@ $bannerUrl = !empty($store['banner_url']) ? '../public/' . htmlspecialchars($sto
                                         </span>
                                     </div>
                                     
-                                    <button class="book-btn" style="background-color: #000; color: #fff; border: none; padding: 8px 18px; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                                    <button class="book-btn" id="test">
                                         Book
                                     </button>
                                 </div>
@@ -400,6 +400,7 @@ $bannerUrl = !empty($store['banner_url']) ? '../public/' . htmlspecialchars($sto
             </form>
         </div>
     </div>
-    <script src="../public/js/styles-business-service.js"></script>
+
+    <script src="/public/js/styles-business-service.js"></script>
 </body>
 </html>
