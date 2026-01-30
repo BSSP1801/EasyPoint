@@ -226,7 +226,7 @@ class UserController
         };
 
         try {
-            // 2. Recoger datos de texto
+            // 2. Recoger datos de texto y procesar Logo/Banner
             $data = [
                 'business_name' => $_POST['business_name'] ?? '',
                 'phone'         => $_POST['phone'] ?? '',
@@ -235,16 +235,16 @@ class UserController
                 'postal_code'   => $_POST['postal_code'] ?? '',
                 'description'   => $_POST['description'] ?? '',
                 'is_public'     => isset($_POST['is_public']) ? 1 : 0,
-                'website' => $_POST['website'] ?? '',
-                'instagram' => $_POST['instagram'] ?? '',
-                'facebook' => $_POST['facebook'] ?? '',
-                'twitter' => $_POST['twitter'] ?? '',
-                'tiktok' => $_POST['tiktok'] ?? '',
+                'website'       => $_POST['website'] ?? '',
+                'instagram'     => $_POST['instagram'] ?? '',
+                'facebook'      => $_POST['facebook'] ?? '',
+                'twitter'       => $_POST['twitter'] ?? '',
+                'tiktok'        => $_POST['tiktok'] ?? '',
                 'logo_url'      => $handleUpload('logo'),
                 'banner_url'    => $handleUpload('banner')
             ];
 
-            // 3. Actualizar perfil básico
+            // 3. Actualizar perfil básico en la base de datos
             if (!$userModel->updateBusinessProfile($_SESSION['user_id'], $data)) {
                 throw new Exception("Database error updating profile.");
             }
@@ -263,14 +263,20 @@ class UserController
                     }
                 }
 
+                // SI hay fotos nuevas, las guardamos usando el ID del perfil
                 if (!empty($galleryPaths)) {
-                    // Obtenemos el perfil completo para tener el ID de la tabla business_profiles
-                    $profile = $userModel->getFullProfile($_SESSION['user_id']);
-                    $userModel->addGalleryImages($profile['id'], $galleryPaths);
+                    // Importante: Usar el método que devuelve el ID de 'business_profiles'
+                    $profile = $userModel->getBusinessProfileByUserId($_SESSION['user_id']);
+                    
+                    if ($profile && isset($profile['id'])) {
+                        $userModel->addGalleryImages($profile['id'], $galleryPaths);
+                    } else {
+                        throw new Exception("No business profile found to link images.");
+                    }
                 }
             }
 
-            // 5. Respuesta final
+            // 5. Respuesta final exitosa
             header('Content-Type: application/json');
             echo json_encode(['success' => true]);
             exit();
@@ -284,26 +290,21 @@ class UserController
 }
 
 
-    public function viewBusiness()
-    {
-        $businessId = $_GET['id'] ?? null;
-        if (!$businessId) {
-            header("Location: index.php");
-            exit();
-        }
+    public function viewBusiness() {
+    $businessId = $_GET['id'] ?? null;
+    $userModel = new User();
+    
+    $businessData = $userModel->getFullProfile($businessId);
+    // AQUÍ: Obtenemos las imágenes y las pasamos a la vista
+    $galleryImages = $userModel->getBusinessGallery($businessId); 
 
-        $userModel = new User();
-        // Get the full profile including business info
-        $businessData = $userModel->getFullProfile($businessId);
-
-        if (!$businessData || $businessData['role'] !== 'store') {
-            header("Location: index.php");
-            exit();
-        }
-
-
-        require_once __DIR__ . '/../views/business-service.php';
+    if (!$businessData) {
+        header("Location: index.php");
+        exit();
     }
+
+    require_once __DIR__ . '/../views/business-service.php';
+}
 
 
     // Function to send email using PHPMailer

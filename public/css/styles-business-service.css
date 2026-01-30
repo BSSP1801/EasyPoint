@@ -747,3 +747,8 @@ header {
 }
 
 .dot.active { background: white; width: 25px; border-radius: 10px; }
+
+
+    *{
+        text-decoration: none;
+    }

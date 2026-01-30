@@ -57,7 +57,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
 
     <div class="sticky-header">
         <div class="sticky-container">
-            <div class="sticky-logo">EasyPoint</div>
+            <div class="sticky-logo"><a href="/index.php">EasyPoint</a></div>
 
             <div class="sticky-search-bar">
                 <div class="search-field">
@@ -93,7 +93,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
     </div>
     <header>
         <nav class="navigation-bar">
-            <div class="logo">EasyPoint</div>
+            <div class="logo"><a href="/index.php">EasyPoint</a></div>
 
             <div class="search-bar">
                 <input type="text" class="search-input" placeholder="Search services or businesses">
@@ -134,34 +134,19 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
     <div class="main-container">
 
         <div class="left-panel">
-            <section class="gallery-carousel-wrapper">
-                <div class="carousel-main">
-                    <?php if (!empty($galleryImages)): ?>
-                        <button class="carousel-control prev" onclick="moveCarousel(-1)">&#10094;</button>
-
-                        <div class="carousel-track" id="carouselTrack">
-                            <?php foreach ($galleryImages as $img): ?>
-                                <div class="carousel-slide">
-                                    <img src="public/<?php echo htmlspecialchars($img['image_url']); ?>" alt="Business Image">
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-
-                        <button class="carousel-control next" onclick="moveCarousel(1)">&#10095;</button>
-
-                        <div class="carousel-dots">
-                            <?php foreach ($galleryImages as $index => $img): ?>
-                                <span class="dot <?php echo $index === 0 ? 'active' : ''; ?>"
-                                    onclick="currentSlide(<?php echo $index; ?>)"></span>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <div class="no-images-banner">
-                            <p>Este establecimiento aún no ha añadido fotos a su galería.</p>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </section>
+           <div class="gallery-grid">
+    <?php if (!empty($galleryImages)): ?>
+        <?php foreach ($galleryImages as $image): ?>
+            <div class="gallery-item">
+                <img src="/EasyPoint/public/<?php echo htmlspecialchars($image['image_url']); ?>" 
+                     alt="Imagen de la galería" 
+                     class="gallery-img">
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p class="no-images">Este establecimiento aún no ha subido fotos a su galería.</p>
+    <?php endif; ?>
+</div>
             <div class="business-title">
                 <h1><?php echo htmlspecialchars($store['business_name']); ?></h1>
                 <p>

@@ -120,8 +120,8 @@ class User
 
     // 1. Get combined data from User and Business Profile
    public function getFullProfile($id) {
-   $query = "SELECT u.id AS user_id, u.business_name, u.address, u.city, u.postal_code, 
-                     bp.description, bp.logo_url, bp.banner_url, bp.opening_hours
+  $query = "SELECT u.id AS user_id, u.business_name, u.email, u.phone, u.address, u.city, u.postal_code, 
+                     bp.description, bp.logo_url, bp.banner_url, bp.opening_hours, bp.is_public
               FROM users u
               LEFT JOIN business_profiles bp ON u.id = bp.user_id
               WHERE u.id = :id LIMIT 1";
@@ -229,7 +229,7 @@ class User
     }
 
     // También actualiza getFullProfile para traer la galería
-  public function getBusinessGallery($userId) {
+ public function getBusinessGallery($userId) {
     $query = "SELECT bg.image_url 
               FROM business_gallery bg 
               JOIN business_profiles bp ON bg.business_profile_id = bp.id 
@@ -239,4 +239,15 @@ class User
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+public function getBusinessProfileByUserId($userId) {
+    $query = "SELECT id FROM business_profiles WHERE user_id = :uid LIMIT 1";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':uid', $userId);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
+
+
+}
+

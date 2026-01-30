@@ -67,7 +67,7 @@ switch ($action) {
 <body>
     <div class="sticky-header">
         <div class="sticky-container">
-            <div class="sticky-logo">EasyPoint</div>
+            <div class="sticky-logo"><a href="/index.php">EasyPoint</a></div>
 
             <div class="sticky-search-bar">
                 <div class="search-field">
@@ -98,7 +98,7 @@ switch ($action) {
     </div>
     <header>
         <nav class="navigation-bar">
-            <div class="logo">EasyPoint</div>
+            <div class="logo"><a href="/index.php">EasyPoint</a></div>
             <div class="user-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
                     <a href="index.php?action=dashboard">

@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Connection error');
+                alert('Connection error: ' + error.message);
             })
             .finally(() => {
                 submitBtn.innerHTML = originalText;

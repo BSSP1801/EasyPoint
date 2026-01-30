@@ -877,4 +877,8 @@ header {
     .modal-title {
         font-size: 22px;
     }
-}
+
+
+    a{
+        text-decoration: none;
+    }
