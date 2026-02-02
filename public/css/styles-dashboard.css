@@ -857,6 +857,8 @@ input:checked + .slider:before {
     color: #616161;
     border: 1px solid #9e9e9e;
     text-decoration: line-through;
+}
+
 .debug-info {
     margin-bottom: 20px;
     padding: 10px 20px; 
