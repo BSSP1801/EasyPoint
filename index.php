@@ -1,5 +1,7 @@
 <?php
 // public/index.php
+
+
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
 require_once __DIR__ . '/models/Service.php';
@@ -40,6 +42,15 @@ switch ($action) {
     case 'view_business':
         $controller->viewBusiness();
         exit();
+    case 'view_business':
+        $controller->viewBusiness();
+        exit();
+    case 'add_service':
+        $controller->addService();
+        exit();
+    case 'delete_service':
+        $controller->deleteService();
+        exit();
     case 'logout':
         session_destroy();
         $_SESSION = array(); // Clear the session array
@@ -67,7 +78,7 @@ switch ($action) {
 <body>
     <div class="sticky-header">
         <div class="sticky-container">
-            <div class="sticky-logo">EasyPoint</div>
+            <div class="sticky-logo"><a href="/index.php">EasyPoint</a></div>
 
             <div class="sticky-search-bar">
                 <div class="search-field">
@@ -98,7 +109,7 @@ switch ($action) {
     </div>
     <header>
         <nav class="navigation-bar">
-            <div class="logo">EasyPoint</div>
+            <div class="logo"><a href="/index.php">EasyPoint</a></div>
             <div class="user-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
                     <a href="index.php?action=dashboard">
@@ -155,7 +166,7 @@ switch ($action) {
     <?php else: ?>
         <?php foreach ($stores as $store): ?>
             <?php 
-                // Preparar datos (sin cambios)
+                // Prepare data (no changes)
                 $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
                 
                 $addressParts = [];
@@ -167,7 +178,7 @@ switch ($action) {
                 $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
             ?>
 
-            <a href="views/business-service.php?id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
+            <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
                 <article class="shop-card">
                     <div class="image-container">
                         <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">

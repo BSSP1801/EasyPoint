@@ -1,12 +1,23 @@
 <?php
 // view/business-service.php
-session_start();
-require_once '../models/User.php';
-require_once '../models/Service.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../models/Service.php';
+require_once __DIR__ . '/../models/user.php';
 
-// 1. Verificar si recibimos un ID
+// 1. Check if we received an ID
 if (!isset($_GET['id'])) {
-    // Si no hay ID, redirigir al home o mostrar error
+    // If there is no ID, redirect to home or show error
+    header("Location: ../index.php");
+    exit();
+}
+
+if (isset($businessData)) {
+    // Asignamos $businessData a $userData para que el resto de tu HTML funcione sin cambios
+    $userData = $businessData;
+} else {
+    // Si alguien entra directo al archivo sin pasar por el controlador, lo expulsamos
     header("Location: ../index.php");
     exit();
 }
@@ -14,10 +25,10 @@ if (!isset($_GET['id'])) {
 $storeId = $_GET['id'];
 $userModel = new User();
 
-// 2. Obtener datos de la tienda usando el método que ya tenías
+// 2. Get store data using the method you already had
 $store = $userModel->getFullProfile($storeId);
 
-// Si no existe la tienda, redirigir
+// If the store does not exist, redirect
 if (!$store) {
     header("Location: ../index.php");
     exit();
@@ -25,17 +36,17 @@ if (!$store) {
 
 $serviceModel = new Service();
 $storeServices = $serviceModel->getAllByUserId($storeId);
-
+$targetUserId = $userData['user_id'] ?? $userData['id'];
 // 3. Preparar la URL del logo
 // Nota: Como estamos en la carpeta 'view/', debemos salir un nivel (../) para entrar a 'public/'
 // ... código anterior ...
-$logoUrl = !empty($store['logo_url']) 
-    ? '../public/' . htmlspecialchars($store['logo_url']) 
+$logoUrl = !empty($store['logo_url'])
+    ? '../public/' . htmlspecialchars($store['logo_url'])
     : '../public/assets/images/tienda-1.png';
 
 // NUEVO: Lógica para el banner
-$bannerUrl = !empty($store['banner_url']) 
-    ? '../public/' . htmlspecialchars($store['banner_url']) 
+$bannerUrl = !empty($store['banner_url'])
+    ? '../public/' . htmlspecialchars($store['banner_url'])
     : '../public/assets/images/img-resource-1.jpeg'; // Imagen de fondo por defecto
 // ...
 
@@ -44,6 +55,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,11 +63,12 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../public/css/styles-business-service.css">
 </head>
+
 <body>
 
     <div class="sticky-header">
         <div class="sticky-container">
-            <div class="sticky-logo">EasyPoint</div>
+            <div class="sticky-logo"><a href="/index.php">EasyPoint</a></div>
 
             <div class="sticky-search-bar">
                 <div class="search-field">
@@ -80,7 +93,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
                     <span class="user-link">
                         Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                    </span> 
+                    </span>
                     <a href="../index.php?action=logout" class="logout-link">Logout</a>
                 <?php else: ?>
                     <a href="../index.php?action=login" class="login-link">Log In/Sign Up</a>
@@ -91,11 +104,11 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
     </div>
     <header>
         <nav class="navigation-bar">
-            <div class="logo">EasyPoint</div>
+            <div class="logo"><a href="/index.php">EasyPoint</a></div>
 
             <div class="search-bar">
-                   <input type="text" class="search-input" placeholder="Search services or businesses">
-               </div>
+                <input type="text" class="search-input" placeholder="Search services or businesses">
+            </div>
 
             <div class="user-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
@@ -117,43 +130,61 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                 <?php endif; ?>
             </div>
         </nav>
-            <ul class="category-list">
-                <li>Hair Salon</li>
-                <li>Barbershop</li>
-                <li>Nail Salon</li>
-                <li>Hair Removal</li>
-                <li>Eyebrows & Lashes</li>
-                <li>Skincare</li>
-                <li>Massage</li>
-                <li>Makeup</li>
-            </ul>
+        <ul class="category-list">
+            <li>Hair Salon</li>
+            <li>Barbershop</li>
+            <li>Nail Salon</li>
+            <li>Hair Removal</li>
+            <li>Eyebrows & Lashes</li>
+            <li>Skincare</li>
+            <li>Massage</li>
+            <li>Makeup</li>
+        </ul>
     </header>
 
     <div class="main-container">
-        
-        <div class="left-panel">
-            <div class="main-img" style="padding: 0; height: 250px; overflow: hidden; position: relative; border-radius: 12px;">
-                
-                <i class="far fa-heart" style="position: absolute; top: 20px; right: 20px; font-size: 24px; color: white; text-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10; cursor: pointer;"></i>
-                
-                <img src="<?php echo $bannerUrl; ?>" alt="Banner" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-                
-            </div>
 
-            <div class="gallery-thumbs">
-                <div class="thumb"><i class="fas fa-cut"></i></div>
-                <div class="thumb"><i class="fas fa-cut"></i></div>
-                <div class="thumb"><i class="fas fa-cut"></i></div>
-            </div>
+<div class="left-panel">
+    <div class="gallery-carousel-wrapper">
+        <div class="carousel-main">
+                    
+                    <button class="carousel-control prev" id="btnPrev">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-control next" id="btnNext">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
 
+                    <div class="carousel-track" id="carouselTrack">
+                        <?php if (!empty($galleryImages)): ?>
+                            <?php foreach ($galleryImages as $image): ?>
+                                <div class="carousel-slide">
+                                    <img src="/public/<?php echo htmlspecialchars($image['image_url']); ?>" 
+                                         alt="Gallery Image">
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="carousel-slide">
+                                <img src="../public/assets/images/img-resource-1.jpeg" alt="Default Image">
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="carousel-dots" id="carouselDots">
+                        </div>
+                </div>
+            </div>
             <div class="business-title">
                 <h1><?php echo htmlspecialchars($store['business_name']); ?></h1>
                 <p>
-                    <?php 
+                    <?php
                     $parts = [];
-                    if (!empty($store['address'])) $parts[] = $store['address'];
-                    if (!empty($store['postal_code'])) $parts[] = $store['postal_code'];
-                    if (!empty($store['city'])) $parts[] = $store['city'];
+                    if (!empty($store['address']))
+                        $parts[] = $store['address'];
+                    if (!empty($store['postal_code']))
+                        $parts[] = $store['postal_code'];
+                    if (!empty($store['city']))
+                        $parts[] = $store['city'];
                     echo htmlspecialchars(implode(', ', $parts));
                     ?>
                 </p>
@@ -164,18 +195,19 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
 
             <div>
                 <h2 class="section-title">Services</h2>
-                
+
                 <?php if (empty($storeServices)): ?>
                     <p style="color: #888; font-style: italic;">No services listed yet.</p>
                 <?php else: ?>
                     <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
                         <?php foreach ($storeServices as $service): ?>
-                            <div class="service-row" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px;">
-                                
+                            <div class="service-row"
+                                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+
                                 <h4 style="margin: 0; font-size: 16px; color: #333; flex: 1;">
                                     <?php echo htmlspecialchars($service['name']); ?>
                                 </h4>
-                                
+
                                 <div style="display: flex; align-items: center; gap: 15px;">
                                     <div class="service-details" style="text-align: right;">
                                         <span class="price-tag" style="display: block; font-weight: bold; font-size: 15px;">
@@ -185,8 +217,9 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                                             <?php echo htmlspecialchars($service['duration']); ?> min
                                         </span>
                                     </div>
-                                    
-                                    <button class="book-btn" style="background-color: #000; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px;">
+
+                                    <button class="book-btn"
+                                        style="background-color: #000; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px;">
                                         Book
                                     </button>
                                 </div>
@@ -199,30 +232,29 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
         </div>
 
         <div class="right-panel">
-            <div class="map-box" style="padding: 0; overflow: hidden; height: 300px; border-radius: 12px; border: 1px solid #e0e0e0;">
-                <?php 
-                    $mapParts = [];
-                    // Limpiamos la dirección de espacios extra
-                    if (!empty($store['address'])) $mapParts[] = trim($store['address']);
-                    if (!empty($store['postal_code'])) $mapParts[] = trim($store['postal_code']);
-                    if (!empty($store['city'])) $mapParts[] = trim($store['city']);
-                    
-                    // AÑADIDO: Agregamos el país al final para evitar confusiones
-                    if (!empty($mapParts)) {
-                        $addressString = implode(', ', $mapParts) . ", España";
-                    } else {
-                        $addressString = "Valencia, España";
-                    }
-                    
-                    $encodedAddress = urlencode($addressString);
+            <div class="map-box"
+                style="padding: 0; overflow: hidden; height: 300px; border-radius: 12px; border: 1px solid #e0e0e0;">
+                <?php
+                $mapParts = [];
+                // Limpiamos la dirección de espacios extra
+                if (!empty($store['address']))
+                    $mapParts[] = trim($store['address']);
+                if (!empty($store['postal_code']))
+                    $mapParts[] = trim($store['postal_code']);
+                if (!empty($store['city']))
+                    $mapParts[] = trim($store['city']);
+
+                // AÑADIDO: Agregamos el país al final para evitar confusiones
+                if (!empty($mapParts)) {
+                    $addressString = implode(', ', $mapParts) . ", España";
+                } else {
+                    $addressString = "Valencia, España";
+                }
+
+                $encodedAddress = urlencode($addressString);
                 ?>
-                
-                <iframe 
-                    width="100%" 
-                    height="100%" 
-                    style="border:0;" 
-                    loading="lazy" 
-                    allowfullscreen 
+
+                <iframe width="100%" height="100%" style="border:0;" loading="lazy" allowfullscreen
                     src="https://maps.google.com/maps?q=<?php echo $encodedAddress; ?>&t=&z=15&ie=UTF8&iwloc=&output=embed">
                 </iframe>
             </div>
@@ -237,35 +269,35 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
             <div>
                 <h3 class="info-header">Schedule</h3>
                 <div>
-                    <?php 
+                    <?php
                     $schedule = json_decode($store['opening_hours'] ?? '', true);
-                    
+
                     $orderedDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-                    
-                    if ($schedule && is_array($schedule)): 
+
+                    if ($schedule && is_array($schedule)):
                         foreach ($orderedDays as $day):
                             if (isset($schedule[$day])):
                                 $dayData = $schedule[$day];
-                                
+
                                 $hoursText = "Closed";
-                                
+
                                 $isActive = !empty($dayData['active']) && $dayData['active'] == true;
-                                
+
                                 if ($isActive) {
                                     $open = $dayData['open'] ?? '';
-                                    $close = $dayData['close'] ?? '';            
+                                    $close = $dayData['close'] ?? '';
                                     if ($open && $close) {
                                         $hoursText = $open . ' - ' . $close;
                                     }
                                 }
-                            ?>
-                            <div class="schedule-row">
-                                <span><?php echo htmlspecialchars(ucfirst($day)); ?></span> 
-                                <span><?php echo htmlspecialchars($hoursText); ?></span>
-                            </div>
-                        <?php 
+                                ?>
+                                <div class="schedule-row">
+                                    <span><?php echo htmlspecialchars(ucfirst($day)); ?></span>
+                                    <span><?php echo htmlspecialchars($hoursText); ?></span>
+                                </div>
+                                <?php
                             endif;
-                        endforeach; 
+                        endforeach;
                     else: ?>
                         <p style="font-size: 13px; color: #666;">Schedule not available.</p>
                     <?php endif; ?>
@@ -412,6 +444,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
             </form>
         </div>
     </div>
-    <script src="../public/js/styles-business-service.js"></script>
+<script src="../public/js/script-business-service.js"></script>
 </body>
+
 </html>

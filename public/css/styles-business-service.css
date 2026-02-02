@@ -319,7 +319,7 @@ header {
     margin: 40px auto;
     padding: 0 20px;
     display: grid;
-    grid-template-columns: 45% 50%;
+    grid-template-columns: 60% 35%;
     gap: 5%;
 }
 
@@ -662,3 +662,110 @@ header {
 .hidden {
     display: none;
 }
+
+/* Main carousel container */
+.gallery-carousel-wrapper {
+    width: 100%;
+    margin: 0 0 30px 0; /* Remove side margins to use full width */
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000; /* Black background so it doesn't show white if the image loads slowly */
+}
+
+.carousel-main {
+    position: relative;
+    /* Lower the height from 500px to 400px or 450px so it doesn't look so narrow */
+    height: 420px; 
+    width: 100%;
+}
+
+/* The track where the photos move */
+.carousel-track {
+    display: flex;
+    height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none; /* Hide scrollbar in IE */
+    scrollbar-width: none;    /* Hide scrollbar in Firefox */
+}
+
+.carousel-track::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in Chrome/Safari */
+}
+
+.carousel-slide {
+    min-width: 100%;
+    height: 100%;
+    scroll-snap-align: start;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    /* Keep cover, but now with less height more of the sides will be seen */
+    object-fit: cover; 
+    display: block;
+}
+
+/* Navigation buttons */
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.7);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    z-index: 10;
+    transition: background 0.3s;
+}
+
+.carousel-control:hover { background: white; }
+.carousel-control.prev { left: 20px; }
+.carousel-control.next { right: 20px; }
+
+/* Indicator dots */
+.carousel-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.dot.active { background: white; width: 25px; border-radius: 10px; }
+
+
+.book-btn {
+    background-color: rgb(87, 75, 70);
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-block;
+    appearance: none;
+}
+
+.book-btn:hover {
+    background-color: rgb(128, 111, 104);
+}
+
+
+    *{
+        text-decoration: none;
+    }

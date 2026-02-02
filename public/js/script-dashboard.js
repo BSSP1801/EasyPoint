@@ -1,319 +1,306 @@
+/* public/js/script-dashboard.js */
+
 document.addEventListener('DOMContentLoaded', () => {
+
+
+    /* =========================
+       1. SIDEBAR & RESPONSIVE
+       ========================= */
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('sidebarToggle');
+
+    function applyDefaultState() {
+        if (window.innerWidth <= 900) {
+            sidebar?.classList.add('collapsed');
+        } else {
+            sidebar?.classList.remove('collapsed');
+        }
+    }
     
-    /* =========================================
-       1. Calendar Widget Logic
-       ========================================= */
+    // Inicializar estado
+    applyDefaultState();
+
+    // Toggle manual
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            sidebar.classList.toggle('collapsed');
+        });
+    }
+
+    // Resize listener
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(applyDefaultState, 150);
+    });
+
+
+    /* =========================
+       2. CALENDAR WIDGET
+       ========================= */
     const calendar = document.getElementById('calendar');
-    
-    // only run if calendar element exists
     if (calendar) {
         const monthYear = document.getElementById('monthYear');
         const prevMonthBtn = document.getElementById('prevMonth');
         const nextMonthBtn = document.getElementById('nextMonth');
         
-   
         let currentDate = new Date(); 
 
         function renderCalendar() {
             calendar.innerHTML = '';
-          //  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const days=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             
-            // Draw day headers
             days.forEach(day => {
-                const dayHeader = document.createElement('div');
-                dayHeader.classList.add('calendar-day-header');
-                dayHeader.innerText = day;
-                calendar.appendChild(dayHeader);
+                const header = document.createElement('div');
+                header.className = 'calendar-day-header';
+                header.innerText = day;
+                calendar.appendChild(header);
             });
 
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            const today = currentDate.getDate();
-            // Update month and year display
-            if(monthYear) {
+            const today = new Date();
 
-                // Use es-ES for Spanish month names and en-US for English month names
+            if(monthYear) {
                 monthYear.innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
             }
 
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // empyy cells before first day
             for (let i = 0; i < firstDay; i++) {
                 calendar.appendChild(document.createElement('div'));
             }
 
-            // month days
             for (let i = 1; i <= daysInMonth; i++) {
-                const day = document.createElement('div');
-                day.classList.add('calendar-day');
-                day.innerText = i;
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                dayDiv.innerText = i;
                 
-                if (i === today && month === new Date().getMonth() && year === new Date().getFullYear()) {
-                    day.classList.add('today');
+                if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    dayDiv.classList.add('today');
                 }
-                calendar.appendChild(day);
+                calendar.appendChild(dayDiv);
             }
         }
 
-        // Event listeners for navigation buttons
-        if(prevMonthBtn) {
-            prevMonthBtn.addEventListener('click', () => {
-                currentDate.setMonth(currentDate.getMonth() - 1);
-                renderCalendar();
-            });
-        }
+        prevMonthBtn?.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
 
-        if(nextMonthBtn) {
-            nextMonthBtn.addEventListener('click', () => {
-                currentDate.setMonth(currentDate.getMonth() + 1);
-                renderCalendar();
-            });
-        }
+        nextMonthBtn?.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
 
-        // Render the calendar for the first time
         renderCalendar();
     }
-});
 
 
-/* 
-   5. Sidebar toggle (responsive)
-    */
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.querySelector('.sidebar');
-    const toggleBtn = document.getElementById('sidebarToggle');
-
-    if (!sidebar || !toggleBtn) return;
-
-    // Apply default state based on width: solo colapsa en tablet/móvil
-    function applyDefaultState() {
-        if (window.innerWidth <= 900) {
-            sidebar.classList.add('collapsed');
-            sidebar.classList.remove('open');
-        } else {
-            // En desktop, siempre abierto por defecto
-            sidebar.classList.remove('collapsed');
-            sidebar.classList.add('open');
-        }
-    }
-
-    applyDefaultState();
-
-    // Toggle on button click: funciona en todas las vistas
-    toggleBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (sidebar.classList.contains('collapsed')) {
-            sidebar.classList.remove('collapsed');
-            sidebar.classList.add('open');
-        } else {
-            sidebar.classList.add('collapsed');
-            sidebar.classList.remove('open');
-        }
-    });
-
-    // Adjust on resize
-    let resizeTimer;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            applyDefaultState();
-        }, 120);
-    });
-});
-
-/* =========================================
-   2. NAVIGATION LOGIC (Global Functions)
-   ========================================= */
-
-// Function to switch between Dashboard and Settings (Sidebar Menu)
-function switchMainView(evt, viewId) {
-    if(evt) evt.preventDefault();
-
-    // Hide all main views
-    const views = document.querySelectorAll('.main-view');
-    views.forEach(view => {
-        view.style.display = 'none';
-    });
-
-    // Remove 'active' class from sidebar menu
-    const menuItems = document.querySelectorAll('.menu-item');
-    menuItems.forEach(item => {
-        item.classList.remove('active');
-    });
-
-    // Show selected view
-    const selectedView = document.getElementById(viewId);
-    if(selectedView) {
-        selectedView.style.display = 'block';
-    }
-
-    // Activate the clicked menu button
-    if(evt) {
-        evt.currentTarget.classList.add('active');
-    }
-}
-
-// Function for tabs within Settings
-function openTab(evt, tabName) {
-    if(evt) evt.preventDefault();
-
-    // Hide tab contents
-    const tabContents = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < tabContents.length; i++) {
-        tabContents[i].style.display = "none";
-        tabContents[i].classList.remove("active-content");
-    }
-
-    // Deactivate tab buttons
-    const tabLinks = document.getElementsByClassName("tab-btn");
-    for (let i = 0; i < tabLinks.length; i++) {
-        tabLinks[i].classList.remove("active");
-    }
-
-    // Show selected content
-    const selectedTab = document.getElementById(tabName);
-    if (selectedTab) {
-        selectedTab.style.display = "block";
-        setTimeout(() => {
-            selectedTab.classList.add("active-content");
-        }, 10);
-    }
-    
-    // Activate clicked button
-    if(evt) {
-        evt.currentTarget.classList.add("active");
-    }
-}
-
-
-
-function toggleDay(checkbox) {
-    const row = checkbox.closest('.schedule-row');
-    const timeInputs = row.querySelector('.time-inputs');
-    const closedLabel = row.querySelector('.closed-label');
-
-    if (checkbox.checked) {
-        timeInputs.style.display = 'flex';
-        closedLabel.style.display = 'none';
-    } else {
-        timeInputs.style.display = 'none';
-        closedLabel.style.display = 'block';
-    }
-}
-
-/* =========================================
-   3. SCHEDULE SAVING LOGIC (AJAX)
-   ========================================= */
-document.addEventListener('DOMContentLoaded', () => {
-    const saveBtn = document.getElementById('save-schedule-btn');
-
-    if (saveBtn) {
-        saveBtn.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent form reload
-
-            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-            let schedule = {};
-
-            // Loop through each day to build JSON object
-            days.forEach(day => {
-                const activeCheck = document.getElementById(`${day}-active`);
-                const openInput = document.getElementById(`${day}-open`);
-                const closeInput = document.getElementById(`${day}-close`);
-
-                // Only add day if we find its inputs in HTML
-                if (activeCheck) {
-                    schedule[day] = {
-                        active: activeCheck.checked,
-                        // If active, save time; if not, null
-                        open: activeCheck.checked ? (openInput ? openInput.value : null) : null,
-                        close: activeCheck.checked ? (closeInput ? closeInput.value : null) : null
-                    };
-                }
-            });
-
-            // Visual feedback "Saving..."
-            const originalText = saveBtn.innerText;
-            saveBtn.innerText = 'Saving...';
-            saveBtn.disabled = true;
-
-            // AJAX request to server
-            fetch('index.php?action=update_schedule', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ schedule: schedule })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Schedule updated successfully!');
-                } else {
-                    alert('Error: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('A connection error occurred.');
-            })
-            .finally(() => {
-                // Restore button
-                saveBtn.innerText = originalText;
-                saveBtn.disabled = false;
-            });
-        });
-    }
-});
-
-
-/* =========================================
-   4. Update Business Info Logic
-   ========================================= */
-
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // ... your calendar code ...
-
-    // BUSINESS PROFILE SAVE HANDLING
+    /* =========================
+       3. SAVE BUSINESS INFO (AJAX)
+       ========================= */
     const businessForm = document.getElementById('business-form');
-    
     if (businessForm) {
         businessForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const submitBtn = businessForm.querySelector('.btn-save');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            submitBtn.disabled = true;
+            const btn = this.querySelector('.btn-save');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
 
-            // Use FormData to send text and IMAGES
-            const formData = new FormData(businessForm);
+            const formData = new FormData(this);
 
             fetch('index.php?action=update_business_info', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    alert('Business information updated successfully!');
-                    // Optional: Reload to see new images
-                    // location.reload(); 
+                    alert('Information updated successfully!');
+                    // Recargar solo si hay nuevas imágenes para ver cambios, o manejarlo por DOM
+                    window.location.reload(); 
                 } else {
                     alert('Error: ' + (data.message || 'Unknown error'));
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
+            .catch(err => {
+                console.error(err);
                 alert('Connection error');
             })
             .finally(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             });
         });
     }
-});
+
+    /* =========================
+       4. SAVE SCHEDULE (AJAX)
+       ========================= */
+    const saveScheduleBtn = document.getElementById('save-schedule-btn');
+    if (saveScheduleBtn) {
+        saveScheduleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            let schedule = {};
+
+            days.forEach(day => {
+                const active = document.getElementById(`${day}-active`);
+                const open = document.getElementById(`${day}-open`);
+                const close = document.getElementById(`${day}-close`);
+
+                if (active) {
+                    schedule[day] = {
+                        active: active.checked,
+                        open: active.checked ? open?.value : null,
+                        close: active.checked ? close?.value : null
+                    };
+                }
+            });
+
+            const originalText = saveScheduleBtn.innerText;
+            saveScheduleBtn.innerText = 'Saving...';
+            saveScheduleBtn.disabled = true;
+
+            fetch('index.php?action=update_schedule', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ schedule: schedule })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) alert('Schedule updated!');
+                else alert('Error: ' + data.message);
+            })
+            .finally(() => {
+                saveScheduleBtn.innerText = originalText;
+                saveScheduleBtn.disabled = false;
+            });
+        });
+    }
+
+}); // End DOMContentLoaded
+
+
+/* =========================
+   GLOBAL FUNCTIONS (Called from HTML)
+   ========================= */
+
+// Navigation
+function switchMainView(evt, viewId) {
+    if(evt) evt.preventDefault();
+    document.querySelectorAll('.main-view').forEach(v => v.style.display = 'none');
+    
+    // Ocultar todos los active del sidebar
+    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+    
+    const target = document.getElementById(viewId);
+    if(target) target.style.display = 'block';
+
+    if(evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+}
+
+// Tabs
+function openTab(evt, tabName) {
+    if(evt) evt.preventDefault();
+    
+    document.querySelectorAll('.tab-content').forEach(c => {
+        c.classList.remove('active-content');
+    });
+    
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+    const target = document.getElementById(tabName);
+    if(target) {
+        target.classList.add('active-content');
+    }
+
+    if(evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+}
+
+// Toggle Schedule Day
+function toggleDay(checkbox) {
+    const row = checkbox.closest('.schedule-row');
+    const inputs = row.querySelector('.time-inputs');
+    const label = row.querySelector('.closed-label');
+    
+    if(checkbox.checked) {
+        inputs.style.display = 'flex';
+        label.style.display = 'none';
+    } else {
+        inputs.style.display = 'none';
+        label.style.display = 'block';
+    }
+}
+
+// AJAX: Add Service
+function submitService(e) {
+    e.preventDefault();
+    const form = document.getElementById('add-service-form');
+    const formData = new FormData(form);
+    const btn = form.querySelector('button');
+    const originalText = btn.textContent;
+    
+    btn.textContent = 'Adding...';
+    btn.disabled = true;
+
+    fetch('index.php?action=add_service', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            form.reset();
+            const list = document.getElementById('services-list');
+            const noMsg = document.getElementById('no-services-msg');
+            if(noMsg) noMsg.style.display = 'none';
+
+            const html = `
+            <div class="service-item" style="background: white; border: 1px solid #eee; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="background: #f0f0f0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-cut" style="color: #555;"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0; font-size: 16px; color: #333;">${data.service.name}</h4>
+                        <span style="font-size: 13px; color: #777;"><i class="far fa-clock"></i> ${data.service.duration} min</span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <span style="font-weight: bold; font-size: 18px; color: #000;">${data.service.price} €</span>
+                    <a href="#" onclick="deleteService(${data.service.id}, this); return false;" style="color: #ff4d4d; background: #fff0f0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fas fa-trash-alt"></i></a>
+                </div>
+            </div>`;
+            
+            list.insertAdjacentHTML('beforeend', html);
+            alert('Service added!');
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(err => alert('Connection Error'))
+    .finally(() => {
+        btn.textContent = originalText;
+        btn.disabled = false;
+    });
+}
+
+// AJAX: Delete Service
+function deleteService(id, el) {
+    if(!confirm('Delete this service?')) return;
+    
+    fetch('index.php?action=delete_service&id=' + id)
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            el.closest('.service-item').remove();
+        } else {
+            alert('Error deleting');
+        }
+    });
+}

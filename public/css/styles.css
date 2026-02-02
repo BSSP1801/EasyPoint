@@ -18,7 +18,7 @@ body {
     color: var(--text-main);
 }
 
-/* Enlaces globales: usar color de acento y mejorar legibilidad */
+/* Global links: use accent color and improve readability */
 a {
     color: var(--accent);
     text-decoration: none;
@@ -27,7 +27,7 @@ a {
 
 a:hover, a:focus {
     color: #ebe6d2;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .main-container {
@@ -414,8 +414,8 @@ header {
     }
 }
 
-/* Breakpoints: Móvil / Tablet / Escritorio */
-/* Móvil */
+/* Breakpoints: Mobile / Tablet / Desktop */
+/* Mobile */
 @media (max-width: 600px) {
     header { height: 420px; padding: 18px 10px; }
     .navigation-bar { padding: 12px 18px; }
@@ -442,7 +442,7 @@ header {
     .features-image-wrapper { height: 360px; }
 }
 
-/* Escritorio: las reglas por defecto aplican; ajustar si hace falta */
+/* Desktop: default rules apply; adjust if necessary */
 
 .sticky-header {
     position: fixed;
@@ -877,4 +877,8 @@ header {
     .modal-title {
         font-size: 22px;
     }
-}
+
+
+    a{
+        text-decoration: none;
+    }

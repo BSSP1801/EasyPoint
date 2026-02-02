@@ -258,6 +258,87 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-});
 
+
+
+// ==========================================
+    // 7. CAROUSEL LOGIC
+    // ==========================================
+
+    const track = document.getElementById('carouselTrack');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const dotsContainer = document.getElementById('carouselDots');
+
+    if (track && btnPrev && btnNext) {
+        
+        // --- Functions ---
+
+        // Function to scroll the carousel left or right
+        const moveCarousel = (direction) => {
+            const width = track.offsetWidth;
+            track.scrollBy({
+                left: direction * width,
+                behavior: 'smooth'
+            });
+            // We update dots after a short delay to match scroll end
+            setTimeout(updateDots, 300); 
+        };
+
+        // Function to jump to a specific slide
+        const currentSlide = (index) => {
+            const width = track.offsetWidth;
+            track.scrollTo({
+                left: index * width,
+                behavior: 'smooth'
+            });
+            setTimeout(updateDots, 300);
+        };
+
+        // Function to update active dot based on scroll position
+        const updateDots = () => {
+            // Calculate current index based on scroll position
+            const index = Math.round(track.scrollLeft / track.offsetWidth);
+            const dots = document.querySelectorAll('.dot');
+            
+            dots.forEach((dot, i) => {
+                if (i === index) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        };
+
+        // --- Initialization ---
+
+        // Generate dots dynamically based on number of slides
+        const slides = track.querySelectorAll('.carousel-slide');
+        if (dotsContainer && slides.length > 0) {
+            dotsContainer.innerHTML = ''; // Clear existing
+            slides.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (i === 0) dot.classList.add('active');
+                
+                // Add click event to jump to slide
+                dot.addEventListener('click', () => currentSlide(i));
+                
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        // --- Event Listeners ---
+
+        btnPrev.addEventListener('click', () => moveCarousel(-1));
+        btnNext.addEventListener('click', () => moveCarousel(1));
+
+        // Update dots on manual scroll
+        track.addEventListener('scroll', () => {
+            // Debounce or simple check could be added here for performance
+            updateDots();
+        });
+    }
+
+}); // End of DOMContentLoaded
 
