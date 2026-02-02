@@ -22,6 +22,38 @@ $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
 // Cargar datos del usuario y perfil
 $userModel = new User();
 $userData = $userModel->getFullProfile($_SESSION['user_id']);
+
+
+$myAppointments = [];
+if ($_SESSION['role'] === 'store') {
+    $myAppointments = $userModel->getStoreAppointments($_SESSION['user_id']);
+} else if ($_SESSION['role'] === 'user') {
+    // user case
+    // $myAppointments = $userModel->getUserAppointments($_SESSION['user_id']);
+}
+$stats = [
+    'today' => 0,
+    'pending' => 0,
+    'confirmed' => 0,
+    'total' => count($myAppointments)
+];
+
+$currentDate = date('Y-m-d'); // Fecha de hoy del servidor
+
+foreach ($myAppointments as $appt) {
+    // Contar por Estado
+    if ($appt['status'] === 'pending') {
+        $stats['pending']++;
+    } elseif ($appt['status'] === 'confirmed') {
+        $stats['confirmed']++;
+    }
+    
+    // Contar si es para Hoy
+    // Asumimos que $appt['appointment_date'] viene en formato Y-m-d desde la BD
+    if ($appt['appointment_date'] === $currentDate) {
+        $stats['today']++;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -94,40 +126,45 @@ $userData = $userModel->getFullProfile($_SESSION['user_id']);
             <section class="summary-cards">
                 <div class="card">
                     <div class="card-content">
-                        <h3>0</h3><p>Today</p>
+                        <h3><?php echo $stats['today']; ?></h3>
+                        <p>Today</p>
                     </div>
                     <div class="card-icon card-icon-blue"><i class="far fa-calendar"></i></div>
                 </div>
+
                 <div class="card">
                     <div class="card-content">
-                        <h3>1</h3><p>Pending</p>
+                        <h3><?php echo $stats['pending']; ?></h3>
+                        <p>Pending</p>
                     </div>
                     <div class="card-icon card-icon-yellow"><i class="far fa-clock"></i></div>
                 </div>
+
                 <div class="card">
                     <div class="card-content">
-                        <h3>1</h3><p>Confirmed</p>
+                        <h3><?php echo $stats['confirmed']; ?></h3>
+                        <p>Confirmed</p>
                     </div>
                     <div class="card-icon card-icon-green"><i class="far fa-check-circle"></i></div>
                 </div>
+
                 <div class="card">
                     <div class="card-content">
-                        <h3>2</h3><p>Total</p>
+                        <h3><?php echo $stats['total']; ?></h3>
+                        <p>Total</p>
                     </div>
                     <div class="card-icon card-icon-teal"><i class="fas fa-chart-line"></i></div>
                 </div>
             </section>
 
             <div class="main-section">
-                <section class="appointments-list">
-                    <h2 class="section-title">Upcoming Appointments</h2>
-                    <div class="appointment">
-                        <div class="appointment-info">
-                            <h4>Dental Cleaning <span class="status confirmed">Confirmed</span></h4>
-                            <p><i class="far fa-user"></i> Maria Garcia | <i class="far fa-clock"></i> Tue, Jan 20 - 10:00</p>
-                        </div>
-                    </div>
-                </section>
+             <section class="appointments-list">
+                <h2 class="section-title" id="appointments-title">Upcoming Appointments</h2>
+                
+                <div id="appointments-container">
+                   
+                </div>
+            </section>
 
                 <aside class="right-sidebar">
                     <div class="calendar-widget">
@@ -343,6 +380,15 @@ $userData = $userModel->getFullProfile($_SESSION['user_id']);
 
         </div>
     </main>
+   <script>
+        // 1. Pasamos TODAS las citas a JS (incluyendo pasadas) para el filtrado dinámico
+        const allAppointments = <?php echo json_encode($myAppointments ?? []); ?>;
+        
+        // 2. Extraemos fechas solo para los puntitos del calendario (excluyendo canceladas)
+        const appointmentDates = allAppointments
+            .filter(a => a.status !== 'cancelled')
+            .map(a => a.appointment_date);
+    </script>
     <script src="/public/js/script-dashboard.js"></script>
 </body>
 </html>

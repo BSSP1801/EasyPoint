@@ -2,7 +2,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-
     /* =========================
        1. SIDEBAR & RESPONSIVE
        ========================= */
@@ -17,10 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Inicializar estado
     applyDefaultState();
 
-    // Toggle manual
     if (toggleBtn && sidebar) {
         toggleBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -28,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Resize listener
     let resizeTimer;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
@@ -37,15 +33,112 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* =========================
-       2. CALENDAR WIDGET
+       2. CALENDAR WIDGET & FUNCIONES
        ========================= */
     const calendar = document.getElementById('calendar');
+    
+    // Función auxiliar para fecha
+    function formatAppointmentDate(dateStr, timeStr) {
+        const date = new Date(dateStr + 'T' + timeStr);
+        const options = { weekday: 'short', month: 'short', day: 'numeric' };
+        const timeParts = timeStr.split(':');
+        const timeFormatted = `${timeParts[0]}:${timeParts[1]}`;
+        return date.toLocaleDateString('en-US', options) + ' - ' + timeFormatted;
+    }
+
+    // Definimos la función PRIMERO
+    window.renderAppointmentsList = function(appointments, titleText) {
+        const container = document.getElementById('appointments-container');
+        const title = document.getElementById('appointments-title');
+        
+        if(title) title.innerText = titleText;
+        container.innerHTML = ''; 
+
+        if (!appointments || appointments.length === 0) {
+            container.innerHTML = '<div class="appointment"><p style="color: #888; font-style: italic;">No appointments found.</p></div>';
+            return;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+
+        appointments.forEach(appt => {
+            let statusClass = 'pending';
+            if(appt.status === 'confirmed') statusClass = 'confirmed';
+            else if(appt.status === 'cancelled') statusClass = 'cancelled';
+            
+            let buttonsHtml = '';
+            
+            // Lógica de botones
+            if (appt.appointment_date >= today) {
+                if (appt.status === 'pending') {
+                    buttonsHtml = `
+                        <div class="appt-actions">
+                            <button onclick="updateStatus(${appt.id}, 'confirmed')" class="btn-action btn-confirm" title="Confirm"><i class="fas fa-check"></i></button>
+                            <button onclick="updateStatus(${appt.id}, 'cancelled')" class="btn-action btn-cancel" title="Cancel"><i class="fas fa-times"></i></button>
+                        </div>
+                    `;
+                } else if (appt.status === 'confirmed') {
+                    buttonsHtml = `
+                        <div class="appt-actions">
+                            <button onclick="updateStatus(${appt.id}, 'cancelled')" class="btn-action btn-cancel" title="Cancel"><i class="fas fa-times"></i></button>
+                        </div>
+                    `;
+                }
+            }
+
+            const html = `
+                <div class="appointment">
+                    <div class="appointment-info">
+                        <h4>
+                            ${appt.service_name} 
+                            <span class="status ${statusClass}">${appt.status.charAt(0).toUpperCase() + appt.status.slice(1)}</span>
+                        </h4>
+                        <p>
+                            <i class="far fa-user"></i> ${appt.client_name} | 
+                            <i class="far fa-clock"></i> ${formatAppointmentDate(appt.appointment_date, appt.appointment_time)}
+                        </p>
+                    </div>
+                    ${buttonsHtml}
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        });
+    };
+
+    window.updateStatus = function(id, newStatus) {
+    if(!confirm('Are you sure you want to change the status to ' + newStatus + '?')) return;
+
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('status', newStatus);
+
+    fetch('index.php?action=change_status', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            // AQUI ESTÁ LA CLAVE: Recargar la página
+            window.location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Connection error');
+    });
+};
+
+    // Lógica del Calendario
     if (calendar) {
         const monthYear = document.getElementById('monthYear');
-        const prevMonthBtn = document.getElementById('prevMonth'); // IDs corregidos
+        const prevMonthBtn = document.getElementById('prevMonth');
         const nextMonthBtn = document.getElementById('nextMonth');
         
         let currentDate = new Date(); 
+        let selectedDate = null;
 
         function renderCalendar() {
             calendar.innerHTML = '';
@@ -78,9 +171,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 dayDiv.className = 'calendar-day';
                 dayDiv.innerText = i;
                 
+                const monthString = String(month + 1).padStart(2, '0');
+                const dayString = String(i).padStart(2, '0');
+                const fullDate = `${year}-${monthString}-${dayString}`;
+
                 if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
                     dayDiv.classList.add('today');
                 }
+
+                if (typeof appointmentDates !== 'undefined' && appointmentDates.includes(fullDate)) {
+                    dayDiv.classList.add('has-appointment');
+                    const dot = document.createElement('span');
+                    dot.className = 'appointment-dot';
+                    dayDiv.appendChild(dot);
+                }
+
+                if (selectedDate === fullDate) {
+                    dayDiv.classList.add('selected');
+                }
+
+                dayDiv.addEventListener('click', () => {
+                    if (selectedDate === fullDate) {
+                        selectedDate = null;
+                        renderCalendar();
+                        const todayStr = new Date().toISOString().split('T')[0];
+                        const upcoming = allAppointments.filter(a => a.appointment_date >= todayStr);
+                        renderAppointmentsList(upcoming, "Upcoming Appointments");
+                    } 
+                    else {
+                        selectedDate = fullDate;
+                        renderCalendar();
+                        const filtered = allAppointments.filter(a => a.appointment_date === fullDate);
+                        renderAppointmentsList(filtered, `Appointments for ${fullDate}`);
+                    }
+                });
+
                 calendar.appendChild(dayDiv);
             }
         }
@@ -100,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* =========================
-       3. SAVE BUSINESS INFO (AJAX)
+       3. SAVE BUSINESS INFO
        ========================= */
     const businessForm = document.getElementById('business-form');
     if (businessForm) {
@@ -113,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const formData = new FormData(this);
 
-            fetch('../index.php?action=update_business_info', {
+            fetch('index.php?action=update_business_info', {
                 method: 'POST',
                 body: formData
             })
@@ -121,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.success) {
                     alert('Information updated successfully!');
-                    // Recargar solo si hay nuevas imágenes para ver cambios, o manejarlo por DOM
                     window.location.reload(); 
                 } else {
                     alert('Error: ' + (data.message || 'Unknown error'));
@@ -139,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* =========================
-       4. SAVE SCHEDULE (AJAX)
+       4. SAVE SCHEDULE
        ========================= */
     const saveScheduleBtn = document.getElementById('save-schedule-btn');
     if (saveScheduleBtn) {
@@ -183,46 +307,63 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /* ========================================================
+       5. INICIALIZACIÓN AUTOMÁTICA (MOVIDO AL FINAL)
+       ======================================================== */
+    // Ahora sí funcionará porque renderAppointmentsList ya existe
+    if (typeof allAppointments !== 'undefined') {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const upcoming = allAppointments.filter(a => a.appointment_date >= todayStr);
+        renderAppointmentsList(upcoming, "Upcoming Appointments");
+    }
+
 }); // End DOMContentLoaded
 
 
 /* =========================
-   GLOBAL FUNCTIONS (Called from HTML)
+   GLOBAL FUNCTIONS
    ========================= */
 
-// Navigation
 function switchMainView(evt, viewId) {
     if(evt) evt.preventDefault();
+    
+    // 1. GUARDAR: Memorizamos en qué vista estamos
+    sessionStorage.setItem('currentView', viewId);
+
+    // Ocultar todas las vistas
     document.querySelectorAll('.main-view').forEach(v => v.style.display = 'none');
     
-    // Ocultar todos los active del sidebar
+    // Quitar active de todos los menús
     document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
     
+    // Mostrar la vista seleccionada
     const target = document.getElementById(viewId);
     if(target) target.style.display = 'block';
 
-    if(evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+    // 2. RECUPERAR ACTIVE: Si hay evento (click) lo usamos, si no (recarga) buscamos el link
+    if(evt && evt.currentTarget) {
+        evt.currentTarget.classList.add('active');
+    } else {
+        // Truco para encontrar el botón del menú correspondiente a esta vista
+        const link = document.querySelector(`a[onclick*="${viewId}"]`);
+        if(link) link.classList.add('active');
+    }
 }
 
-// Tabs
 function openTab(evt, tabName) {
     if(evt) evt.preventDefault();
-    
     document.querySelectorAll('.tab-content').forEach(c => {
         c.classList.remove('active-content');
     });
-    
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
     const target = document.getElementById(tabName);
     if(target) {
         target.classList.add('active-content');
     }
-
     if(evt && evt.currentTarget) evt.currentTarget.classList.add('active');
 }
 
-// Toggle Schedule Day
 function toggleDay(checkbox) {
     const row = checkbox.closest('.schedule-row');
     const inputs = row.querySelector('.time-inputs');
@@ -237,70 +378,33 @@ function toggleDay(checkbox) {
     }
 }
 
-// AJAX: Add Service
 function submitService(e) {
+    // (Tu función submitService existente...)
     e.preventDefault();
     const form = document.getElementById('add-service-form');
-    const formData = new FormData(form);
-    const btn = form.querySelector('button');
-    const originalText = btn.textContent;
-    
-    btn.textContent = 'Adding...';
-    btn.disabled = true;
-
-    fetch('index.php?action=add_service', {
-        method: 'POST',
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success) {
-            form.reset();
-            const list = document.getElementById('services-list');
-            const noMsg = document.getElementById('no-services-msg');
-            if(noMsg) noMsg.style.display = 'none';
-
-            const html = `
-            <div class="service-item">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <i class="fas fa-cut" style="color: #555;"></i>
-                    </div>
-                    <div>
-                        <h4 style="margin: 0; font-size: 16px; color: #333;">${data.service.name}</h4>
-                        <span style="font-size: 13px; color: #333;"><i class="far fa-clock"></i> ${data.service.duration} min</span>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <span style="font-weight: bold; font-size: 18px; color: #000;">${data.service.price} €</span>
-                    <a href="#" onclick="deleteService(${data.service.id}, this); return false;" style="color: #ff4d4d; background: #fff0f0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fas fa-trash-alt"></i></a>
-                </div>
-            </div>`;
-            
-            list.insertAdjacentHTML('beforeend', html);
-            alert('Service added!');
-        } else {
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(err => alert('Connection Error'))
-    .finally(() => {
-        btn.textContent = originalText;
-        btn.disabled = false;
-    });
+    // ... resto del código ...
+    // (Manten el código que ya tenías para submitService y deleteService)
+    // Para simplificar la respuesta he acortado estas dos funciones finales 
+    // ya que no afectan al problema principal.
 }
 
-// AJAX: Delete Service
 function deleteService(id, el) {
+    // (Tu función deleteService existente...)
     if(!confirm('Delete this service?')) return;
-    
     fetch('index.php?action=delete_service&id=' + id)
-    .then(res => res.json())
-    .then(data => {
-        if(data.success) {
-            el.closest('.service-item').remove();
-        } else {
-            alert('Error deleting');
-        }
-    });
+    // ... resto del código ...
 }
+
+/* =========================
+       6. RESTAURAR VISTA TRAS RECARGA
+       ========================= */
+    // Verificamos si hay una vista guardada en memoria
+    const savedView = sessionStorage.getItem('currentView');
+    if (savedView) {
+        // Si existe, forzamos esa vista
+        switchMainView(null, savedView);
+    } else {
+        // (Opcional) Si quieres forzar una por defecto si no hay nada guardado
+        // switchMainView(null, 'view-calendar');
+    }
+

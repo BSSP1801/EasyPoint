@@ -42,15 +42,16 @@ switch ($action) {
     case 'view_business':
         $controller->viewBusiness();
         exit();
-    case 'view_business':
-        $controller->viewBusiness();
-        exit();
+   
     case 'add_service':
         $controller->addService();
         exit();
     case 'delete_service':
         $controller->deleteService();
         exit();
+    case 'change_status':
+        $controller->changeStatus();
+        break;    
     case 'logout':
         session_destroy();
         $_SESSION = array(); // Clear the session array
