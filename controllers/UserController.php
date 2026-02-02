@@ -321,5 +321,37 @@ class UserController
             return false;
         }
     }
+
+
+    public function changeStatus()
+    {
+        header('Content-Type: application/json');
+        
+        // Verificar sesión y rol
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'store') {
+            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+            exit();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id'] ?? null;
+            $status = $_POST['status'] ?? null;
+
+            if ($id && $status && in_array($status, ['confirmed', 'cancelled'])) {
+                $userModel = new User();
+                $success = $userModel->updateAppointmentStatus($id, $status, $_SESSION['user_id']);
+
+                if ($success) {
+                    echo json_encode(['success' => true]);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Could not update status']);
+                }
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Invalid data']);
+            }
+            exit();
+        }
+    }
+    
 }
 ?>

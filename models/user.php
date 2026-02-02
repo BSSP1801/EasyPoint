@@ -244,5 +244,58 @@ class User
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
+    public function getStoreAppointments($storeId)
+{
+    try {
+
+        
+        $query = "SELECT a.id, a.appointment_date, a.appointment_time, a.status, 
+                         u.email as client_name, 
+                         s.name as service_name, s.price, s.duration
+                  FROM appointments a
+                  JOIN services s ON a.service_id = s.id
+                  JOIN users u ON a.user_id = u.id
+                  WHERE s.user_id = :store_id  
+                  ORDER BY a.appointment_date ASC, a.appointment_time ASC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':store_id', $storeId);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e) {
+        error_log("Error fetching store appointments: " . $e->getMessage());
+        return [];
+    }
+}
+
+public function updateAppointmentStatus($appointmentId, $newStatus, $storeId)
+    {
+        try {
+            // Usamos JOIN para asegurarnos de que la cita pertenece a un servicio 
+            // creado por la tienda que está intentando modificarla ($storeId)
+            $query = "UPDATE appointments a 
+                      INNER JOIN services s ON a.service_id = s.id 
+                      SET a.status = :status 
+                      WHERE a.id = :id AND s.user_id = :store_id";
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':status', $newStatus);
+            $stmt->bindParam(':id', $appointmentId);
+            $stmt->bindParam(':store_id', $storeId);
+
+            if ($stmt->execute()) {
+                // Verificar si realmente se modificó alguna fila (si no, es que no era su cita o el ID no existe)
+                return $stmt->rowCount() > 0;
+            }
+            return false;
+        } catch (PDOException $e) {
+            error_log("Error updating appointment: " . $e->getMessage());
+            return false;
+        }
+    }
+
 }
 ?>
