@@ -42,7 +42,17 @@ switch ($action) {
     case 'view_business':
         $controller->viewBusiness();
         exit();
-   
+    case 'book':
+        // Redirige a la página de reserva
+        $service_id = $_GET['service_id'] ?? null;
+        $store_id = $_GET['store_id'] ?? null;
+        if (!$service_id || !$store_id) {
+            header("Location: index.php");
+            exit();
+        }
+        require_once __DIR__ . '/views/book-service.php';
+        exit();
+        break;
     case 'add_service':
         $controller->addService();
         exit();
