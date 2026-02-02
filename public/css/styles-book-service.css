@@ -805,3 +805,7 @@
         font-size: 18px;
     }
 }
+
+header {
+    height: 64px;
+}

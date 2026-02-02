@@ -22,9 +22,8 @@ class Service
         $stmt->bindParam(":price", $data['price']);
         $stmt->bindParam(":duration", $data['duration']);
 
-        return $stmt->execute();
         if ($stmt->execute()) {
-            return $this->conn->lastInsertId();
+            return (int) $this->conn->lastInsertId();
         }
         return false;
     }

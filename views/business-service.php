@@ -202,9 +202,9 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                     <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
                         <?php foreach ($storeServices as $service): ?>
                             <div class="service-row"
-                                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                                style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px;">
 
-                                <h4 style="margin: 0; font-size: 16px; color: #333; flex: 1;">
+                                <h4 style="margin: 0; font-size: 16px; color: #cbbba6; flex: 1;">
                                     <?php echo htmlspecialchars($service['name']); ?>
                                 </h4>
 

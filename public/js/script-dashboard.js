@@ -379,20 +379,91 @@ function toggleDay(checkbox) {
 }
 
 function submitService(e) {
-    // (Tu función submitService existente...)
     e.preventDefault();
     const form = document.getElementById('add-service-form');
-    // ... resto del código ...
-    // (Manten el código que ya tenías para submitService y deleteService)
-    // Para simplificar la respuesta he acortado estas dos funciones finales 
-    // ya que no afectan al problema principal.
+    if (!form) return;
+    const btn = form.querySelector('button[type="submit"]');
+    const originalText = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...'; }
+
+    const formData = new FormData(form);
+
+    fetch('index.php?action=add_service', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success && data.service) {
+            const svc = data.service;
+            const list = document.getElementById('services-list');
+            // Remove empty message if present
+            const noMsg = document.getElementById('no-services-msg');
+            if (noMsg) noMsg.remove();
+
+            const div = document.createElement('div');
+            div.className = 'service-item';
+            div.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div><i class="fas fa-cut" style="color: #555;"></i></div>
+                    <div>
+                        <h4 style="margin: 0; font-size: 16px; color: #333;">${escapeHtml(svc.name)}</h4>
+                        <span style="font-size: 13px; color: #333;"><i class="far fa-clock"></i> ${escapeHtml(svc.duration)} min</span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <span style="font-weight: bold; font-size: 18px; color: #000;">${escapeHtml(svc.price)} €</span>
+                    <a href="#" onclick="deleteService(${svc.id}, this); return false;" style="color: #ff4d4d; background: #fff0f0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fas fa-trash-alt"></i></a>
+                </div>
+            `;
+            if (list) list.insertAdjacentElement('afterbegin', div);
+            form.reset();
+        } else {
+            alert('Error: ' + (data.message || 'Could not add service'));
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Connection error');
+    })
+    .finally(() => {
+        if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
+    });
 }
 
 function deleteService(id, el) {
-    // (Tu función deleteService existente...)
     if(!confirm('Delete this service?')) return;
     fetch('index.php?action=delete_service&id=' + id)
-    // ... resto del código ...
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const item = el.closest('.service-item');
+            if (item) item.remove();
+            const list = document.getElementById('services-list');
+            if (list && !list.querySelector('.service-item')) {
+                const msg = document.createElement('div');
+                msg.id = 'no-services-msg';
+                msg.style = 'text-align: center; padding: 40px; background: rgba(235, 230, 210, 0.55); border-radius: 10px; color: #000000;';
+                msg.textContent = "You haven't added any services yet.";
+                list.appendChild(msg);
+            }
+        } else {
+            alert('Error deleting service: ' + (data.message || 'Unknown'));
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Connection error');
+    });
+}
+
+function escapeHtml(unsafe) {
+    return String(unsafe)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#039;");
 }
 
 /* =========================
