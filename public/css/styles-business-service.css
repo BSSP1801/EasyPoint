@@ -288,9 +288,27 @@ header {
 }
 
 .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #cbbba6;
+    color: var(--text-main);
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* Dashboard link should inherit color and not use purple */
+.dashboard-link,
+.dashboard-link:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Ensure logo links inherit color (remove purple link color) */
+.logo a,
+.sticky-logo a {
+    color: inherit;
+    text-decoration: none;
+}
+.sticky-logo a:hover,
+.logo a:hover {
+    color: var(--accent);
 }
 
 .search-box input {
@@ -551,19 +569,22 @@ header {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.65); /* match main site */
     justify-content: center;
     align-items: center;
 }
 
 .modal-box {
-    background-color: white;
-    padding: 40px;
-    border-radius: 8px;
-    width: 400px;
+    background-color: #2b201e; /* dark modal like index */
+    /* Unified sizing */
+    padding: 28px;
+    border-radius: 12px;
+    width: min(92%, 520px);
+    max-width: 520px;
     position: relative;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 0.3s ease;
+    box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+    animation: fadeIn 0.25s ease;
+    color: var(--text-main);
 }
 
 @keyframes fadeIn {
@@ -584,26 +605,27 @@ header {
     right: 20px;
     font-size: 28px;
     font-weight: bold;
-    color: #aaa;
+    color: #a58668; /* accent color */
     cursor: pointer;
 }
 
 .close-modal:hover {
-    color: #000;
+    color: #ebe6d2;
 }
 
 .modal-title {
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 26px;
+    font-weight: 600;
     margin-bottom: 5px;
-    color: #333;
+    color: #a58668; /* accent */
     text-align: center;
 }
 
 .modal-subtitle {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 25px;
+    font-size: 13px;
+    color: #ebe6d2;
+    opacity: 0.9;
+    margin-bottom: 22px;
     text-align: center;
 }
 
@@ -614,48 +636,71 @@ header {
 
 .form-group label {
     display: block;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
     margin-bottom: 5px;
-    color: #333;
+    color: #ebe6d2;
+    opacity: 0.75;
 }
 
 .modal-input {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 15px;
+    padding: 11px 12px;
+    border: none;
+    border-radius: 6px;
+    outline: none;
+    font-size: 14px;
+
+    background-color: #ebe6d2; /* light input */
+    color: #2b201e;
+
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.modal-input:focus {
+    box-shadow:
+        inset 0 0 0 2px rgba(165,134,104,0.70),
+        0 0 0 4px rgba(165,134,104,0.20);
+    transform: translateY(-1px);
 }
 
 .modal-btn {
     width: 100%;
-    background-color: #000;
-    color: white;
-    padding: 12px;
+    background-color: #a58668; /* accent */
+    color: #2b201e;
+    padding: 11px 12px;
     border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    font-weight: bold;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 12px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+    transition: transform 0.2s ease, filter 0.2s ease;
 }
 
 .modal-btn:hover {
-    background-color: #333;
+    filter: brightness(1.06);
+    transform: translateY(-2px);
 }
 
 .switch-form {
-    margin-top: 20px;
-    font-size: 14px;
+    margin-top: 18px;
+    font-size: 13px;
     text-align: center;
-    color: #666;
+    color: rgba(235, 230, 210, 0.75);
 }
 
 .switch-form span {
-    color: #000;
-    font-weight: bold;
+    color: #a58668;
+    font-weight: 600;
     cursor: pointer;
+    text-decoration: none;
+}
+
+.switch-form span:hover {
     text-decoration: underline;
 }
 
@@ -765,7 +810,18 @@ header {
     background-color: rgb(128, 111, 104);
 }
 
+.service-name {
+    margin: 0; 
+    font-size: 16px; 
+    color: var(--soft-text); 
+    flex: 1;
+}
 
-    *{
+*{
+    text-decoration: none;
+}
+
+a{
         text-decoration: none;
-    }
+}
+

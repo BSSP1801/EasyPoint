@@ -59,6 +59,9 @@ switch ($action) {
     case 'delete_service':
         $controller->deleteService();
         exit();
+    case 'change_status':
+        $controller->changeStatus();
+        break;    
     case 'logout':
         session_destroy();
         $_SESSION = array(); // Clear the session array
