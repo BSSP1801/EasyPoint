@@ -749,6 +749,23 @@ header {
 .dot.active { background: white; width: 25px; border-radius: 10px; }
 
 
+.book-btn {
+    background-color: rgb(87, 75, 70);
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-block;
+    appearance: none;
+}
+
+.book-btn:hover {
+    background-color: rgb(128, 111, 104);
+}
+
+
     *{
         text-decoration: none;
     }
