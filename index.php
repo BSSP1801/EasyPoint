@@ -99,6 +99,9 @@ switch ($action) {
                     <a href="index.php?action=logout" class="logout-link">Logout</a>
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
                     <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a> 
+                    <span class="user-link">
+                        Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
+                    </span>
                     <a href="index.php?action=logout" class="logout-link">Logout</a>
                 <?php else: ?>
                     <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>

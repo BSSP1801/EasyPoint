@@ -321,5 +321,82 @@ class UserController
             return false;
         }
     }
+
+    public function addService()
+    {
+        // Indicamos que la respuesta será JSON
+        header('Content-Type: application/json');
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
+            $serviceModel = new Service();
+            
+            $data = [
+                'name' => $_POST['service_name'],
+                'price' => $_POST['service_price'],
+                'duration' => $_POST['service_duration']
+            ];
+            
+            // Intentamos crear el servicio y obtener el ID
+            $serviceId = $serviceModel->create($_SESSION['user_id'], $data);
+            
+            if ($serviceId) {
+                // Éxito: Devolvemos los datos incluyendo el ID para poder pintarlos en el HTML sin recargar
+                $data['id'] = $serviceId;
+                echo json_encode([
+                    'success' => true, 
+                    'message' => 'Service added successfully',
+                    'service' => $data
+                ]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Error adding service']);
+            }
+            exit();
+        }
+    }
+
+    public function deleteService()
+    {
+        header('Content-Type: application/json');
+
+    // Function to send email using PHPMailer
+    private function sendEmail($to, $subject, $body)
+    {
+        $mail = new PHPMailer(true);
+        try {
+         
+        $mail->isSMTP();
+        $mail->Host = 'sandbox.smtp.mailtrap.io'; 
+        $mail->SMTPAuth = true;
+        $mail->Port = 2525; 
+        $mail->Username = '83b8fc135d6989'; 
+        $mail->Password = 'f5a90f6cf9f62a'; 
+        
+        $mail->Timeout = 3; // seting a timeout of 3 seconds
+        
+        $mail->setFrom('support@easypoint.com', 'EasyPoint Support');
+        $mail->addAddress($to);
+
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $body;
+
+        $mail->send();
+        return true;
+        } catch (Exception $e) {
+            // We save the error in the log but allow the user to see their success on the web
+            error_log("PHPMailer Error: " . $mail->ErrorInfo);
+            return false;
+        if (isset($_GET['id']) && isset($_SESSION['user_id'])) {
+            $serviceModel = new Service();
+            
+            if ($serviceModel->delete($_GET['id'], $_SESSION['user_id'])) {
+                echo json_encode(['success' => true, 'message' => 'Service deleted successfully']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Error deleting service']);
+            }
+            exit();
+        }
+    }
 }
+    }
 ?>

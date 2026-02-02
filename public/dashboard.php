@@ -11,6 +11,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// 3. Cargar datos necesarios para el HTML
 require_once dirname(__DIR__) . '/models/Service.php';
 require_once dirname(__DIR__) . '/models/user.php'; 
 

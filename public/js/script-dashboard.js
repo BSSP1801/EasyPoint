@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const calendar = document.getElementById('calendar');
     if (calendar) {
         const monthYear = document.getElementById('monthYear');
-        const prevMonthBtn = document.getElementById('prevMonth');
+        const prevMonthBtn = document.getElementById('prevMonth'); // IDs corregidos
         const nextMonthBtn = document.getElementById('nextMonth');
         
         let currentDate = new Date(); 
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const formData = new FormData(this);
 
-            fetch('index.php?action=update_business_info', {
+            fetch('../index.php?action=update_business_info', {
                 method: 'POST',
                 body: formData
             })
