@@ -261,14 +261,14 @@ function submitService(e) {
             if(noMsg) noMsg.style.display = 'none';
 
             const html = `
-            <div class="service-item" style="background: white; border: 1px solid #eee; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <div class="service-item">
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <div style="background: #f0f0f0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
                         <i class="fas fa-cut" style="color: #555;"></i>
                     </div>
                     <div>
                         <h4 style="margin: 0; font-size: 16px; color: #333;">${data.service.name}</h4>
-                        <span style="font-size: 13px; color: #777;"><i class="far fa-clock"></i> ${data.service.duration} min</span>
+                        <span style="font-size: 13px; color: #333;"><i class="far fa-clock"></i> ${data.service.duration} min</span>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 20px;">

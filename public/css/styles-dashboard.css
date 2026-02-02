@@ -51,6 +51,21 @@ a:hover, a:focus {
     letter-spacing: 0.5px;
 }
 
+/* Dashboard link should inherit color and not use purple */
+.dashboard-link,
+.dashboard-link:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+/* Logo links: inherit main color (prevent purple link color) */
+.logo a {
+    color: inherit;
+    text-decoration: none;
+}
+.logo a:hover { color: var(--bg-soft); }
+
 .logo i {
     margin-right: 10px;
     color: var(--bg-soft);
@@ -130,6 +145,7 @@ a:hover, a:focus {
     background-color: rgba(165,134,104,0.14);
     color: var(--text-main);
     transform: translateX(3px);
+    text-decoration: none;
 }
 
 .menu-item.active{
@@ -179,7 +195,6 @@ a:hover, a:focus {
     margin-bottom: 26px;
     padding-bottom: 16px;
     border-bottom: 2px solid rgba(165, 134, 104, 0.35);
-    box-shadow: 0 2px 8px rgba(165, 134, 104, 0.08);
 }
 
 .welcome {
@@ -392,7 +407,7 @@ a:hover, a:focus {
 
 .page-title {
     font-size: 1.5rem;
-    color: var(--text-main);
+    color: var(--bg-soft);
     margin-bottom: 5px;
     font-weight: 700;
 }
@@ -521,7 +536,7 @@ textarea.form-input {
     border-top: 1px solid #f0f0f0;
 }
 
-.btn-save {
+.btn-save-1 {
     background-color: var(--bg-soft);
     color: #2b201e;
     border: none;
@@ -537,7 +552,29 @@ textarea.form-input {
     transition: background-color 0.2s;
 }
 
-.btn-save:hover {
+.btn-save-1:hover {
+    filter: brightness(1.06);
+}
+
+.btn-save-2 {
+    background-color: var(--bg-soft);
+    color: #2b201e;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+    margin-bottom: 20px;
+    margin-left: 20px;
+}
+
+.btn-save-2:hover {
     filter: brightness(1.06);
 }
 
@@ -721,4 +758,94 @@ input:checked + .slider:before {
 
 .tab-content.active-content {
     display: block;
+}
+
+.debug-info {
+    margin-bottom: 20px;
+    padding: 10px 20px; 
+    border-bottom: 1px solid #a58668; 
+    font-size: 1rem;
+    color: #b9977c;
+    font-weight: 700;
+}
+
+.save-schedule-btn {
+    margin-bottom: 20px;
+}
+
+.service-list {
+    margin-bottom: 15px;
+    color: var(--bg-soft);
+}
+
+.service-container {
+    background: rgba(235,230,210,0.55);
+    padding: 25px; 
+    border-radius: 10px; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+    margin-bottom: 30px;
+}
+
+.service-item {
+    background: rgba(235,230,210,0.55);
+    padding: 20px; 
+    border-radius: 8px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+#add-service-form,
+.add-service-grid {
+    display: grid;
+    grid-template-columns: 200px 70px 70px auto;
+    gap: 12px;
+    align-items: end;
+}
+
+.add-service-grid .form-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #333;
+}
+
+.add-service-grid .service-input {
+    width: 100%;
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 0.95rem;
+}
+
+.btn-add {
+    background-color: #866a4e;
+    color: #2b201e;
+    border: none;
+    padding: 11px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    height: 42px;
+    transition: filter 0.15s ease, transform 0.12s ease;
+}
+
+.btn-add:hover {
+    filter: brightness(1.5);
+}
+
+@media (max-width: 720px) {
+    #add-service-form,
+    .add-service-grid {
+        grid-template-columns: 1fr;
+        grid-auto-rows: auto;
+    }
+    #add-service-form button,
+    .add-service-grid button {
+        width: 100%;
+    }
 }
