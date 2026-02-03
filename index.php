@@ -57,6 +57,9 @@ switch ($action) {
         $controller->changeStatus();
       exit();
     
+      case 'search_client_history':
+        $controller->searchClientHistory();
+        exit();
     case 'logout':
         session_destroy();
         $_SESSION = array(); // Clear the session array

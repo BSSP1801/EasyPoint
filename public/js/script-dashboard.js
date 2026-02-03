@@ -317,6 +317,93 @@ document.addEventListener('DOMContentLoaded', () => {
         renderAppointmentsList(upcoming, "Upcoming Appointments");
     }
 
+    /* ========================================================
+          6. BUSCAR HISTORIAL DE CLIENTES
+          ======================================================== */
+    window.searchClientHistory = function () {
+        const email = document.getElementById('client-search-email').value;
+        const resultsContainer = document.getElementById('client-history-results');
+
+        if (!email) {
+            alert("Please enter an email address");
+            return;
+        }
+
+        resultsContainer.innerHTML = '<div style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+
+        fetch(`index.php?action=search_client_history&email=${encodeURIComponent(email)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    resultsContainer.innerHTML = `<p style="color: #ff4d4d; text-align: center;">${data.message}</p>`;
+                    return;
+                }
+
+                if (data.appointments.length === 0) {
+                    resultsContainer.innerHTML = '<p style="text-align: center;">No appointments found for this client.</p>';
+                    return;
+                }
+
+                let html = `
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+            <tr style="border-bottom: 2px solid #eee; text-align: left;">
+                <th style="padding: 10px;">Client</th> <th style="padding: 10px;">Date</th>
+                <th style="padding: 10px;">Service</th>
+                <th style="padding: 10px;">Status</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+                data.appointments.forEach(appt => {
+                    const statusClass = appt.status.toLowerCase();
+                    html += `
+        <tr style="border-bottom: 1px solid #f9f9f9;">
+            <td style="padding: 10px;">
+                <div style="font-weight:bold; font-size: 14px;">${appt.username || 'User'}</div>
+                <div style="font-size: 12px; color: #666;">${appt.email}</div>
+            </td>
+            <td style="padding: 10px;">${appt.appointment_date}<br><small>${appt.appointment_time}</small></td>
+            <td style="padding: 10px;">${appt.service_name}</td>
+            <td style="padding: 10px;"><span class="status ${statusClass}">${appt.status}</span></td>
+        </tr>`;
+                });
+
+                html += `</tbody></table>`;
+                resultsContainer.innerHTML = html;
+            })
+            .catch(err => {
+                console.error(err);
+                resultsContainer.innerHTML = '<p style="color: red;">Connection error</p>';
+            });
+    };
+
+    /* =========================
+           7. BUSQUEDA ACTIVA DE CLIENTES
+           ========================= */
+    const searchInput = document.getElementById('client-search-email');
+    let debounceTimer;
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const term = this.value.trim();
+
+            // Limpiar el temporizador anterior
+            clearTimeout(debounceTimer);
+
+            // Si hay menos de 3 caracteres, limpiamos resultados y no buscamos
+            if (term.length < 3) {
+                document.getElementById('client-history-results').innerHTML =
+                    '<p style="color: #888; font-style: italic; text-align: center; padding: 20px;">Type at least 3 characters to search...</p>';
+                return;
+            }
+
+            // Esperar 500ms después de que el usuario deje de escribir para buscar
+            debounceTimer = setTimeout(() => {
+                window.searchClientHistory(); // Llamamos a tu función existente
+            }, 500);
+        });
+    }
 }); // End DOMContentLoaded
 
 
