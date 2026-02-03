@@ -354,6 +354,57 @@ class UserController
             exit();
         }
     }
+  
+  public function searchClientHistory() {
+    header('Content-Type: application/json');
     
+    // ... verificaciones de sesión (igual que antes) ...
+    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'store') {
+        echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+        exit();
+    }
+
+    $email = $_GET['email'] ?? '';
+    $storeId = $_SESSION['user_id'];
+
+    // Permitir búsquedas de al menos 3 caracteres para no sobrecargar
+    if (strlen($email) < 3) {
+        echo json_encode(['success' => false, 'message' => 'Type at least 3 characters']);
+        exit();
+    }
+
+    $db = new Database();
+    $conn = $db->getConnection();
+
+    try {
+        // CAMBIO PRINCIPAL: Usamos LIKE y concatenamos '%'
+        $stmt = $conn->prepare("
+            SELECT a.appointment_date, a.appointment_time, a.status, s.name as service_name, u.email, u.username
+            FROM appointments a
+            JOIN users u ON a.user_id = u.id
+            JOIN services s ON a.service_id = s.id
+            WHERE u.email LIKE :email AND s.user_id = :store_id
+            ORDER BY a.appointment_date DESC, a.appointment_time DESC
+        ");
+        
+        $searchTerm = "%" . $email . "%";
+
+        $stmt->execute([
+            ':email' => $searchTerm,
+            ':store_id' => $storeId
+        ]);
+
+        $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            'success' => true,
+            'appointments' => $appointments
+        ]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    }
+}
+
+
 }
 ?>
