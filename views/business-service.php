@@ -177,24 +177,28 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                         </div>
                 </div>
             </div>
-            <div class="business-title">
-                <h1><?php echo htmlspecialchars($store['business_name']); ?></h1>
-                <p>
-                    <?php
-                    $parts = [];
-                    if (!empty($store['address']))
-                        $parts[] = $store['address'];
-                    if (!empty($store['postal_code']))
-                        $parts[] = $store['postal_code'];
-                    if (!empty($store['city']))
-                        $parts[] = $store['city'];
-                    echo htmlspecialchars(implode(', ', $parts));
-                    ?>
-                </p>
-                <div class="stars">
-                    <i class="fas fa-star"></i> 5.0 <span style="color:#b0a8a6">(New)</span>
-                </div>
-            </div>
+           <div class="business-title">
+    <h1><?php echo htmlspecialchars($store['business_name']); ?></h1>
+    
+    <?php if (!empty($store['business_type']) && $store['business_type'] !== 'General'): ?>
+        <span style="background-color: #a58668; color: #2b201e; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 8px;">
+            <?php echo htmlspecialchars($store['business_type']); ?>
+        </span>
+    <?php endif; ?>
+
+    <p>
+        <?php
+        $parts = [];
+        if (!empty($store['address'])) $parts[] = $store['address'];
+        if (!empty($store['postal_code'])) $parts[] = $store['postal_code'];
+        if (!empty($store['city'])) $parts[] = $store['city'];
+        echo htmlspecialchars(implode(', ', $parts));
+        ?>
+    </p>
+    <div class="stars">
+        <i class="fas fa-star"></i> 5.0 <span style="color:#b0a8a6">(New)</span>
+    </div>
+</div>
 
             <div>
                 <h2 class="section-title">Services</h2>
@@ -308,10 +312,69 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                 </div>
             </div>
 
-            <div>
-                <h3 class="info-header">Social Media</h3>
-                <i class="fab fa-instagram" style="font-size: 20px;"></i>
-            </div>
+          <div>
+    <h3 class="info-header">Social Media</h3>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        
+        <?php 
+        $socials = [
+            'website'   => ['icon' => 'fas fa-globe',     'val' => $store['website'] ?? '',        'type' => 'url'],
+            'instagram' => ['icon' => 'fab fa-instagram', 'val' => $store['instagram_link'] ?? '', 'type' => 'instagram'],
+            'facebook'  => ['icon' => 'fab fa-facebook',  'val' => $store['facebook_link'] ?? '',  'type' => 'url'],
+            'tiktok'    => ['icon' => 'fab fa-tiktok',    'val' => $store['tiktok_link'] ?? '',    'type' => 'tiktok'],
+            'twitter'   => ['icon' => 'fab fa-twitter',   'val' => $store['twitter_link'] ?? '',   'type' => 'twitter']
+        ];
+        
+        $hasSocial = false;
+        
+        foreach($socials as $key => $data): 
+            $input = trim($data['val']);
+            
+            if(!empty($input)):
+                $hasSocial = true;
+                $finalLink = $input;
+
+                // LÓGICA INTELIGENTE:
+                // Si NO empieza por http/https, asumimos que es un usuario o enlace incompleto
+                if (!preg_match("~^(?:f|ht)tps?://~i", $input)) {
+                    
+                    // Quitamos el '@' inicial si el usuario lo puso (ej: @miusuario -> miusuario)
+                    $cleanUser = ltrim($input, '@');
+
+                    switch ($data['type']) {
+                        case 'tiktok':
+                            $finalLink = "https://www.tiktok.com/@" . $cleanUser;
+                            break;
+                            
+                        case 'instagram':
+                            $finalLink = "https://www.instagram.com/" . $cleanUser;
+                            break;
+                            
+                        case 'twitter':
+                            $finalLink = "https://twitter.com/" . $cleanUser;
+                            break;
+                            
+                        default:
+                            $finalLink = "https://" . $input;
+                            break;
+                    }
+                }
+        ?>
+            <a href="<?php echo htmlspecialchars($finalLink); ?>" target="_blank" rel="noopener noreferrer" 
+               style="color: #cbbba6; text-decoration: none; font-size: 22px; transition: color 0.3s;"
+               onmouseover="this.style.color='#fff'" 
+               onmouseout="this.style.color='#cbbba6'">
+                <i class="<?php echo $data['icon']; ?>"></i>
+            </a>
+        <?php 
+            endif;
+        endforeach; 
+        
+        if(!$hasSocial): ?>
+            <p style="font-size: 13px; color: #666; font-style: italic;">No social media linked.</p>
+        <?php endif; ?>
+    </div>
+</div>
         </div>
     </div>
 

@@ -209,100 +209,122 @@ foreach ($myAppointments as $appt) {
                     </div>
 
                     <form class="settings-form" id="business-form" enctype="multipart/form-data">
-                        <div class="form-row">
-                            <div class="form-group half">
-                                <label>Business Name</label>
-                                <input type="text" name="business_name"
-                                    value="<?php echo htmlspecialchars($userData['business_name'] ?? ''); ?>"
-                                    class="form-input">
-                            </div>
-                            <div class="form-group half">
-                                <label>Phone</label>
-                                <input type="text" name="phone"
-                                    value="<?php echo htmlspecialchars($userData['phone'] ?? ''); ?>"
-                                    class="form-input">
-                            </div>
-                        </div>
+    
+    <div class="form-row">
+        <div class="form-group half">
+            <label>Business Name</label>
+            <input type="text" name="business_name" value="<?php echo htmlspecialchars($userData['business_name'] ?? ''); ?>" class="form-input" required>
+        </div>
+        <div class="form-group half">
+            <label>Category</label>
+            <select name="business_type" class="form-input">
+                <?php 
+                    $currentType = $userData['business_type'] ?? 'General';
+                    $types = ['Hair Salon', 'Barbershop', 'Nail Salon', 'Hair Removal', 'Eyebrows & Lashes', 'Skincare', 'Massage', 'Makeup', 'General'];
+                ?>
+                <option value="" disabled>Select a category</option>
+                <?php foreach($types as $type): ?>
+                    <option value="<?php echo $type; ?>" <?php echo ($currentType === $type) ? 'selected' : ''; ?>>
+                        <?php echo $type; ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
 
-                        <div class="form-row">
-                            <div class="form-group half">
-                                <label>City</label>
-                                <input type="text" name="city"
-                                    value="<?php echo htmlspecialchars($userData['city'] ?? ''); ?>" class="form-input">
-                            </div>
-                            <div class="form-group half">
-                                <label>Postal Code</label>
-                                <input type="text" name="postal_code"
-                                    value="<?php echo htmlspecialchars($userData['postal_code'] ?? ''); ?>"
-                                    class="form-input">
-                            </div>
-                        </div>
+    <div class="form-row">
+        <div class="form-group half">
+            <label>Phone</label>
+            <input type="text" name="phone" value="<?php echo htmlspecialchars($userData['phone'] ?? ''); ?>" class="form-input">
+        </div>
+        <div class="form-group half">
+            <label>Website</label>
+            <input type="text" name="website" value="<?php echo htmlspecialchars($userData['website'] ?? ''); ?>" placeholder="https://example.com" class="form-input">
+        </div>
+    </div>
 
-                        <div class="form-group">
-                            <label>Address</label>
-                            <input type="text" name="address"
-                                value="<?php echo htmlspecialchars($userData['address'] ?? ''); ?>" class="form-input">
-                        </div>
+    <div class="form-row">
+        <div class="form-group half">
+            <label>City</label>
+            <input type="text" name="city" value="<?php echo htmlspecialchars($userData['city'] ?? ''); ?>" class="form-input">
+        </div>
+        <div class="form-group half">
+            <label>Postal Code</label>
+            <input type="text" name="postal_code" value="<?php echo htmlspecialchars($userData['postal_code'] ?? ''); ?>" class="form-input">
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>Address</label>
+        <input type="text" name="address" value="<?php echo htmlspecialchars($userData['address'] ?? ''); ?>" class="form-input">
+    </div>
 
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea name="description" rows="4"
-                                class="form-input"><?php echo htmlspecialchars($userData['description'] ?? ''); ?></textarea>
-                        </div>
+    <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" rows="4" class="form-input"><?php echo htmlspecialchars($userData['description'] ?? ''); ?></textarea>
+    </div>
 
-                        <div class="form-row">
-                            <div class="form-group half">
-                                <label>Logo</label>
-                                <input type="file" name="logo" accept="image/*" class="form-input">
-                                <?php if (!empty($userData['logo_url'])): ?>
-                                    <small>Current: <a href="public/<?php echo $userData['logo_url']; ?>"
-                                            target="_blank">View</a></small>
-                                <?php endif; ?>
-                            </div>
-                            <div class="form-group half">
-                                <label>Banner</label>
-                                <input type="file" name="banner" accept="image/*" class="form-input">
-                                <?php if (!empty($userData['banner_url'])): ?>
-                                    <small>Current: <a href="public/<?php echo $userData['banner_url']; ?>"
-                                            target="_blank">View</a></small>
-                                <?php endif; ?>
-                            </div>
-                        </div>
+    <div style="margin: 25px 0 15px 0; border-top: 1px solid #eee; padding-top: 15px;">
+        <h4 style="margin-bottom: 15px; color: #555;">Social Media</h4>
+        <div class="form-row">
+            <div class="form-group half">
+                <label><i class="fab fa-instagram"></i> Instagram</label>
+                <input type="text" name="instagram" value="<?php echo htmlspecialchars($userData['instagram_link'] ?? ''); ?>" placeholder="@username or URL" class="form-input">
+            </div>
+            <div class="form-group half">
+                <label><i class="fab fa-facebook"></i> Facebook</label>
+                <input type="text" name="facebook" value="<?php echo htmlspecialchars($userData['facebook_link'] ?? ''); ?>" placeholder="URL" class="form-input">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group half">
+                <label><i class="fab fa-tiktok"></i> TikTok</label>
+                <input type="text" name="tiktok" value="<?php echo htmlspecialchars($userData['tiktok_link'] ?? ''); ?>" placeholder="@username" class="form-input">
+            </div>
+            <div class="form-group half">
+                <label><i class="fab fa-twitter"></i> Twitter / X</label>
+                <input type="text" name="twitter" value="<?php echo htmlspecialchars($userData['twitter_link'] ?? ''); ?>" placeholder="@username" class="form-input">
+            </div>
+        </div>
+    </div>
 
-                        <div class="form-group">
-                            <label>Gallery (Multiple)</label>
-                            <input type="file" name="gallery[]" accept="image/*" multiple class="form-input">
-                        </div>
+    <div class="form-row">
+        <div class="form-group half">
+            <label>Logo</label>
+            <input type="file" name="logo" accept="image/*" class="form-input">
+            <?php if (!empty($userData['logo_url'])): ?>
+                <small>Current: <a href="public/<?php echo $userData['logo_url']; ?>" target="_blank">View</a></small>
+            <?php endif; ?>
+        </div>
+        <div class="form-group half">
+            <label>Banner</label>
+            <input type="file" name="banner" accept="image/*" class="form-input">
+            <?php if (!empty($userData['banner_url'])): ?>
+                <small>Current: <a href="public/<?php echo $userData['banner_url']; ?>" target="_blank">View</a></small>
+            <?php endif; ?>
+        </div>
+    </div>
 
-                        <div class="form-group">
-                            <label>Visibility</label>
-                            <div class="day-toggle" style="display:flex; align-items:center; gap:10px;">
-                                <label class="switch">
-                                    <input type="checkbox" name="is_public" value="1" <?php echo ($userData['is_public'] ?? 0) == 1 ? 'checked' : ''; ?>>
-                                    <span class="slider round"></span>
-                                </label>
-                                <span class="day-name">Public (Visible in Home)</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Business Category</label>
-                            <select name="business_type" class="form-input">
-                                <?php
-                                $currentType = $userData['business_type'] ?? 'General';
-                                $types = ['Hair Salon', 'Barbershop', 'Nail Salon', 'Hair Removal', 'Eyebrows & Lashes', 'Skincare', 'Massage', 'Makeup'];
-                                ?>
-                                <option value="General">Select a category...</option>
-                                <?php foreach ($types as $type): ?>
-                                    <option value="<?php echo $type; ?>" <?php echo ($currentType === $type) ? 'selected' : ''; ?>>
-                                        <?php echo $type; ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn-save-1"><i class="fas fa-save"></i> Save Changes</button>
-                        </div>
-                    </form>
+    <div class="form-group">
+        <label>Gallery (Multiple)</label>
+        <input type="file" name="gallery[]" accept="image/*" multiple class="form-input">
+    </div>
+
+    <div class="form-group">
+        <label>Visibility</label>
+        <div class="day-toggle" style="display:flex; align-items:center; gap:10px;">
+            <label class="switch">
+                <input type="checkbox" name="is_public" value="1" <?php echo ($userData['is_public'] ?? 0) == 1 ? 'checked' : ''; ?>>
+                <span class="slider round"></span>
+            </label>
+            <span class="day-name">Public (Visible in Home)</span>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn-save-1"><i class="fas fa-save"></i> Save Changes</button>
+    </div>
+</form>
                 </section>
             </div>
 
