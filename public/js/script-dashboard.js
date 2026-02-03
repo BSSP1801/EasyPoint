@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sidebar?.classList.remove('collapsed');
         }
     }
-    
+
     applyDefaultState();
 
     if (toggleBtn && sidebar) {
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
        2. CALENDAR WIDGET & FUNCIONES
        ========================= */
     const calendar = document.getElementById('calendar');
-    
+
     // Función auxiliar para fecha
     function formatAppointmentDate(dateStr, timeStr) {
         const date = new Date(dateStr + 'T' + timeStr);
@@ -47,12 +47,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Definimos la función PRIMERO
-    window.renderAppointmentsList = function(appointments, titleText) {
+    window.renderAppointmentsList = function (appointments, titleText) {
         const container = document.getElementById('appointments-container');
         const title = document.getElementById('appointments-title');
-        
-        if(title) title.innerText = titleText;
-        container.innerHTML = ''; 
+
+        if (title) title.innerText = titleText;
+        container.innerHTML = '';
 
         if (!appointments || appointments.length === 0) {
             container.innerHTML = '<div class="appointment"><p style="color: #888; font-style: italic;">No appointments found.</p></div>';
@@ -63,11 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         appointments.forEach(appt => {
             let statusClass = 'pending';
-            if(appt.status === 'confirmed') statusClass = 'confirmed';
-            else if(appt.status === 'cancelled') statusClass = 'cancelled';
-            
+            if (appt.status === 'confirmed') statusClass = 'confirmed';
+            else if (appt.status === 'cancelled') statusClass = 'cancelled';
+
             let buttonsHtml = '';
-            
+
             // Lógica de botones
             if (appt.appointment_date >= today) {
                 if (appt.status === 'pending') {
@@ -105,45 +105,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    window.updateStatus = function(id, newStatus) {
-    if(!confirm('Are you sure you want to change the status to ' + newStatus + '?')) return;
+    window.updateStatus = function (id, newStatus) {
+        if (!confirm('Are you sure you want to change the status to ' + newStatus + '?')) return;
 
-    const formData = new FormData();
-    formData.append('id', id);
-    formData.append('status', newStatus);
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('status', newStatus);
 
-    fetch('index.php?action=change_status', {
-        method: 'POST',
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success) {
-            // AQUI ESTÁ LA CLAVE: Recargar la página
-            window.location.reload();
-        } else {
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        alert('Connection error');
-    });
-};
+        fetch('index.php?action=change_status', {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // AQUI ESTÁ LA CLAVE: Recargar la página
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Connection error');
+            });
+    };
 
     // Lógica del Calendario
     if (calendar) {
         const monthYear = document.getElementById('monthYear');
         const prevMonthBtn = document.getElementById('prevMonth');
         const nextMonthBtn = document.getElementById('nextMonth');
-        
-        let currentDate = new Date(); 
+
+        let currentDate = new Date();
         let selectedDate = null;
 
         function renderCalendar() {
             calendar.innerHTML = '';
             const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            
+
             days.forEach(day => {
                 const header = document.createElement('div');
                 header.className = 'calendar-day-header';
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const month = currentDate.getMonth();
             const today = new Date();
 
-            if(monthYear) {
+            if (monthYear) {
                 monthYear.innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
             }
 
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'calendar-day';
                 dayDiv.innerText = i;
-                
+
                 const monthString = String(month + 1).padStart(2, '0');
                 const dayString = String(i).padStart(2, '0');
                 const fullDate = `${year}-${monthString}-${dayString}`;
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const todayStr = new Date().toISOString().split('T')[0];
                         const upcoming = allAppointments.filter(a => a.appointment_date >= todayStr);
                         renderAppointmentsList(upcoming, "Upcoming Appointments");
-                    } 
+                    }
                     else {
                         selectedDate = fullDate;
                         renderCalendar();
@@ -229,9 +229,9 @@ document.addEventListener('DOMContentLoaded', () => {
        ========================= */
     const businessForm = document.getElementById('business-form');
     if (businessForm) {
-        businessForm.addEventListener('submit', function(e) {
+        businessForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            const btn = this.querySelector('.btn-save');
+            const btn = this.querySelector('button[type="submit"]');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             btn.disabled = true;
@@ -242,23 +242,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 body: formData
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Information updated successfully!');
-                    window.location.reload(); 
-                } else {
-                    alert('Error: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Connection error');
-            })
-            .finally(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Information updated successfully!');
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Connection error');
+                })
+                .finally(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                });
         });
     }
 
@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
        ========================= */
     const saveScheduleBtn = document.getElementById('save-schedule-btn');
     if (saveScheduleBtn) {
-        saveScheduleBtn.addEventListener('click', function(e) {
+        saveScheduleBtn.addEventListener('click', function (e) {
             e.preventDefault();
             const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
             let schedule = {};
@@ -292,18 +292,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             fetch('index.php?action=update_schedule', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ schedule: schedule })
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) alert('Schedule updated!');
-                else alert('Error: ' + data.message);
-            })
-            .finally(() => {
-                saveScheduleBtn.innerText = originalText;
-                saveScheduleBtn.disabled = false;
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) alert('Schedule updated!');
+                    else alert('Error: ' + data.message);
+                })
+                .finally(() => {
+                    saveScheduleBtn.innerText = originalText;
+                    saveScheduleBtn.disabled = false;
+                });
         });
     }
 
@@ -325,51 +325,51 @@ document.addEventListener('DOMContentLoaded', () => {
    ========================= */
 
 function switchMainView(evt, viewId) {
-    if(evt) evt.preventDefault();
-    
+    if (evt) evt.preventDefault();
+
     // 1. GUARDAR: Memorizamos en qué vista estamos
     sessionStorage.setItem('currentView', viewId);
 
     // Ocultar todas las vistas
     document.querySelectorAll('.main-view').forEach(v => v.style.display = 'none');
-    
+
     // Quitar active de todos los menús
     document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-    
+
     // Mostrar la vista seleccionada
     const target = document.getElementById(viewId);
-    if(target) target.style.display = 'block';
+    if (target) target.style.display = 'block';
 
     // 2. RECUPERAR ACTIVE: Si hay evento (click) lo usamos, si no (recarga) buscamos el link
-    if(evt && evt.currentTarget) {
+    if (evt && evt.currentTarget) {
         evt.currentTarget.classList.add('active');
     } else {
         // Truco para encontrar el botón del menú correspondiente a esta vista
         const link = document.querySelector(`a[onclick*="${viewId}"]`);
-        if(link) link.classList.add('active');
+        if (link) link.classList.add('active');
     }
 }
 
 function openTab(evt, tabName) {
-    if(evt) evt.preventDefault();
+    if (evt) evt.preventDefault();
     document.querySelectorAll('.tab-content').forEach(c => {
         c.classList.remove('active-content');
     });
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
     const target = document.getElementById(tabName);
-    if(target) {
+    if (target) {
         target.classList.add('active-content');
     }
-    if(evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
 }
 
 function toggleDay(checkbox) {
     const row = checkbox.closest('.schedule-row');
     const inputs = row.querySelector('.time-inputs');
     const label = row.querySelector('.closed-label');
-    
-    if(checkbox.checked) {
+
+    if (checkbox.checked) {
         inputs.style.display = 'flex';
         label.style.display = 'none';
     } else {
@@ -392,18 +392,18 @@ function submitService(e) {
         method: 'POST',
         body: formData
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success && data.service) {
-            const svc = data.service;
-            const list = document.getElementById('services-list');
-            // Remove empty message if present
-            const noMsg = document.getElementById('no-services-msg');
-            if (noMsg) noMsg.remove();
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.service) {
+                const svc = data.service;
+                const list = document.getElementById('services-list');
+                // Remove empty message if present
+                const noMsg = document.getElementById('no-services-msg');
+                if (noMsg) noMsg.remove();
 
-            const div = document.createElement('div');
-            div.className = 'service-item';
-            div.innerHTML = `
+                const div = document.createElement('div');
+                div.className = 'service-item';
+                div.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <div><i class="fas fa-cut" style="color: #555;"></i></div>
                     <div>
@@ -416,66 +416,66 @@ function submitService(e) {
                     <a href="#" onclick="deleteService(${svc.id}, this); return false;" style="color: #ff4d4d; background: #fff0f0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fas fa-trash-alt"></i></a>
                 </div>
             `;
-            if (list) list.insertAdjacentElement('afterbegin', div);
-            form.reset();
-        } else {
-            alert('Error: ' + (data.message || 'Could not add service'));
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        alert('Connection error');
-    })
-    .finally(() => {
-        if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
-    });
+                if (list) list.insertAdjacentElement('afterbegin', div);
+                form.reset();
+            } else {
+                alert('Error: ' + (data.message || 'Could not add service'));
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Connection error');
+        })
+        .finally(() => {
+            if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
+        });
 }
 
 function deleteService(id, el) {
-    if(!confirm('Delete this service?')) return;
+    if (!confirm('Delete this service?')) return;
     fetch('index.php?action=delete_service&id=' + id)
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            const item = el.closest('.service-item');
-            if (item) item.remove();
-            const list = document.getElementById('services-list');
-            if (list && !list.querySelector('.service-item')) {
-                const msg = document.createElement('div');
-                msg.id = 'no-services-msg';
-                msg.style = 'text-align: center; padding: 40px; background: rgba(235, 230, 210, 0.55); border-radius: 10px; color: #000000;';
-                msg.textContent = "You haven't added any services yet.";
-                list.appendChild(msg);
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const item = el.closest('.service-item');
+                if (item) item.remove();
+                const list = document.getElementById('services-list');
+                if (list && !list.querySelector('.service-item')) {
+                    const msg = document.createElement('div');
+                    msg.id = 'no-services-msg';
+                    msg.style = 'text-align: center; padding: 40px; background: rgba(235, 230, 210, 0.55); border-radius: 10px; color: #000000;';
+                    msg.textContent = "You haven't added any services yet.";
+                    list.appendChild(msg);
+                }
+            } else {
+                alert('Error deleting service: ' + (data.message || 'Unknown'));
             }
-        } else {
-            alert('Error deleting service: ' + (data.message || 'Unknown'));
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        alert('Connection error');
-    });
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Connection error');
+        });
 }
 
 function escapeHtml(unsafe) {
     return String(unsafe)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/\"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 /* =========================
        6. RESTAURAR VISTA TRAS RECARGA
        ========================= */
-    // Verificamos si hay una vista guardada en memoria
-    const savedView = sessionStorage.getItem('currentView');
-    if (savedView) {
-        // Si existe, forzamos esa vista
-        switchMainView(null, savedView);
-    } else {
-        // (Opcional) Si quieres forzar una por defecto si no hay nada guardado
-        // switchMainView(null, 'view-calendar');
-    }
+// Verificamos si hay una vista guardada en memoria
+const savedView = sessionStorage.getItem('currentView');
+if (savedView) {
+    // Si existe, forzamos esa vista
+    switchMainView(null, savedView);
+} else {
+    // (Opcional) Si quieres forzar una por defecto si no hay nada guardado
+    // switchMainView(null, 'view-calendar');
+}
 

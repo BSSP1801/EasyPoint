@@ -23,19 +23,15 @@ switch ($action) {
     case 'register':
         $controller->register();
         exit();
-        break;
     case 'login':
         $controller->login();
         exit();
-        break;
     case 'dashboard':
         $controller->dashboard();
         exit();
-        break;
     case 'update_schedule':
         $controller->updateSchedule();
         exit();
-        break;
     case 'update_business_info':
         $controller->updateBusinessInfo();
         exit();
@@ -43,7 +39,6 @@ switch ($action) {
         $controller->viewBusiness();
         exit();
     case 'book':
-        // Redirige a la página de reserva
         $service_id = $_GET['service_id'] ?? null;
         $store_id = $_GET['store_id'] ?? null;
         if (!$service_id || !$store_id) {
@@ -52,7 +47,6 @@ switch ($action) {
         }
         require_once __DIR__ . '/views/book-service.php';
         exit();
-        break;
     case 'add_service':
         $controller->addService();
         exit();
@@ -61,15 +55,23 @@ switch ($action) {
         exit();
     case 'change_status':
         $controller->changeStatus();
-        break;    
+      exit();
+    
     case 'logout':
         session_destroy();
         $_SESSION = array(); // Clear the session array
         header("Location: index.php");
         exit();
-        break;
 }
 
+$stores = [];
+if ($action === 'home') {
+    // 
+    $categoryFilter = isset($_GET['category']) ? $_GET['category'] : null;
+
+    // Pasamos el filtro al modelo
+    $stores = $userModel->getRecommendedStores($categoryFilter);
+}
 // --- VIEW SECTION: Start HTML output after all logic is done ---
 ?>
 <!DOCTYPE html>
@@ -109,7 +111,7 @@ switch ($action) {
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                     <a href="index.php?action=logout" class="logout-link">Logout</a>
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
-                    <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a> 
+                    <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a>
                     <span class="user-link">
                         Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
                     </span>
@@ -154,14 +156,17 @@ switch ($action) {
             </div>
 
             <ul class="category-list">
-                <li>Hair Salon</li>
-                <li>Barbershop</li>
-                <li>Nail Salon</li>
-                <li>Hair Removal</li>
-                <li>Eyebrows & Lashes</li>
-                <li>Skincare</li>
-                <li>Massage</li>
-                <li>Makeup</li>
+                <li><a href="index.php?category=Hair Salon" class="cat-link">Hair Salon</a></li>
+                <li><a href="index.php?category=Barbershop" class="cat-link">Barbershop</a></li>
+                <li><a href="index.php?category=Nail Salon" class="cat-link">Nail Salon</a></li>
+                <li><a href="index.php?category=Hair Removal" class="cat-link">Hair Removal</a></li>
+                <li><a href="index.php?category=Eyebrows & Lashes" class="cat-link">Eyebrows & Lashes</a></li>
+                <li><a href="index.php?category=Skincare" class="cat-link">Skincare</a></li>
+                <li><a href="index.php?category=Massage" class="cat-link">Massage</a></li>
+                <li><a href="index.php?category=Makeup" class="cat-link">Makeup</a></li>
+                <?php if (isset($_GET['category'])): ?>
+                    <li><a href="index.php" class="cat-link" style="color: #d9534f;">Show All</a></li>
+                <?php endif; ?>
             </ul>
         </div>
     </header>
@@ -175,42 +180,46 @@ switch ($action) {
             </button>
 
             <div class="shops-grid">
-    <?php if (empty($stores)): ?>
-        <p style="padding: 20px;">No stores available yet. Be the first to join!</p>
-    <?php else: ?>
-        <?php foreach ($stores as $store): ?>
-            <?php 
-                // Prepare data (no changes)
-                $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
-                
-                $addressParts = [];
-                if (!empty($store['address'])) $addressParts[] = htmlspecialchars($store['address']);
-                if (!empty($store['postal_code'])) $addressParts[] = htmlspecialchars($store['postal_code']);
-                if (!empty($store['city'])) $addressParts[] = htmlspecialchars($store['city']);
-                $fullAddress = implode(', ', $addressParts);
-                
-                $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
-            ?>
+                <?php if (empty($stores)): ?>
+                    <p style="padding: 20px;">No stores available yet. Be the first to join!</p>
+                <?php else: ?>
+                    <?php foreach ($stores as $store): ?>
+                        <?php
+                        // Prepare data (no changes)
+                        $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
 
-            <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
-                <article class="shop-card">
-                    <div class="image-container">
-                        <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
-                        <div class="rating-label">
-                            5.0 <span class="reviews-text">New</span>
-                        </div>
-                    </div>
-                    <div class="shop-info">
-                        <h3 class="shop-name"><?php echo $name; ?></h3>
-                        <p class="shop-address"><?php echo $fullAddress; ?></p>
-                        <span class="sponsored-text">Recommended</span>
-                    </div>
-                </article>
-            </a>
+                        $addressParts = [];
+                        if (!empty($store['address']))
+                            $addressParts[] = htmlspecialchars($store['address']);
+                        if (!empty($store['postal_code']))
+                            $addressParts[] = htmlspecialchars($store['postal_code']);
+                        if (!empty($store['city']))
+                            $addressParts[] = htmlspecialchars($store['city']);
+                        $fullAddress = implode(', ', $addressParts);
 
-        <?php endforeach; ?>
-    <?php endif; ?>
-</div>
+                        $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
+                        ?>
+
+                        <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>"
+                            style="text-decoration: none; color: inherit;">
+                            <article class="shop-card">
+                                <div class="image-container">
+                                    <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
+                                    <div class="rating-label">
+                                        5.0 <span class="reviews-text">New</span>
+                                    </div>
+                                </div>
+                                <div class="shop-info">
+                                    <h3 class="shop-name"><?php echo $name; ?></h3>
+                                    <p class="shop-address"><?php echo $fullAddress; ?></p>
+                                    <span class="sponsored-text">Recommended</span>
+                                </div>
+                            </article>
+                        </a>
+
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
 
             <button class="arrow-button right-arrow">
                 <i class="fa-solid fa-arrow-right"></i>

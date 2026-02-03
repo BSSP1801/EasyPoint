@@ -129,7 +129,7 @@ class UserController
         $userData = $userModel->getFullProfile($_SESSION['user_id']);
         $userRole = $_SESSION['role'] ?? $userData['role'] ?? 'user';
 
-        require_once __DIR__ . '/../public/dashboard.php';
+        require_once __DIR__ . '/../views/dashboard.php';
     }
 
     // Actualizar Horario (AJAX)
@@ -201,6 +201,7 @@ class UserController
                     'city'          => $_POST['city'] ?? '',
                     'postal_code'   => $_POST['postal_code'] ?? '',
                     'description'   => $_POST['description'] ?? '',
+                    'business_type' => $_POST['business_type'] ?? 'General',
                     'is_public'     => isset($_POST['is_public']) ? 1 : 0,
                     'website'       => $_POST['website'] ?? '',
                     'instagram'     => $_POST['instagram'] ?? '',
@@ -209,6 +210,7 @@ class UserController
                     'tiktok'        => $_POST['tiktok'] ?? '',
                     'logo_url'      => $handleUpload('logo'),
                     'banner_url'    => $handleUpload('banner')
+                   
                 ];
 
                 if (!$userModel->updateBusinessProfile($_SESSION['user_id'], $data)) {
