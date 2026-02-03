@@ -131,15 +131,18 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
             </div>
         </nav>
         <ul class="category-list">
-            <li>Hair Salon</li>
-            <li>Barbershop</li>
-            <li>Nail Salon</li>
-            <li>Hair Removal</li>
-            <li>Eyebrows & Lashes</li>
-            <li>Skincare</li>
-            <li>Massage</li>
-            <li>Makeup</li>
-        </ul>
+                <li><a href="index.php?category=Hair Salon" class="cat-link">Hair Salon</a></li>
+                <li><a href="index.php?category=Barbershop" class="cat-link">Barbershop</a></li>
+                <li><a href="index.php?category=Nail Salon" class="cat-link">Nail Salon</a></li>
+                <li><a href="index.php?category=Hair Removal" class="cat-link">Hair Removal</a></li>
+                <li><a href="index.php?category=Eyebrows & Lashes" class="cat-link">Eyebrows & Lashes</a></li>
+                <li><a href="index.php?category=Skincare" class="cat-link">Skincare</a></li>
+                <li><a href="index.php?category=Massage" class="cat-link">Massage</a></li>
+                <li><a href="index.php?category=Makeup" class="cat-link">Makeup</a></li>
+                <?php if (isset($_GET['category'])): ?>
+                    <li><a href="index.php" class="cat-link" style="color: #d9534f;">Show All</a></li>
+                <?php endif; ?>
+            </ul>
     </header>
 
     <div class="main-container">
