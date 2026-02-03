@@ -4,6 +4,7 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
+require_once __DIR__ . '/controllers/BookingController.php';
 require_once __DIR__ . '/models/Service.php';
 
 session_start();
@@ -59,6 +60,14 @@ switch ($action) {
     case 'delete_service':
         $controller->deleteService();
         exit();
+    case 'get-booked-slots':
+        BookingController::getBookedSlots();
+        exit();
+        break;
+    case 'create-appointment':
+        BookingController::create();
+        exit();
+        break;
     case 'change_status':
         $controller->changeStatus();
         break;    

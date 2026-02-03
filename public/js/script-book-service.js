@@ -4,6 +4,14 @@ let selectedDate = null;
 let selectedTime = null;
 let selectedEmployee = null;
 
+// Helper function to convert date to YYYY-MM-DD without timezone issues
+function dateToYMD(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function () {
     renderCalendar();
@@ -144,37 +152,55 @@ function generateTimeSlots(date) {
 
     if (!dayHours.active) return;
 
-    const [openHour, openMinute] = dayHours.open.split(':').map(Number);
-    const [closeHour, closeMinute] = dayHours.close.split(':').map(Number);
-    const duration = SERVICE_DATA.duration;
+    const dateStr = dateToYMD(date);
 
-    // Generate time slots
-    let currentHour = openHour;
-    let currentMinute = openMinute;
+    // Fetch booked slots for this date
+    fetch('index.php?action=get-booked-slots', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            service_id: SERVICE_DATA.id,
+            date: dateStr
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        const bookedTimes = result.booked_times || [];
+        
+        const [openHour, openMinute] = dayHours.open.split(':').map(Number);
+        const [closeHour, closeMinute] = dayHours.close.split(':').map(Number);
+        const duration = SERVICE_DATA.duration;
 
-    const openTotalMinutes = openHour * 60 + openMinute;
-    const closeTotalMinutes = closeHour * 60 + closeMinute;
+        // Generate time slots
+        const openTotalMinutes = openHour * 60 + openMinute;
+        const closeTotalMinutes = closeHour * 60 + closeMinute;
 
-    for (let totalMinutes = openTotalMinutes; totalMinutes + duration <= closeTotalMinutes; totalMinutes += 30) {
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-        const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+        for (let totalMinutes = openTotalMinutes; totalMinutes + duration <= closeTotalMinutes; totalMinutes += 30) {
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
-        const slot = createTimeSlot(timeStr, date);
-        const hour = hours;
+            const slot = createTimeSlot(timeStr, date, bookedTimes);
+            const hour = hours;
 
-        // Categorize by time of day
-        if (hour < 12) {
-            document.getElementById('morningSlots').appendChild(slot);
-        } else if (hour < 18) {
-            document.getElementById('afternoonSlots').appendChild(slot);
-        } else {
-            document.getElementById('eveningSlots').appendChild(slot);
+            // Categorize by time of day
+            if (hour < 12) {
+                document.getElementById('morningSlots').appendChild(slot);
+            } else if (hour < 18) {
+                document.getElementById('afternoonSlots').appendChild(slot);
+            } else {
+                document.getElementById('eveningSlots').appendChild(slot);
+            }
         }
-    }
+    })
+    .catch(error => {
+        console.error('Error fetching booked slots:', error);
+    });
 }
 
-function createTimeSlot(time, date) {
+function createTimeSlot(time, date, bookedTimes = []) {
     const btn = document.createElement('button');
     btn.className = 'time-slot';
     btn.type = 'button';
@@ -185,7 +211,11 @@ function createTimeSlot(time, date) {
     const slotDate = new Date(date);
     slotDate.setHours(hours, minutes, 0, 0);
 
-    if (slotDate < new Date()) {
+    // Check if slot is booked (convert time to HH:MM:SS format for comparison)
+    const timeWithSeconds = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
+    const isBooked = bookedTimes.some(bookedTime => bookedTime === timeWithSeconds || bookedTime === time);
+
+    if (slotDate < new Date() || isBooked) {
         btn.classList.add('disabled');
         btn.disabled = true;
     } else {
@@ -311,20 +341,19 @@ function confirmBooking() {
 
     // Prepare data
     const [hours, minutes] = selectedTime.split(':').map(Number);
-    const appointmentDate = new Date(selectedDate);
     const appointmentTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
 
     const data = {
         user_id: USER_ID,
         service_id: SERVICE_DATA.id,
-        appointment_date: appointmentDate.toISOString().split('T')[0],
+        appointment_date: dateToYMD(selectedDate),
         appointment_time: appointmentTime,
         status: 'pending',
         notes: ''
     };
 
     // Send to server
-    fetch('controllers/BookingController.php', {
+    fetch('index.php?action=create-appointment', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
