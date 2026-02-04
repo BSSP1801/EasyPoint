@@ -628,6 +628,85 @@ header {
     }
 }
 
+@media (max-width: 768px) {
+    .sticky-container {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 0 15px;
+    }
+
+    .sticky-logo {
+        font-size: 18px;
+        flex: 0 0 auto;
+    }
+
+    .sticky-menu {
+        flex: 1;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .business-button,
+    .sticky-business-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+        white-space: nowrap;
+        border-radius: 4px;
+    }
+
+    .user-link,
+    .login-link,
+    .logout-link {
+        font-size: 12px;
+    }
+
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-toggle {
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .dropdown-menu {
+        min-width: 160px;
+        right: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .sticky-container {
+        padding: 0 12px;
+    }
+
+    .sticky-logo {
+        font-size: 16px;
+    }
+
+    .sticky-menu {
+        gap: 8px;
+    }
+
+    .business-button,
+    .sticky-business-btn {
+        padding: 5px 10px;
+        font-size: 10px;
+    }
+
+    .user-link,
+    .login-link,
+    .logout-link {
+        font-size: 10px;
+    }
+
+    .dropdown-toggle {
+        font-size: 10px;
+    }
+}
+
+
 
 .modal-overlay {
     display: none;

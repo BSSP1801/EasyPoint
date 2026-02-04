@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once __DIR__ . '/../models/Service.php';
+require_once __DIR__ . '/../models/service.php';
 require_once __DIR__ . '/../models/user.php';
 
 // Verificar que tenemos los parámetros necesarios
@@ -68,15 +68,37 @@ if (!empty($store['opening_hours'])) {
 
             <div class="sticky-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-                    <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
-                    <a href="index.php?action=logout" class="logout-link">Logout</a>
+
+                    <div class="dropdown">
+                        <span class="user-link dropdown-toggle">
+                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
+                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
+                        </span>
+                        <div class="dropdown-menu">
+                            <a href="index.php?action=dashboard" class="dropdown-item">
+                                <i class="fa-solid fa-gauge"></i> Dashboard
+                            </a>
+                            <a href="index.php?action=logout" class="dropdown-item">
+                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                            </a>
+                        </div>
+                    </div>
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
-                    <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a> 
-                    <span class="user-link">
-                        Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                    </span>
-                    <a href="index.php?action=logout" class="logout-link">Logout</a>
+                    <div class="dropdown">
+                        <span class="user-link dropdown-toggle">
+                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
+                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
+                        </span>
+                        <div class="dropdown-menu">
+                            <a href="index.php?action=dashboard" class="dropdown-item">
+                                <i class="fa-solid fa-gauge"></i> Dashboard
+                            </a>
+                            <a href="index.php?action=logout" class="dropdown-item">
+                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                            </a>
+                        </div>
+                    </div>
                 <?php else: ?>
                     <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
@@ -89,18 +111,37 @@ if (!empty($store['opening_hours'])) {
             <div class="logo"><a href="/index.php">EasyPoint</a></div>
             <div class="user-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-                    <a href="index.php?action=dashboard">
-                        <span class="user-link">
-                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                        </span></a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
-                    <a href="index.php?action=logout" class="logout-link">Logout</a>
+
+                    <div class="dropdown">
+                        <span class="user-link dropdown-toggle">
+                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
+                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
+                        </span>
+                        <div class="dropdown-menu">
+                            <a href="index.php?action=dashboard" class="dropdown-item">
+                                <i class="fa-solid fa-gauge"></i> Dashboard
+                            </a>
+                            <a href="index.php?action=logout" class="dropdown-item">
+                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                            </a>
+                        </div>
+                    </div>
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
-                    <span class="user-link">
-                        Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                    </span>
-                    <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a>
-                    <a href="index.php?action=logout" class="logout-link">Logout</a>
+                    <div class="dropdown">
+                        <span class="user-link dropdown-toggle">
+                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
+                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
+                        </span>
+                        <div class="dropdown-menu">
+                            <a href="index.php?action=dashboard" class="dropdown-item">
+                                <i class="fa-solid fa-gauge"></i> Dashboard
+                            </a>
+                            <a href="index.php?action=logout" class="dropdown-item">
+                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                            </a>
+                        </div>
+                    </div>
                 <?php else: ?>
                     <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>

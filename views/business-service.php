@@ -3,7 +3,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once __DIR__ . '/../models/Service.php';
+require_once __DIR__ . '/../models/service.php';
 require_once __DIR__ . '/../models/user.php';
 
 // 1. Check if we received an ID
@@ -270,8 +270,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                                     </div>
 
                                     <a href="../index.php?action=book&service_id=<?php echo htmlspecialchars($service['id']); ?>&store_id=<?php echo htmlspecialchars($storeId); ?>" 
-                                        class="book-btn"
-                                        style="background-color: #000; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-block;">
+                                        class="book-btn">
                                         Book
                                     </a>
                                 </div>
