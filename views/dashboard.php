@@ -49,11 +49,19 @@ foreach ($myAppointments as $appt) {
     }
 
     // Contar si es para Hoy
-    // Asumimos que $appt['appointment_date'] viene en formato Y-m-d desde la BD
     if ($appt['appointment_date'] === $currentDate) {
         $stats['today']++;
     }
 }
+
+// --- LÓGICA DE VISUALIZACIÓN POR DEFAULT ---
+$role = $_SESSION['role'] ?? 'user';
+
+// Si es usuario, la vista por defecto es CALENDARIO (view-calendar)
+// Si es tienda/admin, la vista por defecto es DASHBOARD (view-dashboard)
+$calendarClass = ($role === 'user') ? 'main-view' : 'main-view hidden';
+$dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main-view hidden';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,7 +122,7 @@ foreach ($myAppointments as $appt) {
 
     <main class="content">
 
-        <div id="view-calendar" class="main-view hidden">
+        <div id="view-calendar" class="<?php echo $calendarClass; ?>">
             <header class="header">
                 <div class="welcome">Welcome back. Here is a summary of your schedule.</div>
                 <div class="header-tools">
@@ -181,7 +189,7 @@ foreach ($myAppointments as $appt) {
             </div>
         </div>
 
-        <div id="view-dashboard" class="main-view">
+        <div id="view-dashboard" class="<?php echo $dashboardClass; ?>">
             <header class="header">
                 <div class="header-text">
                     <h1 class="page-title">Management</h1>

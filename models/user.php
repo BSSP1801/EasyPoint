@@ -279,6 +279,30 @@ class User
     }
 }
 
+public function getUserAppointments($userId)
+{
+    try {
+        $query = "SELECT a.id, a.appointment_date, a.appointment_time, a.status, 
+                         s.name as service_name, s.price, s.duration,
+                         store.id as store_id, store.business_name as store_name, bp.logo_url as store_logo
+                  FROM appointments a
+                  JOIN services s ON a.service_id = s.id
+                  JOIN users store ON s.user_id = store.id
+                  LEFT JOIN business_profiles bp ON store.id = bp.user_id
+                  WHERE a.user_id = :user_id
+                  ORDER BY a.appointment_date ASC, a.appointment_time ASC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e) {
+        error_log("Error fetching user appointments: " . $e->getMessage());
+        return [];
+    }
+}
+
 public function updateAppointmentStatus($appointmentId, $newStatus, $storeId)
     {
         try {
