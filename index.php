@@ -92,16 +92,20 @@ switch ($action) {
             <div class="sticky-logo"><a href="/index.php">EasyPoint</a></div>
 
             <div class="sticky-search-bar">
-                <div class="search-field">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" placeholder="Search services">
-                </div>
-                <div class="search-field border-left">
-                    <span class="search-icon">📍</span>
-                    <input type="text" placeholder="Where?">
-                </div>
-                <button class="sticky-search-btn">Search</button>
-            </div>
+    <div class="search-field">
+        <span class="search-icon">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </span>
+        <input type="text" placeholder="Search services">
+    </div>
+    <div class="search-field border-left">
+        <span class="search-icon">
+            <i class="fa-solid fa-location-dot"></i>
+        </span>
+        <input type="text" placeholder="Where?">
+    </div>
+    <button class="sticky-search-btn">Search</button>
+</div>
 
             <div class="sticky-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>

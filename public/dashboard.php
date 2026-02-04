@@ -29,7 +29,7 @@ if ($_SESSION['role'] === 'store') {
     $myAppointments = $userModel->getStoreAppointments($_SESSION['user_id']);
 } else if ($_SESSION['role'] === 'user') {
     // user case
-    // $myAppointments = $userModel->getUserAppointments($_SESSION['user_id']);
+    $myAppointments = $userModel->getUserAppointments($_SESSION['user_id']);
 }
 $stats = [
     'today' => 0,
@@ -113,7 +113,7 @@ foreach ($myAppointments as $appt) {
 
     <main class="content">
 
-        <div id="view-calendar" class="main-view hidden">
+        <div id="view-calendar" class="main-view <?php echo ($_SESSION['role'] === 'store') ? 'hidden' : ''; ?>">
             <header class="header">
                 <div class="welcome">Welcome back. Here is a summary of your schedule.</div>
                 <div class="header-tools">
@@ -179,7 +179,7 @@ foreach ($myAppointments as $appt) {
             </div>
         </div>
 
-        <div id="view-dashboard" class="main-view">
+        <div id="view-dashboard" class="main-view <?php echo ($_SESSION['role'] === 'user') ? 'hidden' : ''; ?>">
             <header class="header">
                 <div class="header-text">
                     <h1 class="page-title">Management</h1>
