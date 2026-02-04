@@ -231,10 +231,7 @@ header {
     transition: color 0.3s ease;
     padding-bottom: 5px;
 }
-.category-list a:link, a:visited, a:hover, a:active {
-    color: var(--accent); 
-    text-decoration: none; 
-}
+
 .category-list li:hover li:active li:visited {
     color: var(--accent);
 }

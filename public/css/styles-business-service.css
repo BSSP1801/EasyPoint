@@ -252,6 +252,10 @@ header {
     z-index: 10;
 }
 
+.business-button:hover {
+    color: white;
+}
+
 .navigation-bar {
     display: flex;
     justify-content: space-between;
@@ -347,11 +351,11 @@ header {
     transition: color 0.3s ease;
     padding-bottom: 5px;
 }
-.category-list a:link, a:visited, a:hover, a:active {
+.category-list a:link {
     color: var(--accent); 
     text-decoration: none; 
 }
-.category-list li:hover li:active li:visited {
+.category-list li:active li:visited {
     color: var(--accent);
 }
 
