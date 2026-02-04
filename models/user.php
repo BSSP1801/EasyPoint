@@ -109,17 +109,15 @@ class User
     // Obtener Perfil Completo (Usuario + Negocio)
     public function getFullProfile($userId)
     {
-        // Unificación: Traemos todo (*) de users y los campos específicos de business_profiles
-        // incluyendo el ID del perfil para la galería.
         $query = "SELECT u.*, 
                      bp.id as business_profile_id, 
-                     bp.description, bp.logo_url, bp.banner_url, 
+                     bp.description, bp.business_type, bp.logo_url, bp.banner_url, 
                      bp.opening_hours, bp.is_public,
                      bp.website, bp.instagram_link, bp.facebook_link, bp.twitter_link, bp.tiktok_link
               FROM " . $this->table_name . " u 
               LEFT JOIN business_profiles bp ON u.id = bp.user_id 
               WHERE u.id = :id LIMIT 1";
-
+        // ... resto de la función igual
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $userId);
         $stmt->execute();
@@ -141,15 +139,11 @@ class User
         try {
             $this->conn->beginTransaction();
 
-            // 1. Actualizar tabla users
+            // ... (El update de la tabla users se mantiene igual) ...
             $queryUser = "UPDATE users SET 
-                      business_name = :bname, 
-                      phone = :phone, 
-                      address = :address, 
-                      city = :city, 
-                      postal_code = :zip 
+                      business_name = :bname, phone = :phone, address = :address, city = :city, postal_code = :zip 
                       WHERE id = :id";
-
+            // ... (binding de users igual) ...
             $stmtU = $this->conn->prepare($queryUser);
             $stmtU->bindParam(':bname', $data['business_name']);
             $stmtU->bindParam(':phone', $data['phone']);
@@ -159,12 +153,13 @@ class User
             $stmtU->bindParam(':id', $userId);
             $stmtU->execute();
 
-            // 2. Actualizar/Insertar tabla business_profiles
+            // Actualizar business_profiles incluyendo business_type
             $queryProfile = "INSERT INTO business_profiles 
-                 (user_id, description, logo_url, banner_url, is_public, website, instagram_link, facebook_link, twitter_link, tiktok_link) 
-                 VALUES (:uid, :desc, :logo, :banner, :is_public, :web, :insta, :fb, :tw, :tk) 
+                 (user_id, description, business_type, logo_url, banner_url, is_public, website, instagram_link, facebook_link, twitter_link, tiktok_link) 
+                 VALUES (:uid, :desc, :type, :logo, :banner, :is_public, :web, :insta, :fb, :tw, :tk) 
                  ON DUPLICATE KEY UPDATE 
                  description = :desc,
+                 business_type = :type, 
                  logo_url = COALESCE(:logo, logo_url),
                  banner_url = COALESCE(:banner, banner_url),
                  is_public = :is_public,
@@ -177,6 +172,7 @@ class User
             $stmtP = $this->conn->prepare($queryProfile);
             $stmtP->bindParam(':uid', $userId);
             $stmtP->bindParam(':desc', $data['description']);
+            $stmtP->bindParam(':type', $data['business_type']); // Nuevo campo
             $stmtP->bindParam(':is_public', $data['is_public']);
             $stmtP->bindParam(':web', $data['website']);
             $stmtP->bindParam(':insta', $data['instagram']);
@@ -202,16 +198,28 @@ class User
     }
 
     // Tiendas recomendadas (Carrusel Home)
-    public function getRecommendedStores()
+    public function getRecommendedStores($category = null)
     {
         try {
-            $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, bp.logo_url 
+            $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, bp.logo_url, bp.business_type 
                   FROM users u 
                   INNER JOIN business_profiles bp ON u.id = bp.user_id 
-                  WHERE u.role = 'store' AND bp.is_public = 1 
-                  ORDER BY u.created_at DESC LIMIT 8";
+                  WHERE u.role = 'store' AND bp.is_public = 1";
+
+            // Si hay categoría, añadimos el filtro
+            if ($category) {
+                $query .= " AND bp.business_type = :category";
+            }
+
+            $query .= " ORDER BY u.created_at DESC LIMIT 8";
 
             $stmt = $this->conn->prepare($query);
+            
+            // Vincular parámetro si existe
+            if ($category) {
+                $stmt->bindParam(':category', $category);
+            }
+            
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

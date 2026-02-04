@@ -53,8 +53,9 @@ switch ($action) {
         exit();
     case 'change_status':
         $controller->changeStatus();
-        exit();
-    case 'search_client_history':
+      exit();
+    
+      case 'search_client_history':
         $controller->searchClientHistory();
         exit();
     case 'logout':
@@ -64,6 +65,15 @@ switch ($action) {
         exit();
 }
 
+$stores = [];
+if ($action === 'home') {
+    // 
+    $categoryFilter = isset($_GET['category']) ? $_GET['category'] : null;
+
+    // Pasamos el filtro al modelo
+    $stores = $userModel->getRecommendedStores($categoryFilter);
+}
+// --- VIEW SECTION: Start HTML output after all logic is done ---
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -118,6 +128,11 @@ switch ($action) {
                     </div>
 
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
+                    <a href="index.php?action=dashboard" class="dashboard-link">Dashboard</a>
+                    <span class="user-link">
+                        Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
+                    </span>
+                    <a href="index.php?action=logout" class="logout-link">Logout</a>
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
@@ -221,19 +236,24 @@ switch ($action) {
                     <p style="padding: 20px;">No stores available yet. Be the first to join!</p>
                 <?php else: ?>
                     <?php foreach ($stores as $store): ?>
-                        <?php 
-                            $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
-                            
-                            $addressParts = [];
-                            if (!empty($store['address'])) $addressParts[] = htmlspecialchars($store['address']);
-                            if (!empty($store['postal_code'])) $addressParts[] = htmlspecialchars($store['postal_code']);
-                            if (!empty($store['city'])) $addressParts[] = htmlspecialchars($store['city']);
-                            $fullAddress = implode(', ', $addressParts);
-                            
-                            $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
+                        <?php
+                        // Prepare data (no changes)
+                        $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
+
+                        $addressParts = [];
+                        if (!empty($store['address']))
+                            $addressParts[] = htmlspecialchars($store['address']);
+                        if (!empty($store['postal_code']))
+                            $addressParts[] = htmlspecialchars($store['postal_code']);
+                        if (!empty($store['city']))
+                            $addressParts[] = htmlspecialchars($store['city']);
+                        $fullAddress = implode(', ', $addressParts);
+
+                        $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
                         ?>
 
-                        <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
+                        <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>"
+                            style="text-decoration: none; color: inherit;">
                             <article class="shop-card">
                                 <div class="image-container">
                                     <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
