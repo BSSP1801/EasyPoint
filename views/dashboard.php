@@ -29,7 +29,7 @@ if ($_SESSION['role'] === 'store') {
     $myAppointments = $userModel->getStoreAppointments($_SESSION['user_id']);
 } else if ($_SESSION['role'] === 'user') {
     // user case
-    // $myAppointments = $userModel->getUserAppointments($_SESSION['user_id']);
+    $myAppointments = $userModel->getUserAppointments($_SESSION['user_id']);
 }
 $stats = [
     'today' => 0,
@@ -91,10 +91,8 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
             </div>
 
             <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-                <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-calendar')">
-                    <i class="far fa-calendar-alt"></i><span class="menu-text">Calendar</span>
-                </a>
-                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-appointments')">
+
+                <a href="#" class="menu-item active" onclick="switchMainView(event, 'view-appointments')">
                     <i class="far fa-clock"></i><span class="menu-text">Appointments</span>
                 </a>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')">
@@ -171,9 +169,12 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
                 <section class="appointments-list">
                     <h2 class="section-title" id="appointments-title">Upcoming Appointments</h2>
 
-                    <div id="appointments-container">
-
-                    </div>
+                    <?php if ($role !== 'user'): ?>
+                        <div id="appointments-container">
+                        </div>
+                    <?php else: ?>
+                        <p>Switch to "Appointments" tab to manage your bookings.</p>
+                    <?php endif; ?>
                 </section>
 
                 <aside class="right-sidebar">
@@ -499,6 +500,22 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
                 </div>
             </section>
         </div>
+        <div id="view-appointments" class="<?php echo ($role === 'user') ? 'main-view' : 'hidden'; ?>">
+            <header class="header">
+                <div class="header-text">
+                    <h1 class="page-title">My Appointments</h1>
+                    <p class="page-subtitle">Manage your upcoming bookings</p>
+                </div>
+            </header>
+
+            <section class="settings-card">
+                <?php if ($role === 'user'): ?>
+                    <div id="appointments-container"></div>
+                <?php endif; ?>
+            </section>
+        </div>
+
+
     </main>
     <script>
         // 1. Pasamos TODAS las citas a JS (incluyendo pasadas) para el filtrado dinámico
