@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
 
 // 3. Cargar datos necesarios para el HTML
 require_once dirname(__DIR__) . '/models/Service.php';
-require_once dirname(__DIR__) . '/models/user.php'; 
+require_once dirname(__DIR__) . '/models/user.php';
 
 // Cargar servicios
 $serviceModel = new Service();
@@ -29,7 +29,7 @@ if ($_SESSION['role'] === 'store') {
     $myAppointments = $userModel->getStoreAppointments($_SESSION['user_id']);
 } else if ($_SESSION['role'] === 'user') {
     // user case
-    $myAppointments = $userModel->getUserAppointments($_SESSION['user_id']);
+    // $myAppointments = $userModel->getUserAppointments($_SESSION['user_id']);
 }
 $stats = [
     'today' => 0,
@@ -47,7 +47,7 @@ foreach ($myAppointments as $appt) {
     } elseif ($appt['status'] === 'confirmed') {
         $stats['confirmed']++;
     }
-    
+
     // Contar si es para Hoy
     // Asumimos que $appt['appointment_date'] viene en formato Y-m-d desde la BD
     if ($appt['appointment_date'] === $currentDate) {
@@ -74,7 +74,8 @@ foreach ($myAppointments as $appt) {
             <span class="logo-text">EasyPoint</span>
         </div>
         <div style="padding: 0 20px; margin-bottom: 5px;">
-            <a href="index.php" style="font-size: 14px; opacity: 0.8;"><i class="fas fa-arrow-left"></i> <span class="menu-text">Back to Home</span></a>
+            <a href="index.php" style="font-size: 14px; opacity: 0.8;"><i class="fas fa-arrow-left"></i> <span
+                    class="menu-text">Back to Home</span></a>
         </div>
         <nav>
             <div class="debug-info">
@@ -99,10 +100,10 @@ foreach ($myAppointments as $appt) {
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-calendar')">
                     <i class="far fa-calendar-alt"></i><span class="menu-text">Calendar</span>
                 </a>
-                <?php if($_SESSION['role'] === 'store'): ?>
-                <a href="#" class="menu-item" onclick="switchMainView(event, 'view-clients')">
-                    <i class="far fa-user"></i><span class="menu-text">Clients</span>
-                </a>
+                <?php if ($_SESSION['role'] === 'store'): ?>
+                    <a href="#" class="menu-item" onclick="switchMainView(event, 'view-clients')">
+                        <i class="far fa-user"></i><span class="menu-text">Clients</span>
+                    </a>
                 <?php endif; ?>
                 <a href="#" class="menu-item" onclick="switchMainView(event, 'view-settings')">
                     <i class="fas fa-cog"></i><span class="menu-text">Settings</span>
@@ -113,11 +114,12 @@ foreach ($myAppointments as $appt) {
 
     <main class="content">
 
-        <div id="view-calendar" class="main-view <?php echo ($_SESSION['role'] === 'store') ? 'hidden' : ''; ?>">
+        <div id="view-calendar" class="main-view hidden">
             <header class="header">
                 <div class="welcome">Welcome back. Here is a summary of your schedule.</div>
                 <div class="header-tools">
-                    <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle sidebar"><i class="fas fa-bars"></i></button>
+                    <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle sidebar"><i
+                            class="fas fa-bars"></i></button>
                     <input type="text" placeholder="Search..." class="search-input">
                     <i class="fas fa-bell notification-icon"></i>
                 </div>
@@ -158,13 +160,13 @@ foreach ($myAppointments as $appt) {
             </section>
 
             <div class="main-section">
-             <section class="appointments-list">
-                <h2 class="section-title" id="appointments-title">Upcoming Appointments</h2>
-                
-                <div id="appointments-container">
-                   
-                </div>
-            </section>
+                <section class="appointments-list">
+                    <h2 class="section-title" id="appointments-title">Upcoming Appointments</h2>
+
+                    <div id="appointments-container">
+
+                    </div>
+                </section>
 
                 <aside class="right-sidebar">
                     <div class="calendar-widget">
@@ -179,7 +181,7 @@ foreach ($myAppointments as $appt) {
             </div>
         </div>
 
-        <div id="view-dashboard" class="main-view <?php echo ($_SESSION['role'] === 'user') ? 'hidden' : ''; ?>">
+        <div id="view-dashboard" class="main-view">
             <header class="header">
                 <div class="header-text">
                     <h1 class="page-title">Management</h1>
@@ -207,36 +209,102 @@ foreach ($myAppointments as $appt) {
                     </div>
 
                     <form class="settings-form" id="business-form" enctype="multipart/form-data">
+
                         <div class="form-row">
                             <div class="form-group half">
                                 <label>Business Name</label>
-                                <input type="text" name="business_name" value="<?php echo htmlspecialchars($userData['business_name'] ?? ''); ?>" class="form-input">
+                                <input type="text" name="business_name"
+                                    value="<?php echo htmlspecialchars($userData['business_name'] ?? ''); ?>"
+                                    class="form-input" required>
                             </div>
                             <div class="form-group half">
+                                <label>Category</label>
+                                <select name="business_type" class="form-input">
+                                    <?php
+                                    $currentType = $userData['business_type'] ?? 'General';
+                                    $types = ['Hair Salon', 'Barbershop', 'Nail Salon', 'Hair Removal', 'Eyebrows & Lashes', 'Skincare', 'Massage', 'Makeup', 'General'];
+                                    ?>
+                                    <option value="" disabled>Select a category</option>
+                                    <?php foreach ($types as $type): ?>
+                                        <option value="<?php echo $type; ?>" <?php echo ($currentType === $type) ? 'selected' : ''; ?>>
+                                            <?php echo $type; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group half">
                                 <label>Phone</label>
-                                <input type="text" name="phone" value="<?php echo htmlspecialchars($userData['phone'] ?? ''); ?>" class="form-input">
+                                <input type="text" name="phone"
+                                    value="<?php echo htmlspecialchars($userData['phone'] ?? ''); ?>"
+                                    class="form-input">
+                            </div>
+                            <div class="form-group half">
+                                <label>Website</label>
+                                <input type="text" name="website"
+                                    value="<?php echo htmlspecialchars($userData['website'] ?? ''); ?>"
+                                    placeholder="https://example.com" class="form-input">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group half">
                                 <label>City</label>
-                                <input type="text" name="city" value="<?php echo htmlspecialchars($userData['city'] ?? ''); ?>" class="form-input">
+                                <input type="text" name="city"
+                                    value="<?php echo htmlspecialchars($userData['city'] ?? ''); ?>" class="form-input">
                             </div>
                             <div class="form-group half">
                                 <label>Postal Code</label>
-                                <input type="text" name="postal_code" value="<?php echo htmlspecialchars($userData['postal_code'] ?? ''); ?>" class="form-input">
+                                <input type="text" name="postal_code"
+                                    value="<?php echo htmlspecialchars($userData['postal_code'] ?? ''); ?>"
+                                    class="form-input">
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Address</label>
-                            <input type="text" name="address" value="<?php echo htmlspecialchars($userData['address'] ?? ''); ?>" class="form-input">
+                            <input type="text" name="address"
+                                value="<?php echo htmlspecialchars($userData['address'] ?? ''); ?>" class="form-input">
                         </div>
 
                         <div class="form-group">
                             <label>Description</label>
-                            <textarea name="description" rows="4" class="form-input"><?php echo htmlspecialchars($userData['description'] ?? ''); ?></textarea>
+                            <textarea name="description" rows="4"
+                                class="form-input"><?php echo htmlspecialchars($userData['description'] ?? ''); ?></textarea>
+                        </div>
+
+                        <div style="margin: 25px 0 15px 0; border-top: 1px solid #eee; padding-top: 15px;">
+                            <h4 style="margin-bottom: 15px; color: #555;">Social Media</h4>
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label><i class="fab fa-instagram"></i> Instagram</label>
+                                    <input type="text" name="instagram"
+                                        value="<?php echo htmlspecialchars($userData['instagram_link'] ?? ''); ?>"
+                                        placeholder="@username or URL" class="form-input">
+                                </div>
+                                <div class="form-group half">
+                                    <label><i class="fab fa-facebook"></i> Facebook</label>
+                                    <input type="text" name="facebook"
+                                        value="<?php echo htmlspecialchars($userData['facebook_link'] ?? ''); ?>"
+                                        placeholder="URL" class="form-input">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label><i class="fab fa-tiktok"></i> TikTok</label>
+                                    <input type="text" name="tiktok"
+                                        value="<?php echo htmlspecialchars($userData['tiktok_link'] ?? ''); ?>"
+                                        placeholder="@username" class="form-input">
+                                </div>
+                                <div class="form-group half">
+                                    <label><i class="fab fa-twitter"></i> Twitter / X</label>
+                                    <input type="text" name="twitter"
+                                        value="<?php echo htmlspecialchars($userData['twitter_link'] ?? ''); ?>"
+                                        placeholder="@username" class="form-input">
+                                </div>
+                            </div>
                         </div>
 
                         <div class="form-row">
@@ -244,14 +312,16 @@ foreach ($myAppointments as $appt) {
                                 <label>Logo</label>
                                 <input type="file" name="logo" accept="image/*" class="form-input">
                                 <?php if (!empty($userData['logo_url'])): ?>
-                                    <small>Current: <a href="public/<?php echo $userData['logo_url']; ?>" target="_blank">View</a></small>
+                                    <small>Current: <a href="public/<?php echo $userData['logo_url']; ?>"
+                                            target="_blank">View</a></small>
                                 <?php endif; ?>
                             </div>
                             <div class="form-group half">
                                 <label>Banner</label>
                                 <input type="file" name="banner" accept="image/*" class="form-input">
                                 <?php if (!empty($userData['banner_url'])): ?>
-                                    <small>Current: <a href="public/<?php echo $userData['banner_url']; ?>" target="_blank">View</a></small>
+                                    <small>Current: <a href="public/<?php echo $userData['banner_url']; ?>"
+                                            target="_blank">View</a></small>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -275,7 +345,7 @@ foreach ($myAppointments as $appt) {
                         <div class="form-actions">
                             <button type="submit" class="btn-save-1"><i class="fas fa-save"></i> Save Changes</button>
                         </div>
-                    </form> 
+                    </form>
                 </section>
             </div>
 
@@ -304,22 +374,27 @@ foreach ($myAppointments as $appt) {
                             <div class="schedule-row">
                                 <div class="day-toggle">
                                     <label class="switch">
-                                        <input type="checkbox" id="<?php echo $day; ?>-active" onchange="toggleDay(this)" <?php echo $isActive ? 'checked' : ''; ?>>
+                                        <input type="checkbox" id="<?php echo $day; ?>-active" onchange="toggleDay(this)"
+                                            <?php echo $isActive ? 'checked' : ''; ?>>
                                         <span class="slider round"></span>
                                     </label>
                                     <span class="day-name"><?php echo ucfirst($day); ?></span>
                                 </div>
                                 <div class="time-inputs" style="display: <?php echo $isActive ? 'flex' : 'none'; ?>;">
-                                    <input type="time" id="<?php echo $day; ?>-open" value="<?php echo $openTime; ?>" class="form-input time-input">
+                                    <input type="time" id="<?php echo $day; ?>-open" value="<?php echo $openTime; ?>"
+                                        class="form-input time-input">
                                     <span>to</span>
-                                    <input type="time" id="<?php echo $day; ?>-close" value="<?php echo $closeTime; ?>" class="form-input time-input">
+                                    <input type="time" id="<?php echo $day; ?>-close" value="<?php echo $closeTime; ?>"
+                                        class="form-input time-input">
                                 </div>
-                                <div class="closed-label" style="display: <?php echo $isActive ? 'none' : 'block'; ?>;">Closed</div>
+                                <div class="closed-label" style="display: <?php echo $isActive ? 'none' : 'block'; ?>;">
+                                    Closed</div>
                             </div>
                         <?php endforeach; ?>
                     </div>
                     <div class="form-actions">
-                        <button id="save-schedule-btn" class="btn-save-2"><i class="fas fa-save"></i> Save Schedule</button>
+                        <button id="save-schedule-btn" class="btn-save-2"><i class="fas fa-save"></i> Save
+                            Schedule</button>
                     </div>
                 </section>
             </div>
@@ -330,30 +405,34 @@ foreach ($myAppointments as $appt) {
                 <div class="service-container">
                     <h3 style="margin-top: 0; margin-bottom: 20px; color: #333;">Add New Service</h3>
                     <form id="add-service-form" onsubmit="submitService(event)">
-                    <div class="add-service-grid">
-                        <div class="form-field">
-                            <label>Name</label>
-                            <input type="text" name="service_name" placeholder="e.g. Haircut" required class="service-input">
+                        <div class="add-service-grid">
+                            <div class="form-field">
+                                <label>Name</label>
+                                <input type="text" name="service_name" placeholder="e.g. Haircut" required
+                                    class="service-input">
+                            </div>
+                            <div class="form-field">
+                                <label>Price (€)</label>
+                                <input type="number" step="0.01" name="service_price" placeholder="0.00" required
+                                    class="service-input">
+                            </div>
+                            <div class="form-field">
+                                <label>Duration (min)</label>
+                                <input type="number" name="service_duration" placeholder="30" required
+                                    class="service-input">
+                            </div>
+                            <div class="form-field">
+                                <button type="submit" class="btn-add">Add</button>
+                            </div>
                         </div>
-                        <div class="form-field">
-                            <label>Price (€)</label>
-                            <input type="number" step="0.01" name="service_price" placeholder="0.00" required class="service-input">
-                        </div>
-                        <div class="form-field">
-                            <label>Duration (min)</label>
-                            <input type="number" name="service_duration" placeholder="30" required class="service-input">
-                        </div>
-                        <div class="form-field">
-                            <button type="submit" class="btn-add">Add</button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
                 </div>
 
                 <h3 class="service-list">Your Services List</h3>
                 <div id="services-list" style="display: grid; gap: 15px;">
                     <?php if (empty($myServices)): ?>
-                        <div id="no-services-msg" style="text-align: center; padding: 40px; background: rgba(235, 230, 210, 0.55); border-radius: 10px; color: #000000;">
+                        <div id="no-services-msg"
+                            style="text-align: center; padding: 40px; background: rgba(235, 230, 210, 0.55); border-radius: 10px; color: #000000;">
                             You haven't added any services yet.
                         </div>
                     <?php else: ?>
@@ -364,13 +443,20 @@ foreach ($myAppointments as $appt) {
                                         <i class="fas fa-cut" style="color: #555;"></i>
                                     </div>
                                     <div>
-                                        <h4 style="margin: 0; font-size: 16px; color: #333;"><?php echo htmlspecialchars($service['name']); ?></h4>
-                                        <span style="font-size: 13px; color: #333;"><i class="far fa-clock"></i> <?php echo htmlspecialchars($service['duration']); ?> min</span>
+                                        <h4 style="margin: 0; font-size: 16px; color: #333;">
+                                            <?php echo htmlspecialchars($service['name']); ?>
+                                        </h4>
+                                        <span style="font-size: 13px; color: #333;"><i class="far fa-clock"></i>
+                                            <?php echo htmlspecialchars($service['duration']); ?> min</span>
                                     </div>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 20px;">
-                                    <span style="font-weight: bold; font-size: 18px; color: #000;"><?php echo htmlspecialchars($service['price']); ?> €</span>
-                                    <a href="#" onclick="deleteService(<?php echo $service['id']; ?>, this); return false;" style="color: #ff4d4d; background: #fff0f0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fas fa-trash-alt"></i></a>
+                                    <span
+                                        style="font-weight: bold; font-size: 18px; color: #000;"><?php echo htmlspecialchars($service['price']); ?>
+                                        €</span>
+                                    <a href="#" onclick="deleteService(<?php echo $service['id']; ?>, this); return false;"
+                                        style="color: #ff4d4d; background: #fff0f0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i
+                                            class="fas fa-trash-alt"></i></a>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -379,11 +465,37 @@ foreach ($myAppointments as $appt) {
             </div>
 
         </div>
+
+        <div id="view-clients" class="main-view hidden">
+            <header class="header">
+                <div class="header-text">
+                    <h1 class="page-title">Client History</h1>
+                    <p class="page-subtitle">Search appointments by client email</p>
+                </div>
+            </header>
+
+            <section class="settings-card">
+                <div class="search-container" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="client-search-email" placeholder="Search by email (e.g. 'alex', 'maria@')..."
+                        class="form-input" style="flex-grow: 1;">
+
+                    <div id="search-spinner" style="display:none; align-items:center;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                </div>
+
+                <div id="client-history-results">
+                    <p style="color: #888; font-style: italic; text-align: center; padding: 20px;">
+                        Enter a client's email to see their appointment history in your business.
+                    </p>
+                </div>
+            </section>
+        </div>
     </main>
-   <script>
+    <script>
         // 1. Pasamos TODAS las citas a JS (incluyendo pasadas) para el filtrado dinámico
         const allAppointments = <?php echo json_encode($myAppointments ?? []); ?>;
-        
+
         // 2. Extraemos fechas solo para los puntitos del calendario (excluyendo canceladas)
         const appointmentDates = allAppointments
             .filter(a => a.status !== 'cancelled')
@@ -391,4 +503,5 @@ foreach ($myAppointments as $appt) {
     </script>
     <script src="/public/js/script-dashboard.js"></script>
 </body>
+
 </html>

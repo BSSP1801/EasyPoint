@@ -1,6 +1,4 @@
 <?php
-// public/index.php
-
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
@@ -11,31 +9,27 @@ session_start();
 $action = $_GET['action'] ?? 'home';
 $controller = new UserController();
 $userModel = new User();
-// --- LOGIC SECTION: Process actions before any HTML is sent ---
-// This allows header("Location: ...") to work correctly
-// Initialize an empty array for stores
+
 $stores = [];
+
 if ($action === 'home') {
-    $stores = $userModel->getRecommendedStores();
+    $categoryFilter = $_GET['category'] ?? null;
+    $stores = $userModel->getRecommendedStores($categoryFilter);
 }
-//Switch case to handle different actions
+
 switch ($action) {
     case 'register':
         $controller->register();
         exit();
-        break;
     case 'login':
         $controller->login();
         exit();
-        break;
     case 'dashboard':
         $controller->dashboard();
         exit();
-        break;
     case 'update_schedule':
         $controller->updateSchedule();
         exit();
-        break;
     case 'update_business_info':
         $controller->updateBusinessInfo();
         exit();
@@ -43,7 +37,6 @@ switch ($action) {
         $controller->viewBusiness();
         exit();
     case 'book':
-        // Redirige a la página de reserva
         $service_id = $_GET['service_id'] ?? null;
         $store_id = $_GET['store_id'] ?? null;
         if (!$service_id || !$store_id) {
@@ -52,7 +45,6 @@ switch ($action) {
         }
         require_once __DIR__ . '/views/book-service.php';
         exit();
-        break;
     case 'add_service':
         $controller->addService();
         exit();
@@ -61,16 +53,17 @@ switch ($action) {
         exit();
     case 'change_status':
         $controller->changeStatus();
-        break;    
+        exit();
+    case 'search_client_history':
+        $controller->searchClientHistory();
+        exit();
     case 'logout':
         session_destroy();
-        $_SESSION = array(); // Clear the session array
+        $_SESSION = array(); 
         header("Location: index.php");
         exit();
-        break;
 }
 
-// --- VIEW SECTION: Start HTML output after all logic is done ---
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -82,9 +75,6 @@ switch ($action) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="public/css/styles.css">
 </head>
-<?php
-
-?>
 
 <body>
     <div class="sticky-header">
@@ -92,42 +82,42 @@ switch ($action) {
             <div class="sticky-logo"><a href="/index.php">EasyPoint</a></div>
 
             <div class="sticky-search-bar">
-    <div class="search-field">
-        <span class="search-icon">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </span>
-        <input type="text" placeholder="Search services">
-    </div>
-    <div class="search-field border-left">
-        <span class="search-icon">
-            <i class="fa-solid fa-location-dot"></i>
-        </span>
-        <input type="text" placeholder="Where?">
-    </div>
-    <button class="sticky-search-btn">Search</button>
-</div>
+                <div class="search-field">
+                    <span class="search-icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" placeholder="Search services">
+                </div>
+                <div class="search-field border-left">
+                    <span class="search-icon">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </span>
+                    <input type="text" placeholder="Where?">
+                </div>
+                <button class="sticky-search-btn">Search</button>
+            </div>
 
             <div class="sticky-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
     
-    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
+                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
 
-    <div class="dropdown">
-        <span class="user-link dropdown-toggle">
-            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
-        </span>
-        <div class="dropdown-menu">
-            <a href="index.php?action=dashboard" class="dropdown-item">
-                <i class="fa-solid fa-gauge"></i> Dashboard
-            </a>
-            <a href="index.php?action=logout" class="dropdown-item">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout
-            </a>
-        </div>
-    </div>
+                    <div class="dropdown">
+                        <span class="user-link dropdown-toggle">
+                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
+                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
+                        </span>
+                        <div class="dropdown-menu">
+                            <a href="index.php?action=dashboard" class="dropdown-item">
+                                <i class="fa-solid fa-gauge"></i> Dashboard
+                            </a>
+                            <a href="index.php?action=logout" class="dropdown-item">
+                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                            </a>
+                        </div>
+                    </div>
 
-<?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
+                <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
@@ -155,24 +145,24 @@ switch ($action) {
             <div class="user-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
     
-    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
+                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
 
-    <div class="dropdown">
-        <span class="user-link dropdown-toggle">
-            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
-        </span>
-        <div class="dropdown-menu">
-            <a href="index.php?action=dashboard" class="dropdown-item">
-                <i class="fa-solid fa-gauge"></i> Dashboard
-            </a>
-            <a href="index.php?action=logout" class="dropdown-item">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout
-            </a>
-        </div>
-    </div>
+                    <div class="dropdown">
+                        <span class="user-link dropdown-toggle">
+                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
+                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
+                        </span>
+                        <div class="dropdown-menu">
+                            <a href="index.php?action=dashboard" class="dropdown-item">
+                                <i class="fa-solid fa-gauge"></i> Dashboard
+                            </a>
+                            <a href="index.php?action=logout" class="dropdown-item">
+                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                            </a>
+                        </div>
+                    </div>
 
-<?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
+                <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
@@ -203,14 +193,17 @@ switch ($action) {
             </div>
 
             <ul class="category-list">
-                <li>Hair Salon</li>
-                <li>Barbershop</li>
-                <li>Nail Salon</li>
-                <li>Hair Removal</li>
-                <li>Eyebrows & Lashes</li>
-                <li>Skincare</li>
-                <li>Massage</li>
-                <li>Makeup</li>
+                <li><a href="index.php?category=Hair Salon" class="cat-link">Hair Salon</a></li>
+                <li><a href="index.php?category=Barbershop" class="cat-link">Barbershop</a></li>
+                <li><a href="index.php?category=Nail Salon" class="cat-link">Nail Salon</a></li>
+                <li><a href="index.php?category=Hair Removal" class="cat-link">Hair Removal</a></li>
+                <li><a href="index.php?category=Eyebrows & Lashes" class="cat-link">Eyebrows & Lashes</a></li>
+                <li><a href="index.php?category=Skincare" class="cat-link">Skincare</a></li>
+                <li><a href="index.php?category=Massage" class="cat-link">Massage</a></li>
+                <li><a href="index.php?category=Makeup" class="cat-link">Makeup</a></li>
+                <?php if (isset($_GET['category'])): ?>
+                    <li><a href="index.php" class="cat-link" style="color: #d9534f;">Show All</a></li>
+                <?php endif; ?>
             </ul>
         </div>
     </header>
@@ -224,51 +217,47 @@ switch ($action) {
             </button>
 
             <div class="shops-grid">
-    <?php if (empty($stores)): ?>
-        <p style="padding: 20px;">No stores available yet. Be the first to join!</p>
-    <?php else: ?>
-        <?php foreach ($stores as $store): ?>
-            <?php 
-                // Prepare data (no changes)
-                $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
-                
-                $addressParts = [];
-                if (!empty($store['address'])) $addressParts[] = htmlspecialchars($store['address']);
-                if (!empty($store['postal_code'])) $addressParts[] = htmlspecialchars($store['postal_code']);
-                if (!empty($store['city'])) $addressParts[] = htmlspecialchars($store['city']);
-                $fullAddress = implode(', ', $addressParts);
-                
-                $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
-            ?>
+                <?php if (empty($stores)): ?>
+                    <p style="padding: 20px;">No stores available yet. Be the first to join!</p>
+                <?php else: ?>
+                    <?php foreach ($stores as $store): ?>
+                        <?php 
+                            $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
+                            
+                            $addressParts = [];
+                            if (!empty($store['address'])) $addressParts[] = htmlspecialchars($store['address']);
+                            if (!empty($store['postal_code'])) $addressParts[] = htmlspecialchars($store['postal_code']);
+                            if (!empty($store['city'])) $addressParts[] = htmlspecialchars($store['city']);
+                            $fullAddress = implode(', ', $addressParts);
+                            
+                            $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
+                        ?>
 
-            <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
-                <article class="shop-card">
-                    <div class="image-container">
-                        <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
-                        <div class="rating-label">
-                            5.0 <span class="reviews-text">New</span>
-                        </div>
-                    </div>
-                    <div class="shop-info">
-                        <h3 class="shop-name"><?php echo $name; ?></h3>
-                        <p class="shop-address"><?php echo $fullAddress; ?></p>
-                        <span class="sponsored-text">Recommended</span>
-                    </div>
-                </article>
-            </a>
+                        <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
+                            <article class="shop-card">
+                                <div class="image-container">
+                                    <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
+                                    <div class="rating-label">
+                                        5.0 <span class="reviews-text">New</span>
+                                    </div>
+                                </div>
+                                <div class="shop-info">
+                                    <h3 class="shop-name"><?php echo $name; ?></h3>
+                                    <p class="shop-address"><?php echo $fullAddress; ?></p>
+                                    <span class="sponsored-text">Recommended</span>
+                                </div>
+                            </article>
+                        </a>
 
-        <?php endforeach; ?>
-    <?php endif; ?>
-</div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
 
             <button class="arrow-button right-arrow">
                 <i class="fa-solid fa-arrow-right"></i>
             </button>
         </div>
     </section>
-
-
-
 
     <section class="features-section">
         <div class="features-container">
