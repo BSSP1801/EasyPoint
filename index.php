@@ -13,11 +13,21 @@ $userModel = new User();
 $stores = [];
 
 if ($action === 'home') {
+    $searchTerm = $_GET['q'] ?? null;
+    $locationTerm = $_GET['loc'] ?? null;
     $categoryFilter = $_GET['category'] ?? null;
-    $stores = $userModel->getRecommendedStores($categoryFilter);
+
+    if ($searchTerm || $locationTerm) {
+        $stores = $userModel->searchStores($searchTerm, $locationTerm);
+    } else {
+        $stores = $userModel->getRecommendedStores($categoryFilter);
+    }
 }
 
 switch ($action) {
+    case 'search':
+        $controller->search();
+        exit();
     case 'register':
         $controller->register();
         exit();
@@ -84,21 +94,17 @@ switch ($action) {
         <div class="sticky-container">
             <div class="sticky-logo"><a href="/index.php">EasyPoint</a></div>
 
-            <div class="sticky-search-bar">
-                <div class="search-field">
-                    <span class="search-icon">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </span>
-                    <input type="text" placeholder="Search services">
-                </div>
-                <div class="search-field border-left">
-                    <span class="search-icon">
-                        <i class="fa-solid fa-location-dot"></i>
-                    </span>
-                    <input type="text" placeholder="Where?">
-                </div>
-                <button class="sticky-search-btn">Search</button>
-            </div>
+            <form action="index.php" method="GET" class="sticky-search-bar">
+    <input type="hidden" name="action" value="search"> <div class="search-field">
+        <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input type="text" name="q" placeholder="Search services">
+    </div>
+    <div class="search-field border-left">
+        <span class="search-icon"><i class="fa-solid fa-location-dot"></i></span>
+        <input type="text" name="loc" placeholder="Where?">
+    </div>
+    <button type="submit" class="sticky-search-btn">Search</button>
+</form>
 
             <div class="sticky-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
@@ -193,10 +199,49 @@ switch ($action) {
             <h1 class="main-title">Believe in yourself</h1>
             <p class="subtitle">Discover and book an appointment with beauty and wellness professionals near you</p>
 
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="Search services or businesses">
-            </div>
+            <form action="index.php" method="GET" class="hero-search-bar" style="
+    background-color: rgba(235, 230, 210, 0.1); 
+    border: 1px solid rgba(165, 134, 104, 0.3);
+    border-radius: 50px; 
+    padding: 5px; 
+    display: flex; 
+    align-items: center; 
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2); 
+    max-width: 750px; 
+    margin: 30px auto; 
+    backdrop-filter: blur(5px);">
+    
+    <input type="hidden" name="action" value="search">
 
+    <div class="search-field" style="flex: 1; display: flex; align-items: center; padding: 10px 20px;">
+        <span class="search-icon" style="color: #a58668; margin-right: 15px; font-size: 18px;">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </span>
+        <input type="text" name="q" placeholder="Search services" value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>" style="border: none; outline: none; width: 100%; font-size: 16px; background: transparent; color: #ebe6d2;">
+    </div>
+
+    <div style="width: 1px; height: 30px; background-color: rgba(165, 134, 104, 0.3);"></div>
+
+    <div class="search-field" style="flex: 1; display: flex; align-items: center; padding: 10px 20px;">
+        <span class="search-icon" style="color: #a58668; margin-right: 15px; font-size: 18px;">
+            <i class="fa-solid fa-location-dot"></i>
+        </span>
+        <input type="text" name="loc" placeholder="Where?" value="<?php echo htmlspecialchars($_GET['loc'] ?? ''); ?>" style="border: none; outline: none; width: 100%; font-size: 16px; background: transparent; color: #ebe6d2;">
+    </div>
+
+    <button type="submit" class="sticky-search-btn" style="
+        background-color: #a58668; 
+        color: #2b201e; 
+        border: none; 
+        padding: 12px 30px; 
+        border-radius: 30px; 
+        cursor: pointer; 
+        font-weight: bold; 
+        margin-left: 5px; 
+        font-size: 16px;">
+        Search
+    </button>
+</form>
             <ul class="category-list">
                 <li><a href="index.php?action=view_all_stores&category=Hair Salon" class="cat-link">Hair Salon</a></li>
                 <li><a href="index.php?action=view_all_stores&category=Barbershop" class="cat-link">Barbershop</a></li>

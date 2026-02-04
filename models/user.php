@@ -365,5 +365,41 @@ public function updateAppointmentStatus($appointmentId, $newStatus, $storeId)
 }
     
 
+    // Búsqueda de tiendas por servicio, nombre o ubicación
+    public function searchStores($searchTerm = null, $location = null)
+    {
+        // HE AÑADIDO u.created_at AQUÍ PARA EVITAR EL ERROR 3065
+        $query = "SELECT DISTINCT u.id, u.business_name, u.address, u.city, u.postal_code, u.created_at, 
+                         bp.logo_url, bp.business_type, bp.description
+                  FROM users u 
+                  LEFT JOIN services s ON u.id = s.user_id 
+                  INNER JOIN business_profiles bp ON u.id = bp.user_id 
+                  WHERE u.role = 'store' AND bp.is_public = 1";
+        
+        $params = [];
+    
+        if (!empty($searchTerm)) {
+            $query .= " AND (s.name LIKE :search OR u.business_name LIKE :business_search OR bp.business_type LIKE :type_search)";
+            $params[':search'] = "%" . $searchTerm . "%";
+            $params[':business_search'] = "%" . $searchTerm . "%";
+            $params[':type_search'] = "%" . $searchTerm . "%";
+        }
+    
+        if (!empty($location)) {
+            $query .= " AND u.city LIKE :location";
+            $params[':location'] = "%" . $location . "%";
+        }
+    
+        $query .= " ORDER BY u.created_at DESC";
+    
+        $stmt = $this->conn->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+    
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>
