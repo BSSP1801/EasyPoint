@@ -1,23 +1,18 @@
 <?php
-// view/business-service.php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/../models/Service.php';
 require_once __DIR__ . '/../models/user.php';
 
-// 1. Check if we received an ID
 if (!isset($_GET['id'])) {
-    // If there is no ID, redirect to home or show error
     header("Location: ../index.php");
     exit();
 }
 
 if (isset($businessData)) {
-    // Asignamos $businessData a $userData para que el resto de tu HTML funcione sin cambios
     $userData = $businessData;
 } else {
-    // Si alguien entra directo al archivo sin pasar por el controlador, lo expulsamos
     header("Location: ../index.php");
     exit();
 }
@@ -25,10 +20,8 @@ if (isset($businessData)) {
 $storeId = $_GET['id'];
 $userModel = new User();
 
-// 2. Get store data using the method you already had
 $store = $userModel->getFullProfile($storeId);
 
-// If the store does not exist, redirect
 if (!$store) {
     header("Location: ../index.php");
     exit();
@@ -37,18 +30,14 @@ if (!$store) {
 $serviceModel = new Service();
 $storeServices = $serviceModel->getAllByUserId($storeId);
 $targetUserId = $userData['user_id'] ?? $userData['id'];
-// 3. Preparar la URL del logo
-// Nota: Como estamos en la carpeta 'view/', debemos salir un nivel (../) para entrar a 'public/'
-// ... código anterior ...
+
 $logoUrl = !empty($store['logo_url'])
     ? '../public/' . htmlspecialchars($store['logo_url'])
     : '../public/assets/images/tienda-1.png';
 
-// NUEVO: Lógica para el banner
 $bannerUrl = !empty($store['banner_url'])
     ? '../public/' . htmlspecialchars($store['banner_url'])
-    : '../public/assets/images/img-resource-1.jpeg'; // Imagen de fondo por defecto
-// ...
+    : '../public/assets/images/img-resource-1.jpeg';
 
 $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre');
 ?>
@@ -71,20 +60,20 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
             <div class="sticky-logo"><a href="/index.php">EasyPoint</a></div>
 
             <div class="sticky-search-bar">
-    <div class="search-field">
-        <span class="search-icon">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </span>
-        <input type="text" placeholder="Search services">
-    </div>
-    <div class="search-field border-left">
-        <span class="search-icon">
-            <i class="fa-solid fa-location-dot"></i>
-        </span>
-        <input type="text" placeholder="Where?">
-    </div>
-    <button class="sticky-search-btn">Search</button>
-</div>
+                <div class="search-field">
+                    <span class="search-icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" placeholder="Search services">
+                </div>
+                <div class="search-field border-left">
+                    <span class="search-icon">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </span>
+                    <input type="text" placeholder="Where?">
+                </div>
+                <button class="sticky-search-btn">Search</button>
+            </div>
 
             <div class="sticky-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
@@ -130,8 +119,47 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
         <nav class="navigation-bar">
             <div class="logo"><a href="/index.php">EasyPoint</a></div>
 
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="Search services or businesses">
+            <div class="hero-search-bar" style="
+                background-color: rgba(235, 230, 210, 0.1); 
+                border: 1px solid rgba(165, 134, 104, 0.3);
+                border-radius: 50px; 
+                padding: 4px; 
+                display: flex; 
+                align-items: center; 
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2); 
+                flex: 1;
+                max-width: 600px;
+                margin: 0 20px;
+                backdrop-filter: blur(5px);">
+                
+                <div class="search-field" style="flex: 1; display: flex; align-items: center; padding: 0 15px;">
+                    <span class="search-icon" style="color: #a58668; margin-right: 10px; font-size: 16px;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" placeholder="Search services" style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #ebe6d2;">
+                </div>
+
+                <div style="width: 1px; height: 25px; background-color: rgba(165, 134, 104, 0.3);"></div>
+
+                <div class="search-field" style="flex: 1; display: flex; align-items: center; padding: 0 15px;">
+                    <span class="search-icon" style="color: #a58668; margin-right: 10px; font-size: 16px;">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </span>
+                    <input type="text" placeholder="Where?" style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #ebe6d2;">
+                </div>
+
+                <button class="sticky-search-btn" style="
+                    background-color: #a58668; 
+                    color: #2b201e; 
+                    border: none; 
+                    padding: 8px 24px; 
+                    border-radius: 30px; 
+                    cursor: pointer; 
+                    font-weight: bold; 
+                    margin-left: 5px; 
+                    font-size: 14px;">
+                    Search
+                </button>
             </div>
 
             <div class="user-menu">
@@ -271,7 +299,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
 
                                     <a href="../index.php?action=book&service_id=<?php echo htmlspecialchars($service['id']); ?>&store_id=<?php echo htmlspecialchars($storeId); ?>" 
                                         class="book-btn"
-                                        style="background-color: #000; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-block;">
+                                        style="background-color: #a58668; color: #2b201e; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-block;">
                                         Book
                                     </a>
                                 </div>
@@ -378,11 +406,8 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                 $hasSocial = true;
                 $finalLink = $input;
 
-                // LÓGICA INTELIGENTE:
-                // Si NO empieza por http/https, asumimos que es un usuario o enlace incompleto
                 if (!preg_match("~^(?:f|ht)tps?://~i", $input)) {
                     
-                    // Quitamos el '@' inicial si el usuario lo puso (ej: @miusuario -> miusuario)
                     $cleanUser = ltrim($input, '@');
 
                     switch ($data['type']) {
@@ -462,13 +487,13 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; 2026 EasyPoint. All rights reserved.</p>
+            <p>© 2026 EasyPoint. All rights reserved.</p>
         </div>
     </footer>
 
     <div id="auth-modal" class="modal-overlay">
         <div class="modal-box">
-            <span class="close-modal">&times;</span>
+            <span class="close-modal">×</span>
 
             <div id="login-view">
                 <h2 class="modal-title">Welcome Back</h2>
@@ -520,7 +545,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
     <div id="store-modal" class="modal-overlay">
         <div class="modal-box">
             <span class="close-store-modal"
-                style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer;">&times;</span>
+                style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer;">×</span>
 
             <h2 class="modal-title">Register your Business</h2>
             <p class="modal-subtitle">List your store on EasyPoint</p>
