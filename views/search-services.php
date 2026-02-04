@@ -7,6 +7,7 @@ $categoryFilter = $_GET['category'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +15,7 @@ $categoryFilter = $_GET['category'] ?? '';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="public/css/styles-search-services.css">
 </head>
+
 <body>
 
     <div class="sticky-header">
@@ -22,18 +24,20 @@ $categoryFilter = $_GET['category'] ?? '';
 
             <form action="index.php" method="GET" class="sticky-search-bar">
                 <input type="hidden" name="action" value="search">
-                
+
                 <div class="search-field">
                     <span class="search-icon">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </span>
-                    <input type="text" name="q" placeholder="Search services" value="<?php echo htmlspecialchars($searchTerm); ?>">
+                    <input type="text" name="q" placeholder="Search services"
+                        value="<?php echo htmlspecialchars($searchTerm); ?>">
                 </div>
                 <div class="search-field border-left">
                     <span class="search-icon">
                         <i class="fa-solid fa-location-dot"></i>
                     </span>
-                    <input type="text" name="loc" placeholder="Where?" value="<?php echo htmlspecialchars($locationTerm); ?>">
+                    <input type="text" name="loc" placeholder="Where?"
+                        value="<?php echo htmlspecialchars($locationTerm); ?>">
                 </div>
                 <button type="submit" class="sticky-search-btn">Search</button>
             </form>
@@ -51,7 +55,7 @@ $categoryFilter = $_GET['category'] ?? '';
                             <a href="../index.php?action=dashboard" class="dropdown-item">
                                 <i class="fa-solid fa-gauge"></i> Dashboard
                             </a>
-                            <a href="../index.php?action=logout" class="dropdown-item">
+                            <a href="../index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
                                 <i class="fa-solid fa-right-from-bracket"></i> Logout
                             </a>
                         </div>
@@ -66,13 +70,14 @@ $categoryFilter = $_GET['category'] ?? '';
                             <a href="../index.php?action=dashboard" class="dropdown-item">
                                 <i class="fa-solid fa-gauge"></i> Dashboard
                             </a>
-                            <a href="../index.php?action=logout" class="dropdown-item">
+                            <a href="../index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
                                 <i class="fa-solid fa-right-from-bracket"></i> Logout
                             </a>
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="../index.php?action=login" class="login-link" onclick="openLoginModal(event)">Log In/Sign Up</a>
+                    <a href="../index.php?action=login" class="login-link" onclick="openLoginModal(event)">Log In/Sign
+                        Up</a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                 <?php endif; ?>
             </div>
@@ -95,14 +100,16 @@ $categoryFilter = $_GET['category'] ?? '';
                 max-width: 600px;
                 margin: 0 20px;
                 backdrop-filter: blur(5px);">
-                
+
                 <input type="hidden" name="action" value="search">
-                
+
                 <div class="search-field" style="flex: 1; display: flex; align-items: center; padding: 0 15px;">
                     <span class="search-icon" style="color: #a58668; margin-right: 10px; font-size: 16px;">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </span>
-                    <input type="text" name="q" placeholder="Search services" value="<?php echo htmlspecialchars($searchTerm); ?>" style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #ebe6d2;">
+                    <input type="text" name="q" placeholder="Search services"
+                        value="<?php echo htmlspecialchars($searchTerm); ?>"
+                        style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #ebe6d2;">
                 </div>
 
                 <div style="width: 1px; height: 25px; background-color: rgba(165, 134, 104, 0.3);"></div>
@@ -111,7 +118,9 @@ $categoryFilter = $_GET['category'] ?? '';
                     <span class="search-icon" style="color: #a58668; margin-right: 10px; font-size: 16px;">
                         <i class="fa-solid fa-location-dot"></i>
                     </span>
-                    <input type="text" name="loc" placeholder="Where?" value="<?php echo htmlspecialchars($locationTerm); ?>" style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #ebe6d2;">
+                    <input type="text" name="loc" placeholder="Where?"
+                        value="<?php echo htmlspecialchars($locationTerm); ?>"
+                        style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #ebe6d2;">
                 </div>
 
                 <button type="submit" class="sticky-search-btn" style="
@@ -141,7 +150,7 @@ $categoryFilter = $_GET['category'] ?? '';
                             <a href="../index.php?action=dashboard" class="dropdown-item">
                                 <i class="fa-solid fa-gauge"></i> Dashboard
                             </a>
-                            <a href="../index.php?action=logout" class="dropdown-item">
+                            <a href="../index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
                                 <i class="fa-solid fa-right-from-bracket"></i> Logout
                             </a>
                         </div>
@@ -157,51 +166,96 @@ $categoryFilter = $_GET['category'] ?? '';
                             <a href="../index.php?action=dashboard" class="dropdown-item">
                                 <i class="fa-solid fa-gauge"></i> Dashboard
                             </a>
-                            <a href="../index.php?action=logout" class="dropdown-item">
+                            <a href="../index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
                                 <i class="fa-solid fa-right-from-bracket"></i> Logout
                             </a>
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="../index.php?action=login" class="login-link" onclick="openLoginModal(event)">Log In/Sign Up</a>
+                    <a href="../index.php?action=login" class="login-link" onclick="openLoginModal(event)">Log In/Sign
+                        Up</a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                 <?php endif; ?>
             </div>
         </nav>
+
+        <input type="hidden" name="category" value="<?php echo htmlspecialchars($categoryFilter); ?>">
+
+        <input type="hidden" name="category" value="<?php echo htmlspecialchars($categoryFilter); ?>">
+
         <ul class="category-list">
-                <li><a href="index.php?action=view_all_stores&category=Hair Salon" class="cat-link">Hair Salon</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Barbershop" class="cat-link">Barbershop</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Nail Salon" class="cat-link">Nail Salon</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Hair Removal" class="cat-link">Hair Removal</a>
+            <?php
+            // Definimos las categorías
+            $categories = [
+                'Hair Salon',
+                'Barbershop',
+                'Nail Salon',
+                'Hair Removal',
+                'Eyebrows & Lashes',
+                'Skincare',
+                'Massage',
+                'Makeup'
+            ];
+
+            // Función auxiliar para construir enlaces manteniendo filtros actuales
+            function buildUrl($newCategory = null)
+            {
+                $params = $_GET; // Copia los parámetros actuales (q, loc, action, etc.)
+                $params['action'] = 'search'; // Aseguramos que la acción sea 'search'
+            
+                if ($newCategory) {
+                    $params['category'] = $newCategory;
+                } else {
+                    unset($params['category']); // Si es para limpiar filtro, quitamos la categoría
+                }
+
+                return 'index.php?' . http_build_query($params);
+            }
+            ?>
+
+            <?php foreach ($categories as $cat): ?>
+                <?php
+                // Clase activa si es la categoría actual
+                $activeClass = ($categoryFilter === $cat) ? 'font-weight: bold; text-decoration: underline;' : '';
+                ?>
+                <li>
+                    <a href="<?php echo buildUrl($cat); ?>" class="cat-link" style="<?php echo $activeClass; ?>">
+                        <?php echo $cat; ?>
+                    </a>
                 </li>
-                <li><a href="index.php?action=view_all_stores&category=Eyebrows & Lashes" class="cat-link">Eyebrows &
-                        Lashes</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Skincare" class="cat-link">Skincare</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Massage" class="cat-link">Massage</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Makeup" class="cat-link">Makeup</a></li>
-                <?php if (isset($_GET['category'])): ?>
-                    <li><a href="index.php?action=view_all_stores" class="cat-link" style="color: #d9534f;">Clear Filters</a></li>
-                <?php else: ?>
-                    <li><a href="index.php?action=view_all_stores" class="cat-link" style="font-weight: bold;">View All
-                            Stores</a></li>
-                <?php endif; ?>
-            </ul>
+            <?php endforeach; ?>
+
+            <?php if (!empty($categoryFilter)): ?>
+                <li>
+                    <a href="<?php echo buildUrl(null); ?>" class="cat-link" style="color: #d9534f;">
+                        Clear Filters
+                    </a>
+                </li>
+            <?php elseif (!empty($searchTerm) || !empty($locationTerm)): ?>
+                <li>
+                    <a href="index.php?action=search" class="cat-link" style="font-weight: bold;">
+                        View All Stores
+                    </a>
+                </li>
+            <?php endif; ?>
+        </ul>
+
     </header>
 
     <div class="main-container">
-        
+
         <div class="results-header">
-            <?php 
-                $titleText = "All Services";
-                if ($searchTerm && $locationTerm) {
-                    $titleText = "Results for \"$searchTerm\" in \"$locationTerm\"";
-                } elseif ($searchTerm) {
-                    $titleText = "Results for \"$searchTerm\"";
-                } elseif ($locationTerm) {
-                    $titleText = "Services in \"$locationTerm\"";
-                } elseif ($categoryFilter) {
-                    $titleText = "Category: $categoryFilter";
-                }
+            <?php
+            $titleText = "All Services";
+            if ($searchTerm && $locationTerm) {
+                $titleText = "Results for \"$searchTerm\" in \"$locationTerm\"";
+            } elseif ($searchTerm) {
+                $titleText = "Results for \"$searchTerm\"";
+            } elseif ($locationTerm) {
+                $titleText = "Services in \"$locationTerm\"";
+            } elseif ($categoryFilter) {
+                $titleText = "Category: $categoryFilter";
+            }
             ?>
             <h1><?php echo htmlspecialchars($titleText); ?></h1>
             <p class="results-count"><?php echo count($stores); ?> results found</p>
@@ -217,14 +271,16 @@ $categoryFilter = $_GET['category'] ?? '';
         <?php else: ?>
             <div class="results-grid">
                 <?php foreach ($stores as $store): ?>
-                    <?php 
-                        $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
-                        $addressParts = [];
-                        if (!empty($store['address'])) $addressParts[] = htmlspecialchars($store['address']);
-                        if (!empty($store['city'])) $addressParts[] = htmlspecialchars($store['city']);
-                        $fullAddress = implode(', ', $addressParts);
-                        $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
-                        $type = !empty($store['business_type']) ? htmlspecialchars($store['business_type']) : 'Service';
+                    <?php
+                    $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
+                    $addressParts = [];
+                    if (!empty($store['address']))
+                        $addressParts[] = htmlspecialchars($store['address']);
+                    if (!empty($store['city']))
+                        $addressParts[] = htmlspecialchars($store['city']);
+                    $fullAddress = implode(', ', $addressParts);
+                    $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
+                    $type = !empty($store['business_type']) ? htmlspecialchars($store['business_type']) : 'Service';
                     ?>
                     <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>" class="shop-card">
                         <div class="image-container">
@@ -253,7 +309,8 @@ $categoryFilter = $_GET['category'] ?? '';
         <div class="footer-container">
             <div class="footer-brand">
                 <h2 class="footer-logo">EasyPoint</h2>
-                <p class="footer-desc">The easiest way to look and feel your best. Book appointments with top professionals near you.</p>
+                <p class="footer-desc">The easiest way to look and feel your best. Book appointments with top
+                    professionals near you.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
                     <a href="#"><i class="fa-brands fa-instagram"></i></a>
@@ -345,7 +402,8 @@ $categoryFilter = $_GET['category'] ?? '';
 
     <div id="store-modal" class="modal-overlay">
         <div class="modal-box">
-            <span class="close-store-modal" style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer;">×</span>
+            <span class="close-store-modal"
+                style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer;">×</span>
 
             <h2 class="modal-title">Register your Business</h2>
             <p class="modal-subtitle">List your store on EasyPoint</p>
@@ -383,4 +441,5 @@ $categoryFilter = $_GET['category'] ?? '';
 
     <script src="public/js/script.js"></script>
 </body>
+
 </html>

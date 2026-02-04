@@ -121,7 +121,7 @@ switch ($action) {
                             <a href="index.php?action=dashboard" class="dropdown-item">
                                 <i class="fa-solid fa-gauge"></i> Dashboard
                             </a>
-                            <a href="index.php?action=logout" class="dropdown-item">
+                            <a href="index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
                                 <i class="fa-solid fa-right-from-bracket"></i> Logout
                             </a>
                         </div>
@@ -138,7 +138,7 @@ switch ($action) {
                             <a href="index.php?action=dashboard" class="dropdown-item">
                                 <i class="fa-solid fa-gauge"></i> Dashboard
                             </a>
-                            <a href="index.php?action=logout" class="dropdown-item">
+                            <a href="index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
                                 <i class="fa-solid fa-right-from-bracket"></i> Logout
                             </a>
                         </div>
@@ -168,7 +168,7 @@ switch ($action) {
                             <a href="index.php?action=dashboard" class="dropdown-item">
                                 <i class="fa-solid fa-gauge"></i> Dashboard
                             </a>
-                            <a href="index.php?action=logout" class="dropdown-item">
+                            <a href="index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
                                 <i class="fa-solid fa-right-from-bracket"></i> Logout
                             </a>
                         </div>
@@ -184,7 +184,7 @@ switch ($action) {
                             <a href="index.php?action=dashboard" class="dropdown-item">
                                 <i class="fa-solid fa-gauge"></i> Dashboard
                             </a>
-                            <a href="index.php?action=logout" class="dropdown-item">
+                            <a href="index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
                                 <i class="fa-solid fa-right-from-bracket"></i> Logout
                             </a>
                         </div>
@@ -247,7 +247,7 @@ switch ($action) {
                     Search
                 </button>
             </form>
-             <ul class="category-list">
+            <ul class="category-list">
                 <li><a href="index.php?action=view_all_stores&category=Hair Salon" class="cat-link">Hair Salon</a></li>
                 <li><a href="index.php?action=view_all_stores&category=Barbershop" class="cat-link">Barbershop</a></li>
                 <li><a href="index.php?action=view_all_stores&category=Nail Salon" class="cat-link">Nail Salon</a></li>
@@ -259,12 +259,13 @@ switch ($action) {
                 <li><a href="index.php?action=view_all_stores&category=Massage" class="cat-link">Massage</a></li>
                 <li><a href="index.php?action=view_all_stores&category=Makeup" class="cat-link">Makeup</a></li>
                 <?php if (isset($_GET['category'])): ?>
-                    <li><a href="index.php?action=view_all_stores" class="cat-link" style="color: #d9534f;">Clear Filters</a></li>
+                    <li><a href="index.php?action=view_all_stores" class="cat-link" style="color: #d9534f;">Clear
+                            Filters</a></li>
                 <?php else: ?>
                     <li><a href="index.php?action=view_all_stores" class="cat-link" style="font-weight: bold;">View All
                             Stores</a></li>
                 <?php endif; ?>
-         
+
             </ul>
         </div>
     </header>

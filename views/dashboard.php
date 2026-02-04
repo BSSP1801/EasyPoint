@@ -120,7 +120,7 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
 
     <main class="content">
 
-        <div id="view-calendar" class="<?php echo $calendarClass; ?>">
+        <div id="view-calendar" class="main-view hidden">
             <header class="header">
                 <div class="welcome">Welcome back. Here is a summary of your schedule.</div>
                 <div class="header-tools">
@@ -500,7 +500,7 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
                 </div>
             </section>
         </div>
-        <div id="view-appointments" class="<?php echo ($role === 'user') ? 'main-view' : 'hidden'; ?>">
+        <div id="view-appointments" class="<?php echo $calendarClass; ?>">
             <header class="header">
                 <div class="header-text">
                     <h1 class="page-title">My Appointments</h1>
