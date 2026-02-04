@@ -169,18 +169,23 @@ $categoryFilter = $_GET['category'] ?? '';
             </div>
         </nav>
         <ul class="category-list">
-            <li><a href="index.php?category=Hair Salon" class="cat-link">Hair Salon</a></li>
-            <li><a href="index.php?category=Barbershop" class="cat-link">Barbershop</a></li>
-            <li><a href="index.php?category=Nail Salon" class="cat-link">Nail Salon</a></li>
-            <li><a href="index.php?category=Hair Removal" class="cat-link">Hair Removal</a></li>
-            <li><a href="index.php?category=Eyebrows & Lashes" class="cat-link">Eyebrows & Lashes</a></li>
-            <li><a href="index.php?category=Skincare" class="cat-link">Skincare</a></li>
-            <li><a href="index.php?category=Massage" class="cat-link">Massage</a></li>
-            <li><a href="index.php?category=Makeup" class="cat-link">Makeup</a></li>
-            <?php if (isset($_GET['category'])): ?>
-                <li><a href="index.php" class="cat-link" style="color: #d9534f;">Show All</a></li>
-            <?php endif; ?>
-        </ul>
+                <li><a href="index.php?action=view_all_stores&category=Hair Salon" class="cat-link">Hair Salon</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Barbershop" class="cat-link">Barbershop</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Nail Salon" class="cat-link">Nail Salon</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Hair Removal" class="cat-link">Hair Removal</a>
+                </li>
+                <li><a href="index.php?action=view_all_stores&category=Eyebrows & Lashes" class="cat-link">Eyebrows &
+                        Lashes</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Skincare" class="cat-link">Skincare</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Massage" class="cat-link">Massage</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Makeup" class="cat-link">Makeup</a></li>
+                <?php if (isset($_GET['category'])): ?>
+                    <li><a href="index.php?action=view_all_stores" class="cat-link" style="color: #d9534f;">Clear Filters</a></li>
+                <?php else: ?>
+                    <li><a href="index.php?action=view_all_stores" class="cat-link" style="font-weight: bold;">View All
+                            Stores</a></li>
+                <?php endif; ?>
+            </ul>
     </header>
 
     <div class="main-container">
