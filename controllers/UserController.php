@@ -405,6 +405,31 @@ class UserController
     }
 }
 
+    public function search()
+    {
+        // Obtener términos de búsqueda de la URL
+        $query = $_GET['q'] ?? '';
+        $location = $_GET['loc'] ?? '';
 
+public function viewAllStores() {
+    $category = $_GET['category'] ?? null;
+    $search = $_GET['q'] ?? null; // Para la barra de búsqueda
+    
+    $userModel = new User();
+    // Usamos el nuevo método que creamos
+    $stores = $userModel->getAllStores($category, $search);
+    
+    // Cargamos una vista nueva específica para esto
+    require dirname(__DIR__) . '/views/search-services.php';
+}
+
+        $userModel = new User();
+        
+        // Realizar la búsqueda
+        $stores = $userModel->searchStores($query, $location);
+
+        // Cargar la vista específica de resultados
+        require_once __DIR__ . '/../views/search-services.php';
+    }
 }
 ?>
