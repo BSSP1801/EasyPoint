@@ -67,9 +67,12 @@ switch ($action) {
     case 'search_client_history':
         $controller->searchClientHistory();
         exit();
+    case 'view_all_stores':
+        $controller->viewAllStores();
+        exit();
     case 'logout':
         session_destroy();
-        $_SESSION = array(); 
+        $_SESSION = array();
         header("Location: index.php");
         exit();
 }
@@ -105,7 +108,7 @@ switch ($action) {
 
             <div class="sticky-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-    
+
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
 
                     <div class="dropdown">
@@ -124,7 +127,7 @@ switch ($action) {
                     </div>
 
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
-                    
+
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
@@ -152,7 +155,7 @@ switch ($action) {
             <div class="logo"><a href="/index.php">EasyPoint</a></div>
             <div class="user-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-    
+
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
 
                     <div class="dropdown">
@@ -240,16 +243,18 @@ switch ($action) {
     </button>
 </form>
             <ul class="category-list">
-                <li><a href="index.php?category=Hair Salon" class="cat-link">Hair Salon</a></li>
-                <li><a href="index.php?category=Barbershop" class="cat-link">Barbershop</a></li>
-                <li><a href="index.php?category=Nail Salon" class="cat-link">Nail Salon</a></li>
-                <li><a href="index.php?category=Hair Removal" class="cat-link">Hair Removal</a></li>
-                <li><a href="index.php?category=Eyebrows & Lashes" class="cat-link">Eyebrows & Lashes</a></li>
-                <li><a href="index.php?category=Skincare" class="cat-link">Skincare</a></li>
-                <li><a href="index.php?category=Massage" class="cat-link">Massage</a></li>
-                <li><a href="index.php?category=Makeup" class="cat-link">Makeup</a></li>
-                <?php if (isset($_GET['category'])): ?>
-                    <li><a href="index.php" class="cat-link" style="color: #d9534f;">Show All</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Hair Salon" class="cat-link">Hair Salon</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Barbershop" class="cat-link">Barbershop</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Nail Salon" class="cat-link">Nail Salon</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Hair Removal" class="cat-link">Hair Removal</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Eyebrows & Lashes" class="cat-link">Eyebrows & Lashes</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Skincare" class="cat-link">Skincare</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Massage" class="cat-link">Massage</a></li>
+                <li><a href="index.php?action=view_all_stores&category=Makeup" class="cat-link">Makeup</a></li>
+               <?php if (isset($_GET['category'])): ?>
+                    <li><a href="index.php" class="cat-link" style="color: #d9534f;">Clear Filters</a></li>
+                <?php else: ?>
+                    <li><a href="index.php?action=view_all_stores" class="cat-link" style="font-weight: bold;">View All Stores</a></li>
                 <?php endif; ?>
             </ul>
         </div>
@@ -268,19 +273,23 @@ switch ($action) {
                     <p style="padding: 20px;">No stores available yet. Be the first to join!</p>
                 <?php else: ?>
                     <?php foreach ($stores as $store): ?>
-                        <?php 
-                            $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
-                            
-                            $addressParts = [];
-                            if (!empty($store['address'])) $addressParts[] = htmlspecialchars($store['address']);
-                            if (!empty($store['postal_code'])) $addressParts[] = htmlspecialchars($store['postal_code']);
-                            if (!empty($store['city'])) $addressParts[] = htmlspecialchars($store['city']);
-                            $fullAddress = implode(', ', $addressParts);
-                            
-                            $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
+                        <?php
+                        $name = !empty($store['business_name']) ? htmlspecialchars($store['business_name']) : 'Unnamed Business';
+
+                        $addressParts = [];
+                        if (!empty($store['address']))
+                            $addressParts[] = htmlspecialchars($store['address']);
+                        if (!empty($store['postal_code']))
+                            $addressParts[] = htmlspecialchars($store['postal_code']);
+                        if (!empty($store['city']))
+                            $addressParts[] = htmlspecialchars($store['city']);
+                        $fullAddress = implode(', ', $addressParts);
+
+                        $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
                         ?>
 
-                        <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>" style="text-decoration: none; color: inherit;">
+                        <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>"
+                            style="text-decoration: none; color: inherit;">
                             <article class="shop-card">
                                 <div class="image-container">
                                     <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
