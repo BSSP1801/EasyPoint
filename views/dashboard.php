@@ -35,22 +35,29 @@ $stats = [
     'today' => 0,
     'pending' => 0,
     'confirmed' => 0,
-    'total' => count($myAppointments)
+    'total' => 0 
 ];
 
 $currentDate = date('Y-m-d'); // Fecha de hoy del servidor
 
 foreach ($myAppointments as $appt) {
-    // Contar por Estado
-    if ($appt['status'] === 'pending') {
-        $stats['pending']++;
-    } elseif ($appt['status'] === 'confirmed') {
-        $stats['confirmed']++;
-    }
+    // --- NUEVA CONDICIÓN: Solo contar si la fecha es hoy o futura ---
+    if ($appt['appointment_date'] >= $currentDate) {
+        
+        // Incrementamos el total de citas activas (futuras + hoy)
+        $stats['total']++;
 
-    // Contar si es para Hoy
-    if ($appt['appointment_date'] === $currentDate) {
-        $stats['today']++;
+        // Contar por Estado
+        if ($appt['status'] === 'pending') {
+            $stats['pending']++;
+        } elseif ($appt['status'] === 'confirmed') {
+            $stats['confirmed']++;
+        }
+
+        // Contar si es específicamente para Hoy
+        if ($appt['appointment_date'] === $currentDate) {
+            $stats['today']++;
+        }
     }
 }
 
