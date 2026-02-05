@@ -267,7 +267,19 @@ switch ($action) {
                     'Massage',
                     'Makeup'
                 ];
+                function buildUrl($newCategory = null)
+                {
+                    $params = $_GET; // Copia los parámetros actuales (q, loc, action, etc.)
+                    $params['action'] = 'search'; // Aseguramos que la acción sea 'search'
+                
+                    if ($newCategory) {
+                        $params['category'] = $newCategory;
+                    } else {
+                        unset($params['category']); // Si es para limpiar filtro, quitamos la categoría
+                    }
 
+                    return 'index.php?' . http_build_query($params);
+                }
 
                 ?>
 
