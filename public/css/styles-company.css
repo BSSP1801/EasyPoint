@@ -1,0 +1,149 @@
+html {
+    scroll-behavior: smooth; /* Desplazamiento suave al hacer clic en los enlaces */
+}
+
+.company-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.content-section {
+    background-color: var(--card-bg); /* #3a2b28 */
+    border-radius: 12px;
+    padding: 40px;
+    margin-bottom: 60px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 1px solid rgba(165, 134, 104, 0.1);
+    
+    /* Esto asegura que el sticky header no tape el título al hacer scroll */
+    scroll-margin-top: 100px; 
+}
+
+.section-header {
+    margin-bottom: 25px;
+    border-bottom: 1px solid rgba(165, 134, 104, 0.3);
+    padding-bottom: 15px;
+}
+
+.section-header h2 {
+    color: var(--accent); /* #a58668 */
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.about-text {
+    color: var(--text-main);
+    line-height: 1.8;
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+@media (max-width: 768px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.contact-info-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    color: var(--text-main);
+}
+
+.contact-info-item i {
+    color: var(--accent);
+    font-size: 20px;
+    width: 30px;
+    text-align: center;
+}
+
+/* Reutilizamos estilos de tus formularios pero ajustados aquí */
+.contact-form label {
+    display: block;
+    color: var(--soft-text);
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.contact-form input, 
+.contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: rgba(235, 230, 210, 0.05);
+    border: 1px solid rgba(165, 134, 104, 0.3);
+    border-radius: 6px;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    font-family: inherit;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(165, 134, 104, 0.2);
+}
+
+.send-btn {
+    background-color: var(--accent);
+    color: #2b201e;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: filter 0.2s;
+    font-size: 16px;
+}
+
+.send-btn:hover {
+    filter: brightness(1.1);
+    color: white;
+}
+
+/* =========================================
+   BOOTSTRAP TOAST OVERRIDES (Dark Theme)
+   ========================================= */
+
+/* Contenedor fijo en la esquina superior derecha */
+.toast-container {
+    z-index: 10000; /* Asegurar que esté encima de todo */
+}
+
+/* Personalización del Toast de Bootstrap */
+.toast-easypoint {
+    background-color: var(--card-bg) !important; /* #3a2b28 */
+    color: var(--text-main);
+    border: 1px solid var(--accent); /* Borde dorado */
+    border-left: 5px solid var(--accent); /* Acento lateral más grueso */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* El botón de cerrar (X) necesita ser blanco/claro */
+.toast-easypoint .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.8;
+}
+.toast-easypoint .btn-close:hover {
+    opacity: 1;
+}
+
+/* Tipografía interna */
+.toast-title-text {
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 14px;
+}
+.toast-body-text {
+    font-size: 13px;
+    color: #ebe6d2;
+}

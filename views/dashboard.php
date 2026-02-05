@@ -35,7 +35,7 @@ $stats = [
     'today' => 0,
     'pending' => 0,
     'confirmed' => 0,
-    'total' => count($myAppointments)
+    'total' => 0
 ];
 
 // Use UTC for date calculations to avoid timezone issues
@@ -43,16 +43,23 @@ $stats = [
 $currentDate = gmdate('Y-m-d'); // Usar gmdate para obtener UTC
 
 foreach ($myAppointments as $appt) {
-    // Contar por Estado
-    if ($appt['status'] === 'pending') {
-        $stats['pending']++;
-    } elseif ($appt['status'] === 'confirmed') {
-        $stats['confirmed']++;
-    }
+    // --- NUEVA CONDICIÓN: Solo contar si la fecha es hoy o futura ---
+    if ($appt['appointment_date'] >= $currentDate) {
 
-    // Contar si es para Hoy
-    if ($appt['appointment_date'] === $currentDate) {
-        $stats['today']++;
+        // Incrementamos el total de citas activas (futuras + hoy)
+        $stats['total']++;
+
+        // Contar por Estado
+        if ($appt['status'] === 'pending') {
+            $stats['pending']++;
+        } elseif ($appt['status'] === 'confirmed') {
+            $stats['confirmed']++;
+        }
+
+        // Contar si es específicamente para Hoy
+        if ($appt['appointment_date'] === $currentDate) {
+            $stats['today']++;
+        }
     }
 }
 
@@ -516,7 +523,57 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
                 <?php endif; ?>
             </section>
         </div>
+        <div id="view-settings" class="main-view hidden">
+            <header class="header">
+                <div class="header-text">
+                    <h1 class="page-title">Account Settings</h1>
+                    <p class="page-subtitle">Manage your security preferences</p>
+                </div>
+            </header>
 
+            <section class="settings-card" style="max-width: 600px;">
+                <div class="card-header">
+                    <h3>Change Password</h3>
+                    <p>Ensure your account is using a long, random password to stay secure.</p>
+                </div>
+
+                <form class="settings-form" id="change-password-form" onsubmit="submitPasswordChange(event)">
+
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <div class="password-group">
+                            <input type="password" name="current_password" required class="form-input"
+                                placeholder="Enter current password">
+                            <i class="far fa-eye toggle-password-icon" onclick="togglePasswordVisibility(this)"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <div class="password-group">
+                            <input type="password" name="new_password" required class="form-input"
+                                placeholder="Enter new password">
+                            <i class="far fa-eye toggle-password-icon" onclick="togglePasswordVisibility(this)"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <div class="password-group">
+                            <input type="password" name="confirm_password" required class="form-input"
+                                placeholder="Confirm new password">
+                            <i class="far fa-eye toggle-password-icon" onclick="togglePasswordVisibility(this)"></i>
+                        </div>
+                    </div>
+
+                    <div id="password-msg" style="margin-bottom: 15px; font-size: 14px; font-weight: bold;"></div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save-1">Update Password</button>
+                    </div>
+                </form>
+            </section>
+        </div>
 
     </main>
     <script>

@@ -430,11 +430,61 @@ class UserController
     require_once __DIR__ . '/../views/search-services.php';
 }
 
-// Puedes redirigir viewAllStores a search para no repetir código
 public function viewAllStores()
 {
     $this->search();
 }
+
+
+
+public function changePassword() {
+    header('Content-Type: application/json');
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id'])) {
+        echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+        exit();
+    }
+
+    $current = $_POST['current_password'] ?? '';
+    $new = $_POST['new_password'] ?? '';
+    $confirm = $_POST['confirm_password'] ?? '';
+
+    // Validaciones básicas
+    if (empty($current) || empty($new) || empty($confirm)) {
+        echo json_encode(['success' => false, 'message' => 'All fields are required']);
+        exit();
+    }
+
+    if ($new !== $confirm) {
+        echo json_encode(['success' => false, 'message' => 'New passwords do not match']);
+        exit();
+    }
+
+    if (strlen($new) < 6) {
+        echo json_encode(['success' => false, 'message' => 'New password must be at least 6 characters']);
+        exit();
+    }
+
+    $userModel = new User();
+    // Obtenemos el usuario actual para verificar su contraseña hash
+    $user = $userModel->getById($_SESSION['user_id']);
+
+    if (!$user || !password_verify($current, $user['password'])) {
+        echo json_encode(['success' => false, 'message' => 'Incorrect current password']);
+        exit();
+    }
+
+    // Hasheamos la nueva contraseña y guardamos
+    $newHash = password_hash($new, PASSWORD_BCRYPT);
+    
+    if ($userModel->updatePassword($_SESSION['user_id'], $newHash)) {
+        echo json_encode(['success' => true, 'message' => 'Password updated successfully']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Database error']);
+    }
+    exit();
+}
+
 
 
 

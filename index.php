@@ -1,5 +1,9 @@
 <?php
-
+// --- DEBUG START ---
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+// --- DEBUG END ---
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
 require_once __DIR__ . '/controllers/BookingController.php';
@@ -26,6 +30,15 @@ if ($action === 'home') {
 }
 
 switch ($action) {
+    case 'company':
+        require_once __DIR__ .'/views/company.php';
+        exit();
+    case 'business':
+        require_once __DIR__ . '/views/business.php';
+        exit();
+    case 'legal':
+        require_once __DIR__ . '/views/legal.php';
+        exit();    
     case 'search':
         $controller->search();
         exit();
@@ -71,6 +84,8 @@ switch ($action) {
     case 'view_all_stores':
         $controller->viewAllStores();
         exit();
+    case 'change_password':
+        $controller->changePassword();
     case 'get-booked-slots':
         header('Content-Type: application/json');
         BookingController::getBookedSlots();
@@ -95,6 +110,7 @@ switch ($action) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EasyPoint - Appointment System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="public/css/styles.css">
 </head>
 
@@ -124,7 +140,6 @@ switch ($action) {
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="index.php?action=dashboard" class="dropdown-item">
@@ -141,7 +156,6 @@ switch ($action) {
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="index.php?action=dashboard" class="dropdown-item">
@@ -171,7 +185,6 @@ switch ($action) {
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="index.php?action=dashboard" class="dropdown-item">
@@ -187,7 +200,6 @@ switch ($action) {
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="index.php?action=dashboard" class="dropdown-item">
@@ -257,24 +269,59 @@ switch ($action) {
                 </button>
             </form>
             <ul class="category-list">
-                <li><a href="index.php?action=view_all_stores&category=Hair Salon" class="cat-link">Hair Salon</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Barbershop" class="cat-link">Barbershop</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Nail Salon" class="cat-link">Nail Salon</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Hair Removal" class="cat-link">Hair Removal</a>
-                </li>
-                <li><a href="index.php?action=view_all_stores&category=Eyebrows & Lashes" class="cat-link">Eyebrows &
-                        Lashes</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Skincare" class="cat-link">Skincare</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Massage" class="cat-link">Massage</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Makeup" class="cat-link">Makeup</a></li>
-                <?php if (isset($_GET['category'])): ?>
-                    <li><a href="index.php?action=view_all_stores" class="cat-link" style="color: #d9534f;">Clear
-                            Filters</a></li>
-                <?php else: ?>
-                    <li><a href="index.php?action=view_all_stores" class="cat-link" style="font-weight: bold;">View All
-                            Stores</a></li>
-                <?php endif; ?>
+                <?php
+                // Definimos las categorías
+                $categories = [
+                    'Hair Salon',
+                    'Barbershop',
+                    'Nail Salon',
+                    'Hair Removal',
+                    'Eyebrows & Lashes',
+                    'Skincare',
+                    'Massage',
+                    'Makeup'
+                ];
+                function buildUrl($newCategory = null)
+                {
+                    $params = $_GET; // Copia los parámetros actuales (q, loc, action, etc.)
+                    $params['action'] = 'search'; // Aseguramos que la acción sea 'search'
+                
+                    if ($newCategory) {
+                        $params['category'] = $newCategory;
+                    } else {
+                        unset($params['category']); // Si es para limpiar filtro, quitamos la categoría
+                    }
 
+                    return 'index.php?' . http_build_query($params);
+                }
+
+                ?>
+
+                <?php foreach ($categories as $cat): ?>
+                    <?php
+                    // Clase activa si es la categoría actual
+                    $activeClass = ($categoryFilter === $cat) ? 'font-weight: bold; text-decoration: underline;' : '';
+                    ?>
+                    <li>
+                        <a href="<?php echo buildUrl($cat); ?>" class="cat-link" style="<?php echo $activeClass; ?>">
+                            <?php echo $cat; ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+
+                <?php if (!empty($categoryFilter)): ?>
+                    <li>
+                        <a href="<?php echo buildUrl(null); ?>" class="cat-link" style="color: #d9534f;">
+                            Clear Filters
+                        </a>
+                    </li>
+                <?php elseif (!empty($searchTerm) || !empty($locationTerm)): ?>
+                    <li>
+                        <a href="index.php?action=search" class="cat-link" style="font-weight: bold;">
+                            View All Stores
+                        </a>
+                    </li>
+                <?php endif; ?>
             </ul>
         </div>
     </header>
@@ -384,6 +431,86 @@ switch ($action) {
         </div>
     </section>
 
+    <section class="faq-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8">
+                    
+                    <h2 class="features-title text-center">Frequently Asked Questions</h2>
+                    <p class="subtitle text-center mb-5">Find answers to common questions about EasyPoint</p>
+    
+                    <div class="accordion" id="faqAccordion">
+                        
+                        <div class="accordion-item easypoint-accordion">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    How do I book an appointment?
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    It's very simple. Use the search bar to find a service (like "haircut") or a specific business. Select the store you like, choose a service, pick a date and time, and confirm your booking. You will need to log in to finalize the appointment.
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="accordion-item easypoint-accordion">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Is it free to use EasyPoint?
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Yes! For customers, browsing and booking appointments on EasyPoint is completely free. You only pay the business for the service you receive, according to their prices.
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="accordion-item easypoint-accordion">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    Can I cancel or reschedule my appointment?
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Yes, you can manage your bookings from your <strong>Dashboard</strong> under the "Appointments" tab. Please note that cancellations are subject to the specific policy of each business.
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="accordion-item easypoint-accordion">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                    Do I need to pay online?
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Currently, EasyPoint is a booking platform. Payments are typically handled directly at the business location after you receive your service, unless the store specifies otherwise.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item easypoint-accordion">
+                            <h2 class="accordion-header" id="headingFive">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                    I own a business, how can I list it here?
+                                </button>
+                            </h2>
+                            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    We would love to have you! Click on the "List your business" button in the menu, create a business account, and fill in your details. Once registered, you can start managing your services and receiving bookings immediately.
+                                </div>
+                            </div>
+                        </div>
+    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <footer class="main-footer">
         <div class="footer-container">
@@ -402,23 +529,20 @@ switch ($action) {
             <div class="footer-links-group">
                 <div class="footer-column">
                     <h3>Company</h3>
-                    <a href="#">About Us</a>
-                    <a href="#">Careers</a>
-                    <a href="#">Press</a>
-                    <a href="#">Contact</a>
+                    <a href="index.php?action=company">About Us</a>
+                    <a href="index.php?action=company#contact">Contact</a>
                 </div>
 
                 <div class="footer-column">
                     <h3>For Business</h3>
-                    <a href="#">Partner with us</a>
-                    <a href="#">Business App</a>
-                    <a href="#">Support</a>
+                    <a href="index.php?action=business">Partner with us</a>
+                    <a href="index.php?action=business#support">Support</a>
                 </div>
 
                 <div class="footer-column">
                     <h3>Legal</h3>
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
+                    <a href="index.php?action=legal">Privacy Policy</a>
+                    <a href="index.php?action=legal#terms">Terms of Service</a>
                     <a href="#">Cookies Settings</a>
                 </div>
             </div>
@@ -520,7 +644,7 @@ switch ($action) {
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="public/js/script.js"></script>
 </body>
-
 </html>
