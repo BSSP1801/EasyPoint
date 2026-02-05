@@ -38,7 +38,9 @@ $stats = [
     'total' => count($myAppointments)
 ];
 
-$currentDate = date('Y-m-d'); // Fecha de hoy del servidor
+// Use UTC for date calculations to avoid timezone issues
+// The dates are stored as YYYY-MM-DD in UTC in the database
+$currentDate = gmdate('Y-m-d'); // Usar gmdate para obtener UTC
 
 foreach ($myAppointments as $appt) {
     // Contar por Estado

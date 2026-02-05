@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
+require_once __DIR__ . '/controllers/BookingController.php';
 require_once __DIR__ . '/models/service.php';
 
 session_start();
@@ -69,6 +70,14 @@ switch ($action) {
         exit();
     case 'view_all_stores':
         $controller->viewAllStores();
+        exit();
+    case 'get-booked-slots':
+        header('Content-Type: application/json');
+        BookingController::getBookedSlots();
+        exit();
+    case 'create-appointment':
+        header('Content-Type: application/json');
+        BookingController::create();
         exit();
     case 'logout':
         session_destroy();
