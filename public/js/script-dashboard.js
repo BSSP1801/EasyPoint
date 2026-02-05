@@ -383,9 +383,10 @@ document.addEventListener('DOMContentLoaded', () => {
     <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
         <thead>
             <tr style="border-bottom: 2px solid #eee; text-align: left;">
-                <th style="padding: 10px;">Client</th> <th style="padding: 10px;">Date</th>
-                <th style="padding: 10px;">Service</th>
-                <th style="padding: 10px;">Status</th>
+                <th style="padding: 10px; color: #000000; ">Client</th> 
+                <th style="padding: 10px; color: #000000; ">Date</th>
+                <th style="padding: 10px; color: #000000; ">Service</th>
+                <th style="padding: 10px; color: #000000; ">Status</th>
             </tr>
         </thead>
         <tbody>`;
@@ -395,12 +396,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     html += `
         <tr style="border-bottom: 1px solid #f9f9f9;">
             <td style="padding: 10px;">
-                <div style="font-weight:bold; font-size: 14px;">${appt.username || 'User'}</div>
-                <div style="font-size: 12px; color: #666;">${appt.email}</div>
+                <div style="font-weight:bold; color: #1d1c1c; font-size: 14px;">${appt.username || 'User'}</div>
+                <div style="font-size: 12px; color: #1d1c1c;">${appt.email}</div>
             </td>
-            <td style="padding: 10px;">${appt.appointment_date}<br><small>${appt.appointment_time}</small></td>
-            <td style="padding: 10px;">${appt.service_name}</td>
-            <td style="padding: 10px;"><span class="status ${statusClass}">${appt.status}</span></td>
+            <td style="padding: 10px; color: #1d1c1c;">${appt.appointment_date}<br><small>${appt.appointment_time}</small></td>
+            <td style="padding: 10px; color: #1d1c1c;">${appt.service_name}</td>
+            <td style="padding: 10px; color: #1d1c1c;"><span class="status ${statusClass}">${appt.status}</span></td>
         </tr>`;
                 });
 
