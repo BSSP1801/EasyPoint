@@ -209,10 +209,10 @@ $locationTerm = $_GET['loc'] ?? '';
                 <p class="footer-desc">The easiest way to look and feel your best. Book appointments with top
                     professionals near you.</p>
                 <div class="social-icons">
-                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="https://facebook.com/"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://instagram.com/"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://x.com/"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="https://tiktok.com/"><i class="fa-brands fa-tiktok"></i></a>
                 </div>
             </div>
 
