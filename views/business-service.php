@@ -302,7 +302,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
         <?php if ($totalReviews > 0): ?>
             (<?php echo $totalReviews; ?> opinions)
         <?php else: ?>
-            (Nuevo)
+            (New)
         <?php endif; ?>
     </span>
 </div>
