@@ -37,12 +37,28 @@ document.addEventListener('DOMContentLoaded', () => {
        ========================= */
     const calendar = document.getElementById('calendar');
 
-    // Función auxiliar para fecha
+    // Función auxiliar para obtener hoy en formato YYYY-MM-DD sin timezone issues
+    function getTodayStr() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Función auxiliar para fecha - SIN conversión de timezone
     function formatAppointmentDate(dateStr, timeStr) {
-        const date = new Date(dateStr + 'T' + timeStr);
+        // dateStr format: YYYY-MM-DD
+        // timeStr format: HH:MM:SS
+        // Parse without timezone conversion
+        const [year, month, day] = dateStr.split('-').map(Number);
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        
+        // Create date WITHOUT timezone conversion - just use the local date values
+        const date = new Date(year, month - 1, day, hours, minutes);
+        
         const options = { weekday: 'short', month: 'short', day: 'numeric' };
-        const timeParts = timeStr.split(':');
-        const timeFormatted = `${timeParts[0]}:${timeParts[1]}`;
+        const timeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
         return date.toLocaleDateString('en-US', options) + ' - ' + timeFormatted;
     }
 
@@ -63,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const today = new Date().toISOString().split('T')[0];
+        const today = getTodayStr();
 
         appointments.forEach(appt => {
             let statusClass = 'pending';
@@ -215,8 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (selectedDate === fullDate) {
                         selectedDate = null;
                         renderCalendar();
-                        const todayStr = new Date().toISOString().split('T')[0];
-                        const upcoming = allAppointments.filter(a => a.appointment_date >= todayStr);
+                        const upcoming = allAppointments.filter(a => a.appointment_date >= getTodayStr());
                         renderAppointmentsList(upcoming, "Upcoming Appointments");
                     }
                     else {
@@ -333,8 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
        ======================================================== */
     // Ahora sí funcionará porque renderAppointmentsList ya existe
     if (typeof allAppointments !== 'undefined') {
-        const todayStr = new Date().toISOString().split('T')[0];
-        const upcoming = allAppointments.filter(a => a.appointment_date >= todayStr);
+        const upcoming = allAppointments.filter(a => a.appointment_date >= getTodayStr());
         renderAppointmentsList(upcoming, "Upcoming Appointments");
     }
 
