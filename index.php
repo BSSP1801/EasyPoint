@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 // --- DEBUG END ---
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
+require_once __DIR__ . '/controllers/BookingController.php';
 require_once __DIR__ . '/models/service.php';
 
 session_start();
@@ -85,6 +86,13 @@ switch ($action) {
         exit();
     case 'change_password':
         $controller->changePassword();
+    case 'get-booked-slots':
+        header('Content-Type: application/json');
+        BookingController::getBookedSlots();
+        exit();
+    case 'create-appointment':
+        header('Content-Type: application/json');
+        BookingController::create();
         exit();
     case 'logout':
         session_destroy();
@@ -377,7 +385,7 @@ switch ($action) {
     <section class="features-section">
         <div class="features-container">
             <div class="features-image-wrapper">
-                <img src="public/assets/images/img-resource-1.jpeg" alt="Beauty Experience" class="features-image">
+                <img src="public/assets/images/img-resource-1.png" alt="Beauty Experience" class="features-image">
             </div>
             <div class="features-content">
                 <h2 class="features-title">Book with top professionals near you</h2>
@@ -419,7 +427,7 @@ switch ($action) {
             </div>
 
             <div class="features-image-wrapper">
-                <img src="public/assets/images/img-resource-2.jpeg" alt="Booking Illustration" class="features-image">
+                <img src="public/assets/images/img-resource-2.png" alt="Booking Illustration" class="features-image">
             </div>
         </div>
     </section>
@@ -512,10 +520,10 @@ switch ($action) {
                 <p class="footer-desc">The easiest way to look and feel your best. Book appointments with top
                     professionals near you.</p>
                 <div class="social-icons">
-                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="https://facebook.com/"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://instagram.com/"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://x.com/"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="https://tiktok.com/"><i class="fa-brands fa-tiktok"></i></a>
                 </div>
             </div>
 

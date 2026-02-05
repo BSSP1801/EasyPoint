@@ -1,8 +1,6 @@
 <?php
 // controllers/BookingController.php
 
-session_start();
-
 require_once __DIR__ . '/../models/Database.php';
 
 class BookingController {
@@ -77,17 +75,61 @@ class BookingController {
             echo json_encode(['success' => false, 'message' => 'Error creating appointment: ' . $e->getMessage()]);
         }
     }
-}
 
-// Handle the request
-header('Content-Type: application/json');
+    public static function getBookedSlots() {
+        // Get booked time slots for a service
+        header('Content-Type: application/json');
+        
+        $input = json_decode(file_get_contents('php://input'), true);
 
-$method = $_SERVER['REQUEST_METHOD'];
+        if (!isset($input['service_id']) || !isset($input['date'])) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Missing service_id or date']);
+            exit();
+        }
 
-if ($method === 'POST') {
-    BookingController::create();
-} else {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+        $serviceId = intval($input['service_id']);
+        $date = $input['date']; // Format: YYYY-MM-DD
+
+        // Validate date format
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Invalid date format']);
+            exit();
+        }
+
+        $db = new Database();
+        $conn = $db->getConnection();
+
+        try {
+            $stmt = $conn->prepare("
+                SELECT appointment_time 
+                FROM appointments 
+                WHERE service_id = :service_id 
+                AND appointment_date = :appointment_date
+                AND status IN ('pending', 'confirmed')
+                ORDER BY appointment_time ASC
+            ");
+
+            $stmt->execute([
+                ':service_id' => $serviceId,
+                ':appointment_date' => $date
+            ]);
+
+            $booked = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $booked[] = $row['appointment_time'];
+            }
+
+            http_response_code(200);
+            echo json_encode([
+                'success' => true,
+                'booked_times' => $booked
+            ]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Error fetching booked slots: ' . $e->getMessage()]);
+        }
+    }
 }
 ?>

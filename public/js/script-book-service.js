@@ -4,6 +4,14 @@ let selectedDate = null;
 let selectedTime = null;
 let selectedEmployee = null;
 
+// Helper function to convert date to YYYY-MM-DD without timezone issues
+function dateToYMD(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function () {
     renderCalendar();
@@ -144,14 +152,12 @@ function generateTimeSlots(date) {
 
     if (!dayHours.active) return;
 
+    const dateStr = dateToYMD(date);
     const [openHour, openMinute] = dayHours.open.split(':').map(Number);
     const [closeHour, closeMinute] = dayHours.close.split(':').map(Number);
     const duration = SERVICE_DATA.duration;
 
     // Generate time slots
-    let currentHour = openHour;
-    let currentMinute = openMinute;
-
     const openTotalMinutes = openHour * 60 + openMinute;
     const closeTotalMinutes = closeHour * 60 + closeMinute;
 
@@ -311,20 +317,19 @@ function confirmBooking() {
 
     // Prepare data
     const [hours, minutes] = selectedTime.split(':').map(Number);
-    const appointmentDate = new Date(selectedDate);
     const appointmentTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
 
     const data = {
         user_id: USER_ID,
         service_id: SERVICE_DATA.id,
-        appointment_date: appointmentDate.toISOString().split('T')[0],
+        appointment_date: dateToYMD(selectedDate),
         appointment_time: appointmentTime,
         status: 'pending',
         notes: ''
     };
 
     // Send to server
-    fetch('controllers/BookingController.php', {
+    fetch('index.php?action=create-appointment', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
