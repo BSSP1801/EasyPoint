@@ -248,25 +248,48 @@ switch ($action) {
                 </button>
             </form>
             <ul class="category-list">
-                <li><a href="index.php?action=view_all_stores&category=Hair Salon" class="cat-link">Hair Salon</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Barbershop" class="cat-link">Barbershop</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Nail Salon" class="cat-link">Nail Salon</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Hair Removal" class="cat-link">Hair Removal</a>
-                </li>
-                <li><a href="index.php?action=view_all_stores&category=Eyebrows & Lashes" class="cat-link">Eyebrows &
-                        Lashes</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Skincare" class="cat-link">Skincare</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Massage" class="cat-link">Massage</a></li>
-                <li><a href="index.php?action=view_all_stores&category=Makeup" class="cat-link">Makeup</a></li>
-                <?php if (isset($_GET['category'])): ?>
-                    <li><a href="index.php?action=view_all_stores" class="cat-link" style="color: #d9534f;">Clear
-                            Filters</a></li>
-                <?php else: ?>
-                    <li><a href="index.php?action=view_all_stores" class="cat-link" style="font-weight: bold;">View All
-                            Stores</a></li>
-                <?php endif; ?>
+            <?php
+            // Definimos las categorías
+            $categories = [
+                'Hair Salon',
+                'Barbershop',
+                'Nail Salon',
+                'Hair Removal',
+                'Eyebrows & Lashes',
+                'Skincare',
+                'Massage',
+                'Makeup'
+            ];
 
-            </ul>
+            
+            ?>
+
+            <?php foreach ($categories as $cat): ?>
+                <?php
+                // Clase activa si es la categoría actual
+                $activeClass = ($categoryFilter === $cat) ? 'font-weight: bold; text-decoration: underline;' : '';
+                ?>
+                <li>
+                    <a href="<?php echo buildUrl($cat); ?>" class="cat-link" style="<?php echo $activeClass; ?>">
+                        <?php echo $cat; ?>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+
+            <?php if (!empty($categoryFilter)): ?>
+                <li>
+                    <a href="<?php echo buildUrl(null); ?>" class="cat-link" style="color: #d9534f;">
+                        Clear Filters
+                    </a>
+                </li>
+            <?php elseif (!empty($searchTerm) || !empty($locationTerm)): ?>
+                <li>
+                    <a href="index.php?action=search" class="cat-link" style="font-weight: bold;">
+                        View All Stores
+                    </a>
+                </li>
+            <?php endif; ?>
+        </ul>
         </div>
     </header>
 
