@@ -79,6 +79,7 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
     <title>EasyPoint</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/public/css/styles-dashboard.css">
+    <link rel="icon" type="image/svg+xml" href="public/assets/images/favicon.svg">
 </head>
 
 <body>

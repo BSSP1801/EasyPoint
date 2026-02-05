@@ -47,6 +47,7 @@ if (!empty($store['opening_hours'])) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="public/css/styles.css">
     <link rel="stylesheet" href="public/css/styles-book-service.css">
+    <link rel="icon" type="image/svg+xml" href="public/assets/images/favicon.svg">
 </head>
 
 <body>

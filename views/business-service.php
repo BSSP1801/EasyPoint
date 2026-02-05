@@ -51,6 +51,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
     <title>EasyPoint</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../public/css/styles-business-service.css">
+    <link rel="icon" type="image/svg+xml" href="public/assets/images/favicon.svg">
 </head>
 
 <body>

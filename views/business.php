@@ -17,6 +17,7 @@ $locationTerm = $_GET['loc'] ?? '';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="public/css/styles-search-services.css">
     <link rel="stylesheet" href="public/css/styles-company.css">
+    <link rel="icon" type="image/svg+xml" href="public/assets/images/favicon.svg">
 </head>
 
 <body>
