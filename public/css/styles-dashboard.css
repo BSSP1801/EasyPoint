@@ -423,7 +423,10 @@ a:hover, a:focus {
     gap: 10px;
     margin-bottom: 25px;
     border-bottom: 1px solid var(--border-soft);
-    padding-bottom: 15px;
+    padding-bottom: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
 }
 
 .tab-btn {
@@ -439,6 +442,8 @@ a:hover, a:focus {
     display: flex;
     align-items: center;
     gap: 8px;
+
+    flex: 0 0 auto;
 }
 
 .tab-btn:hover {
@@ -450,6 +455,11 @@ a:hover, a:focus {
     color: #2b201e;
     border-color: transparent;
     font-weight: 700;
+}
+
+.backhome {
+    padding: 0 20px; 
+    margin-bottom: 5px;
 }
 
 .settings-card {
@@ -578,6 +588,28 @@ textarea.form-input {
     filter: brightness(1.06);
 }
 
+/* Base styles for debug-info: centered and with full-width flex layout */
+.debug-info {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    border-bottom: 1px solid #a58668;
+    color: #b9977c;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.debug-info .debug-name {
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+    display: inline-block;
+    font-size: 1rem;
+    line-height: 1;
+}
+
 @media (max-width: 768px) {
     .form-row {
         flex-direction: column;
@@ -591,6 +623,15 @@ textarea.form-input {
 .sidebar.collapsed .menu-text { display: none; }
 .sidebar.collapsed .menu-item { justify-content: center; }
 
+/* Collapsed sidebar styling: apply mobile-like styles when sidebar is collapsed */
+.sidebar.collapsed .logo { justify-content: center; }
+.sidebar.collapsed .logo i { font-size: 1.6rem; }
+.sidebar.collapsed .menu-item i { font-size: 1.25rem; width: 32px; margin-right: 0; text-align: center; }
+.sidebar.collapsed .debug-info { padding: 8px 6px !important; }
+.sidebar.collapsed .debug-info .debug-name { font-size: 0.9rem !important; }
+.sidebar.collapsed .backhome { padding: 6px 8px; display: flex; justify-content: center; align-items: center; }
+.sidebar.collapsed .backhome a { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; }
+
 /* When sidebar has explicit class 'open' ensure full width */
 .sidebar.open { width: 250px; }
 .sidebar.open .logo-text { display: inline; }
@@ -599,13 +640,35 @@ textarea.form-input {
 /* Breakpoints: Móvil / Tablet / Escritorio */
 @media (max-width: 600px) {
     .sidebar { width: 72px; padding: 12px; }
-    .logo { font-size: 1rem; margin-bottom: 18px; }
+    .logo { font-size: 1rem; margin-bottom: 18px; justify-content: center; }
+    .logo i { font-size: 1.6rem; }
     .menu-item { padding: 10px; gap: 8px; font-size: 13px; }
-    .content { padding: 16px; }
+    /* Hacer los iconos más visibles y centrados en móvil */
+    .menu-item i { font-size: 1.25rem; width: 32px; margin-right: 0; text-align: center; }
+    .menu-item { justify-content: center; }
+    .content { padding: 16px; overflow-x: hidden; }
     .summary-cards { grid-template-columns: 1fr; gap: 12px; }
     .main-section { flex-direction: column; gap: 18px; }
     .right-sidebar { width: 100%; }
     .page-title { font-size: 1.2rem; }
+    /* Asegurar que la palabra completa se vea: reducimos la fuente para que entre en la barra */
+    .debug-info { padding: 8px 6px !important; }
+    .debug-info .debug-name { font-size: 0.9rem !important; }
+    .backhome { padding: 6px 8px; display:flex; justify-content:center; align-items:center; }
+    .backhome a { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; }
+    .debug-info, .backhome { text-align: center; }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+    /* Mostrar nombre completo */
+    .debug-info { padding: 8px 6px !important; }
+    .debug-info .debug-name { font-size: 0.8rem !important; white-space: nowrap; }
+
+    /* Aumentar y centrar iconos en la sidebar para tablet */
+    .logo { justify-content: center; }
+    .logo i { font-size: 1.6rem; }
+    .menu-item i { font-size: 1.35rem; width: 32px; margin-right: 0; text-align: center; }
+    .menu-item { justify-content: center; align-items: center; }
 }
 
 @media (min-width: 601px) and (max-width: 900px) {
@@ -859,15 +922,6 @@ input:checked + .slider:before {
     text-decoration: line-through;
 }
 
-.debug-info {
-    margin-bottom: 20px;
-    padding: 10px 20px; 
-    border-bottom: 1px solid #a58668; 
-    font-size: 1rem;
-    color: #b9977c;
-    font-weight: 700;
-}
-
 .save-schedule-btn {
     margin-bottom: 20px;
 }
@@ -887,6 +941,7 @@ input:checked + .slider:before {
 
 .service-item {
     background: rgba(235,230,210,0.55);
+    color: #333;
     padding: 20px; 
     border-radius: 8px; 
     display: flex; 

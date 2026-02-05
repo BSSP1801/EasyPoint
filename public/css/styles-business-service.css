@@ -291,6 +291,199 @@ header {
     }
 }
 
+@media (max-width: 768px) {
+    header {
+        min-height: 120px;
+    }
+
+    .navigation-bar {
+        padding: 12px 15px;
+        flex-direction: row;
+        gap: 10px;
+        align-items: center;
+        width: 100%;
+        flex-wrap: wrap; /* permitir que la search-bar baje a su propia fila */
+    }
+
+    .logo {
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .search-bar {
+        flex-basis: 100%;
+        order: 10;
+        max-width: 420px; /* no demasiado grande */
+        width: 100%;
+        padding: 0 12px;
+        height: 38px;
+        margin: 10px auto 0; /* centrar horizontalmente */
+    }
+
+    .search-input {
+        font-size: 12px;
+    }
+
+    .user-menu {
+        flex-wrap: nowrap;
+        gap: 8px;
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
+    .business-button {
+        padding: 6px 10px;
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    .user-link,
+    .login-link,
+    .logout-link {
+        font-size: 10px;
+    }
+
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-toggle {
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    .dropdown-menu {
+        min-width: 150px;
+    }
+
+    .category-list {
+        gap: 12px;
+        padding: 10px 15px;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .category-list li {
+        font-size: 12px;
+    }
+
+    .schedule-row {
+        font-size: 13px;
+        padding: 8px 0;
+    }
+
+    .price-tag {
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .duration-tag {
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .service-details {
+        text-align: right;
+        margin-right: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    header {
+        min-height: 100px;
+    }
+
+    .navigation-bar {
+        padding: 10px 10px;
+        gap: 8px;
+        flex-direction: row;
+        width: 100%;
+        flex-wrap: wrap; /* permitir que la search-bar ocupe su propia fila */
+    }
+
+    .logo {
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    .search-bar {
+        flex-basis: 100%;
+        order: 10;
+        max-width: 360px; /* ligeramente más pequeña en móvil */
+        width: 100%;
+        padding: 0 10px;
+        height: 32px;
+        margin: 8px auto 0;
+    }
+
+    .search-input {
+        font-size: 11px;
+    }
+
+    .user-menu {
+        gap: 5px;
+        flex-shrink: 0;
+        flex-wrap: nowrap;
+    }
+
+    .business-button {
+        padding: 5px 10px;
+        font-size: 9px;
+        white-space: nowrap;
+    }
+
+    .user-link,
+    .login-link,
+    .logout-link {
+        font-size: 9px;
+    }
+
+    .dropdown-toggle {
+        font-size: 9px;
+        white-space: nowrap;
+    }
+
+    .category-list {
+        gap: 8px;
+        padding: 6px 10px;
+        font-size: 10px;
+    }
+
+    .category-list li {
+        font-size: 10px;
+    }
+
+    .schedule-row {
+        font-size: 12px;
+        padding: 5px 0;
+    }
+
+    .info-header {
+        font-size: 11px;
+        margin-bottom: 5px;
+    }
+
+    .price-tag {
+        font-size: 12px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .duration-tag {
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    .service-details {
+        text-align: right;
+        margin-right: 5px;
+    }
+
+    .service-row {
+        padding: 10px 0;
+    }
+}
+
 .search-bar {
     background-color: #5e4641;
     width: 100%;
@@ -498,7 +691,7 @@ header {
 
 .service-details {
     text-align: right;
-    margin-right: 15px;
+    margin-right: 0px;
 }
 
 .price-tag {
@@ -974,3 +1167,48 @@ a{
 .sticky-search-btn:hover {
     filter: brightness(1.06);
 }
+/* Ultimas reglas: ajustes de visibilidad y separación
+   - login/link más visibles en headers
+   - garantizar separación día/horario en .schedule-row
+   - asegurar espacio para precio/duración/botón en .service-meta */
+
+header .login-link,
+.sticky-header .login-link,
+.navigation-bar .login-link,
+.navigation-bar .user-link {
+    font-size: 14px;
+    padding: 6px 10px;
+}
+
+.schedule-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.schedule-row span:first-child {
+    flex: 0 0 90px; /* reservar espacio para el día */
+    text-transform: capitalize;
+}
+
+.schedule-row span:last-child {
+    flex: 1 1 auto;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.service-meta {
+    min-width: 150px; /* aprovechar la zona derecha para separar del nombre */
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Ajustes más finos en pantallas muy pequeñas */
+@media (max-width: 420px) {
+    .schedule-row span:first-child { flex: 0 0 70px; }
+    .service-meta { min-width: 120px; gap: 8px; }
+    header .login-link, .navigation-bar .login-link { font-size: 13px; padding: 5px 8px; }
+}
+

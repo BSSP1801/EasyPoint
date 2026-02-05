@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once __DIR__ . '/../models/Service.php';
+require_once __DIR__ . '/../models/service.php';
 require_once __DIR__ . '/../models/user.php';
 
 if (!isset($_GET['id'])) {
@@ -309,9 +309,8 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                                         </span>
                                     </div>
 
-                                    <a href="../index.php?action=book&service_id=<?php echo htmlspecialchars($service['id']); ?>&store_id=<?php echo htmlspecialchars($storeId); ?>"
-                                        class="book-btn"
-                                        style="background-color: #a58668; color: #2b201e; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-block;">
+                                    <a href="../index.php?action=book&service_id=<?php echo htmlspecialchars($service['id']); ?>&store_id=<?php echo htmlspecialchars($storeId); ?>" 
+                                        class="book-btn">
                                         Book
                                     </a>
                                 </div>

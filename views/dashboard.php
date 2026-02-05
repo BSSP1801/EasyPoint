@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // 3. Cargar datos necesarios para el HTML
-require_once dirname(__DIR__) . '/models/Service.php';
+require_once dirname(__DIR__) . '/models/service.php';
 require_once dirname(__DIR__) . '/models/user.php';
 
 // Cargar servicios
@@ -81,13 +81,13 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
             <i class="fas fa-calendar-check"></i>
             <span class="logo-text">EasyPoint</span>
         </div>
-        <div style="padding: 0 20px; margin-bottom: 5px;">
+        <div class="backhome">
             <a href="index.php" style="font-size: 14px; opacity: 0.8;"><i class="fas fa-arrow-left"></i> <span
                     class="menu-text">Back to Home</span></a>
         </div>
         <nav>
-            <div class="debug-info">
-                <?php echo htmlspecialchars($_SESSION['username'] ?? 'N/A'); ?> <br>
+            <div class="debug-info" title="<?php echo htmlspecialchars($_SESSION['username'] ?? 'N/A'); ?>">
+                <span class="debug-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'N/A'); ?></span>
             </div>
 
             <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
@@ -285,7 +285,7 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
                         </div>
 
                         <div style="margin: 25px 0 15px 0; border-top: 1px solid #eee; padding-top: 15px;">
-                            <h4 style="margin-bottom: 15px; color: #555;">Social Media</h4>
+                            <h4 style="margin-bottom: 15px; color: #2b201e;">Social Media</h4>
                             <div class="form-row">
                                 <div class="form-group half">
                                     <label><i class="fab fa-instagram"></i> Instagram</label>
@@ -461,7 +461,7 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 20px;">
                                     <span
-                                        style="font-weight: bold; font-size: 18px; color: #000;"><?php echo htmlspecialchars($service['price']); ?>
+                                        style="font-weight: bold; font-size: 18px;"><?php echo htmlspecialchars($service['price']); ?>
                                         €</span>
                                     <a href="#" onclick="deleteService(<?php echo $service['id']; ?>, this); return false;"
                                         style="color: #ff4d4d; background: #fff0f0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i
@@ -494,7 +494,7 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
                 </div>
 
                 <div id="client-history-results">
-                    <p style="color: #888; font-style: italic; text-align: center; padding: 20px;">
+                    <p style="font-style: italic; text-align: center; padding: 20px;">
                         Enter a client's email to see their appointment history in your business.
                     </p>
                 </div>

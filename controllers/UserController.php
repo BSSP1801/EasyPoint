@@ -4,7 +4,7 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 require_once __DIR__ . '/../models/user.php';
-require_once __DIR__ . '/../models/Service.php'; // Asegurarse de incluir el modelo de servicio
+require_once __DIR__ . '/../models/service.php'; // Asegurarse de incluir el modelo de servicio
 
 class UserController
 {

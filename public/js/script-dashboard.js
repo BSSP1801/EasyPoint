@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = '';
 
         if (!appointments || appointments.length === 0) {
-            container.innerHTML = '<div class="appointment"><p style="color: #888; font-style: italic;">No appointments found.</p></div>';
+            container.innerHTML = '<div class="appointment"><p style="font-style: italic;">No appointments found.</p></div>';
             return;
         }
 
@@ -415,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Si hay menos de 3 caracteres, limpiamos resultados y no buscamos
             if (term.length < 3) {
                 document.getElementById('client-history-results').innerHTML =
-                    '<p style="color: #888; font-style: italic; text-align: center; padding: 20px;">Type at least 3 characters to search...</p>';
+                    '<p style="font-style: italic; text-align: center; padding: 20px;">Type at least 3 characters to search...</p>';
                 return;
             }
 
