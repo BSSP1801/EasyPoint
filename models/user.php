@@ -409,5 +409,21 @@ public function updateAppointmentStatus($appointmentId, $newStatus, $storeId)
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+public function updatePassword($userId, $newHash) {
+    try {
+        $query = "UPDATE " . $this->table_name . " SET password = :password WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':password', $newHash);
+        $stmt->bindParam(':id', $userId);
+        return $stmt->execute();
+    } catch (PDOException $e) {
+        error_log("Error updating password: " . $e->getMessage());
+        return false;
+    }
+}
+
+
+
 }
 ?>

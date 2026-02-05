@@ -197,7 +197,6 @@ $categoryFilter = $_GET['category'] ?? '';
                 'Makeup'
             ];
 
-            // Función auxiliar para construir enlaces manteniendo filtros actuales
            
             ?>
 
