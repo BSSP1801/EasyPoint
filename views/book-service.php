@@ -459,15 +459,12 @@ if (!empty($store['opening_hours'])) {
                 <div class="footer-column">
                     <h3>Company</h3>
                     <a href="#">About Us</a>
-                    <a href="#">Careers</a>
-                    <a href="#">Press</a>
                     <a href="#">Contact</a>
                 </div>
 
                 <div class="footer-column">
                     <h3>For Business</h3>
                     <a href="#">Partner with us</a>
-                    <a href="#">Business App</a>
                     <a href="#">Support</a>
                 </div>
 

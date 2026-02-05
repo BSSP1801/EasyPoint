@@ -1212,3 +1212,40 @@ header .login-link,
     header .login-link, .navigation-bar .login-link { font-size: 13px; padding: 5px 8px; }
 }
 
+/* =========================================
+   BOOTSTRAP TOAST OVERRIDES (Dark Theme)
+   ========================================= */
+
+/* Contenedor fijo en la esquina superior derecha */
+.toast-container {
+    z-index: 10000; /* Asegurar que esté encima de todo */
+}
+
+/* Personalización del Toast de Bootstrap */
+.toast-easypoint {
+    background-color: var(--card-bg) !important; /* #3a2b28 */
+    color: var(--text-main);
+    border: 1px solid var(--accent); /* Borde dorado */
+    border-left: 5px solid var(--accent); /* Acento lateral más grueso */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* El botón de cerrar (X) necesita ser blanco/claro */
+.toast-easypoint .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.8;
+}
+.toast-easypoint .btn-close:hover {
+    opacity: 1;
+}
+
+/* Tipografía interna */
+.toast-title-text {
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 14px;
+}
+.toast-body-text {
+    font-size: 13px;
+    color: #ebe6d2;
+}
