@@ -444,11 +444,11 @@ switch ($action) {
                         
                         <div class="accordion-item easypoint-accordion">
                             <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                     How do I book an appointment?
                                 </button>
                             </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
                                     It's very simple. Use the search bar to find a service (like "haircut") or a specific business. Select the store you like, choose a service, pick a date and time, and confirm your booking. You will need to log in to finalize the appointment.
                                 </div>
