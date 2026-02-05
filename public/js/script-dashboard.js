@@ -591,3 +591,79 @@ if (savedView) {
         sessionStorage.removeItem('currentView');
     }
 }
+
+/* =========================
+   8. RESTAURAR VISTA TRAS RECARGA
+   ========================= */
+
+
+window.submitPasswordChange = function(e) {
+    e.preventDefault();
+    
+    const form = document.getElementById('change-password-form');
+    const msgDiv = document.getElementById('password-msg');
+    const btn = form.querySelector('button[type="submit"]');
+    
+    // UI Feedback
+    const originalText = btn.innerText;
+    btn.innerText = 'Updating...';
+    btn.disabled = true;
+    msgDiv.innerText = '';
+    msgDiv.style.color = '#333';
+
+    const formData = new FormData(form);
+
+    fetch('index.php?action=change_password', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            msgDiv.style.color = 'green';
+            msgDiv.innerText = data.message;
+            form.reset();
+        } else {
+            msgDiv.style.color = 'red';
+            msgDiv.innerText = data.message;
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        msgDiv.style.color = 'red';
+        msgDiv.innerText = 'Connection error. Please try again.';
+    })
+    .finally(() => {
+        btn.innerText = originalText;
+        btn.disabled = false;
+        
+        // Limpiar mensaje de éxito después de 3 segundos
+        if (msgDiv.style.color === 'green') {
+            setTimeout(() => { msgDiv.innerText = ''; }, 3000);
+        }
+    });
+};
+
+
+/* =========================
+   9. TOGGLE VISIBILIDAD CONTRASEÑA (EL OJITO)
+   ========================= */
+window.togglePasswordVisibility = function(iconBtn) {
+    // Encontramos el input que es el hermano anterior del icono dentro del mismo div .password-group
+    const inputField = iconBtn.previousElementSibling;
+    
+    if (!inputField || (inputField.tagName !== 'INPUT')) return;
+
+    // Verificamos el estado actual y cambiamos
+    if (inputField.type === "password") {
+        inputField.type = "text";
+        // Cambiar icono a ojo tachado (usando Font Awesome 5/6)
+        iconBtn.classList.remove("fa-eye");
+        iconBtn.classList.add("fa-eye-slash");
+    } else {
+        inputField.type = "password";
+        // Cambiar icono a ojo normal
+        iconBtn.classList.remove("fa-eye-slash");
+        iconBtn.classList.add("fa-eye");
+    }
+};

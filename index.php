@@ -1,5 +1,9 @@
 <?php
-
+// --- DEBUG START ---
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+// --- DEBUG END ---
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
 require_once __DIR__ . '/models/service.php';
@@ -69,6 +73,9 @@ switch ($action) {
         exit();
     case 'view_all_stores':
         $controller->viewAllStores();
+        exit();
+    case 'change_password':
+        $controller->changePassword();
         exit();
     case 'logout':
         session_destroy();
@@ -248,48 +255,48 @@ switch ($action) {
                 </button>
             </form>
             <ul class="category-list">
-            <?php
-            // Definimos las categorías
-            $categories = [
-                'Hair Salon',
-                'Barbershop',
-                'Nail Salon',
-                'Hair Removal',
-                'Eyebrows & Lashes',
-                'Skincare',
-                'Massage',
-                'Makeup'
-            ];
-
-            
-            ?>
-
-            <?php foreach ($categories as $cat): ?>
                 <?php
-                // Clase activa si es la categoría actual
-                $activeClass = ($categoryFilter === $cat) ? 'font-weight: bold; text-decoration: underline;' : '';
-                ?>
-                <li>
-                    <a href="<?php echo buildUrl($cat); ?>" class="cat-link" style="<?php echo $activeClass; ?>">
-                        <?php echo $cat; ?>
-                    </a>
-                </li>
-            <?php endforeach; ?>
+                // Definimos las categorías
+                $categories = [
+                    'Hair Salon',
+                    'Barbershop',
+                    'Nail Salon',
+                    'Hair Removal',
+                    'Eyebrows & Lashes',
+                    'Skincare',
+                    'Massage',
+                    'Makeup'
+                ];
 
-            <?php if (!empty($categoryFilter)): ?>
-                <li>
-                    <a href="<?php echo buildUrl(null); ?>" class="cat-link" style="color: #d9534f;">
-                        Clear Filters
-                    </a>
-                </li>
-            <?php elseif (!empty($searchTerm) || !empty($locationTerm)): ?>
-                <li>
-                    <a href="index.php?action=search" class="cat-link" style="font-weight: bold;">
-                        View All Stores
-                    </a>
-                </li>
-            <?php endif; ?>
-        </ul>
+
+                ?>
+
+                <?php foreach ($categories as $cat): ?>
+                    <?php
+                    // Clase activa si es la categoría actual
+                    $activeClass = ($categoryFilter === $cat) ? 'font-weight: bold; text-decoration: underline;' : '';
+                    ?>
+                    <li>
+                        <a href="<?php echo buildUrl($cat); ?>" class="cat-link" style="<?php echo $activeClass; ?>">
+                            <?php echo $cat; ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+
+                <?php if (!empty($categoryFilter)): ?>
+                    <li>
+                        <a href="<?php echo buildUrl(null); ?>" class="cat-link" style="color: #d9534f;">
+                            Clear Filters
+                        </a>
+                    </li>
+                <?php elseif (!empty($searchTerm) || !empty($locationTerm)): ?>
+                    <li>
+                        <a href="index.php?action=search" class="cat-link" style="font-weight: bold;">
+                            View All Stores
+                        </a>
+                    </li>
+                <?php endif; ?>
+            </ul>
         </div>
     </header>
 

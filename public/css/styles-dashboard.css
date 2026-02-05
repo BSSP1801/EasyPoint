@@ -1003,3 +1003,28 @@ input:checked + .slider:before {
         width: 100%;
     }
 }
+
+.password-group {
+        position: relative;
+    }
+
+    /* El icono del ojo */
+    .toggle-password-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #aaa;
+        z-index: 2;
+    }
+
+    /* Asegurar que el texto no se escriba debajo del icono */
+    .password-group input[type="password"],
+    .password-group input[type="text"] {
+        padding-right: 35px;
+    }
+
+    .toggle-password-icon:hover {
+        color: #333;
+    }
