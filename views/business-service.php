@@ -1,23 +1,18 @@
 <?php
-// view/business-service.php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/../models/service.php';
 require_once __DIR__ . '/../models/user.php';
 
-// 1. Check if we received an ID
 if (!isset($_GET['id'])) {
-    // If there is no ID, redirect to home or show error
     header("Location: ../index.php");
     exit();
 }
 
 if (isset($businessData)) {
-    // Asignamos $businessData a $userData para que el resto de tu HTML funcione sin cambios
     $userData = $businessData;
 } else {
-    // Si alguien entra directo al archivo sin pasar por el controlador, lo expulsamos
     header("Location: ../index.php");
     exit();
 }
@@ -25,10 +20,8 @@ if (isset($businessData)) {
 $storeId = $_GET['id'];
 $userModel = new User();
 
-// 2. Get store data using the method you already had
 $store = $userModel->getFullProfile($storeId);
 
-// If the store does not exist, redirect
 if (!$store) {
     header("Location: ../index.php");
     exit();
@@ -37,18 +30,14 @@ if (!$store) {
 $serviceModel = new Service();
 $storeServices = $serviceModel->getAllByUserId($storeId);
 $targetUserId = $userData['user_id'] ?? $userData['id'];
-// 3. Preparar la URL del logo
-// Nota: Como estamos en la carpeta 'view/', debemos salir un nivel (../) para entrar a 'public/'
-// ... código anterior ...
+
 $logoUrl = !empty($store['logo_url'])
     ? '../public/' . htmlspecialchars($store['logo_url'])
     : '../public/assets/images/tienda-1.png';
 
-// NUEVO: Lógica para el banner
 $bannerUrl = !empty($store['banner_url'])
     ? '../public/' . htmlspecialchars($store['banner_url'])
-    : '../public/assets/images/img-resource-1.jpeg'; // Imagen de fondo por defecto
-// ...
+    : '../public/assets/images/img-resource-1.jpeg';
 
 $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre');
 ?>
@@ -71,20 +60,20 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
             <div class="sticky-logo"><a href="/index.php">EasyPoint</a></div>
 
             <div class="sticky-search-bar">
-    <div class="search-field">
-        <span class="search-icon">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </span>
-        <input type="text" placeholder="Search services">
-    </div>
-    <div class="search-field border-left">
-        <span class="search-icon">
-            <i class="fa-solid fa-location-dot"></i>
-        </span>
-        <input type="text" placeholder="Where?">
-    </div>
-    <button class="sticky-search-btn">Search</button>
-</div>
+                <div class="search-field">
+                    <span class="search-icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" placeholder="Search services">
+                </div>
+                <div class="search-field border-left">
+                    <span class="search-icon">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </span>
+                    <input type="text" placeholder="Where?">
+                </div>
+                <button class="sticky-search-btn">Search</button>
+            </div>
 
             <div class="sticky-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
@@ -99,7 +88,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                             <a href="../index.php?action=dashboard" class="dropdown-item">
                                 <i class="fa-solid fa-gauge"></i> Dashboard
                             </a>
-                            <a href="../index.php?action=logout" class="dropdown-item">
+                            <a href="../index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
                                 <i class="fa-solid fa-right-from-bracket"></i> Logout
                             </a>
                         </div>
@@ -114,7 +103,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                             <a href="../index.php?action=dashboard" class="dropdown-item">
                                 <i class="fa-solid fa-gauge"></i> Dashboard
                             </a>
-                            <a href="../index.php?action=logout" class="dropdown-item">
+                            <a href="../index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
                                 <i class="fa-solid fa-right-from-bracket"></i> Logout
                             </a>
                         </div>
@@ -130,8 +119,49 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
         <nav class="navigation-bar">
             <div class="logo"><a href="/index.php">EasyPoint</a></div>
 
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="Search services or businesses">
+            <div class="hero-search-bar" style="
+                background-color: rgba(235, 230, 210, 0.1); 
+                border: 1px solid rgba(165, 134, 104, 0.3);
+                border-radius: 50px; 
+                padding: 4px; 
+                display: flex; 
+                align-items: center; 
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2); 
+                flex: 1;
+                max-width: 600px;
+                margin: 0 20px;
+                backdrop-filter: blur(5px);">
+
+                <div class="search-field" style="flex: 1; display: flex; align-items: center; padding: 0 15px;">
+                    <span class="search-icon" style="color: #a58668; margin-right: 10px; font-size: 16px;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" placeholder="Search services"
+                        style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #ebe6d2;">
+                </div>
+
+                <div style="width: 1px; height: 25px; background-color: rgba(165, 134, 104, 0.3);"></div>
+
+                <div class="search-field" style="flex: 1; display: flex; align-items: center; padding: 0 15px;">
+                    <span class="search-icon" style="color: #a58668; margin-right: 10px; font-size: 16px;">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </span>
+                    <input type="text" placeholder="Where?"
+                        style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #ebe6d2;">
+                </div>
+
+                <button class="sticky-search-btn" style="
+                    background-color: #a58668; 
+                    color: #2b201e; 
+                    border: none; 
+                    padding: 8px 24px; 
+                    border-radius: 30px; 
+                    cursor: pointer; 
+                    font-weight: bold; 
+                    margin-left: 5px; 
+                    font-size: 14px;">
+                    Search
+                </button>
             </div>
 
             <div class="user-menu">
@@ -147,7 +177,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                             <a href="../index.php?action=dashboard" class="dropdown-item">
                                 <i class="fa-solid fa-gauge"></i> Dashboard
                             </a>
-                            <a href="../index.php?action=logout" class="dropdown-item">
+                            <a href="../index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
                                 <i class="fa-solid fa-right-from-bracket"></i> Logout
                             </a>
                         </div>
@@ -163,7 +193,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                             <a href="../index.php?action=dashboard" class="dropdown-item">
                                 <i class="fa-solid fa-gauge"></i> Dashboard
                             </a>
-                            <a href="../index.php?action=logout" class="dropdown-item">
+                            <a href="../index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
                                 <i class="fa-solid fa-right-from-bracket"></i> Logout
                             </a>
                         </div>
@@ -175,26 +205,33 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
             </div>
         </nav>
         <ul class="category-list">
-                <li><a href="index.php?category=Hair Salon" class="cat-link">Hair Salon</a></li>
-                <li><a href="index.php?category=Barbershop" class="cat-link">Barbershop</a></li>
-                <li><a href="index.php?category=Nail Salon" class="cat-link">Nail Salon</a></li>
-                <li><a href="index.php?category=Hair Removal" class="cat-link">Hair Removal</a></li>
-                <li><a href="index.php?category=Eyebrows & Lashes" class="cat-link">Eyebrows & Lashes</a></li>
-                <li><a href="index.php?category=Skincare" class="cat-link">Skincare</a></li>
-                <li><a href="index.php?category=Massage" class="cat-link">Massage</a></li>
-                <li><a href="index.php?category=Makeup" class="cat-link">Makeup</a></li>
-                <?php if (isset($_GET['category'])): ?>
-                    <li><a href="index.php" class="cat-link" style="color: #d9534f;">Show All</a></li>
-                <?php endif; ?>
-            </ul>
+            <li><a href="index.php?action=view_all_stores&category=Hair Salon" class="cat-link">Hair Salon</a></li>
+            <li><a href="index.php?action=view_all_stores&category=Barbershop" class="cat-link">Barbershop</a></li>
+            <li><a href="index.php?action=view_all_stores&category=Nail Salon" class="cat-link">Nail Salon</a></li>
+            <li><a href="index.php?action=view_all_stores&category=Hair Removal" class="cat-link">Hair Removal</a>
+            </li>
+            <li><a href="index.php?action=view_all_stores&category=Eyebrows & Lashes" class="cat-link">Eyebrows &
+                    Lashes</a></li>
+            <li><a href="index.php?action=view_all_stores&category=Skincare" class="cat-link">Skincare</a></li>
+            <li><a href="index.php?action=view_all_stores&category=Massage" class="cat-link">Massage</a></li>
+            <li><a href="index.php?action=view_all_stores&category=Makeup" class="cat-link">Makeup</a></li>
+            <?php if (isset($_GET['category'])): ?>
+                <li><a href="index.php?action=view_all_stores" class="cat-link" style="color: #d9534f;">Clear Filters</a>
+                </li>
+            <?php else: ?>
+                <li><a href="index.php?action=view_all_stores" class="cat-link" style="font-weight: bold;">View All
+                        Stores</a></li>
+            <?php endif; ?>
+
+        </ul>
     </header>
 
     <div class="main-container">
 
-<div class="left-panel">
-    <div class="gallery-carousel-wrapper">
-        <div class="carousel-main">
-                    
+        <div class="left-panel">
+            <div class="gallery-carousel-wrapper">
+                <div class="carousel-main">
+
                     <button class="carousel-control prev" id="btnPrev">
                         <i class="fas fa-chevron-left"></i>
                     </button>
@@ -206,8 +243,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                         <?php if (!empty($galleryImages)): ?>
                             <?php foreach ($galleryImages as $image): ?>
                                 <div class="carousel-slide">
-                                    <img src="/public/<?php echo htmlspecialchars($image['image_url']); ?>" 
-                                         alt="Gallery Image">
+                                    <img src="/public/<?php echo htmlspecialchars($image['image_url']); ?>" alt="Gallery Image">
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -218,31 +254,35 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                     </div>
 
                     <div class="carousel-dots" id="carouselDots">
-                        </div>
+                    </div>
                 </div>
             </div>
-           <div class="business-title">
-    <h1><?php echo htmlspecialchars($store['business_name']); ?></h1>
-    
-    <?php if (!empty($store['business_type']) && $store['business_type'] !== 'General'): ?>
-        <span style="background-color: #a58668; color: #2b201e; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 8px;">
-            <?php echo htmlspecialchars($store['business_type']); ?>
-        </span>
-    <?php endif; ?>
+            <div class="business-title">
+                <h1><?php echo htmlspecialchars($store['business_name']); ?></h1>
 
-    <p>
-        <?php
-        $parts = [];
-        if (!empty($store['address'])) $parts[] = $store['address'];
-        if (!empty($store['postal_code'])) $parts[] = $store['postal_code'];
-        if (!empty($store['city'])) $parts[] = $store['city'];
-        echo htmlspecialchars(implode(', ', $parts));
-        ?>
-    </p>
-    <div class="stars">
-        <i class="fas fa-star"></i> 5.0 <span style="color:#b0a8a6">(New)</span>
-    </div>
-</div>
+                <?php if (!empty($store['business_type']) && $store['business_type'] !== 'General'): ?>
+                    <span
+                        style="background-color: #a58668; color: #2b201e; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 8px;">
+                        <?php echo htmlspecialchars($store['business_type']); ?>
+                    </span>
+                <?php endif; ?>
+
+                <p>
+                    <?php
+                    $parts = [];
+                    if (!empty($store['address']))
+                        $parts[] = $store['address'];
+                    if (!empty($store['postal_code']))
+                        $parts[] = $store['postal_code'];
+                    if (!empty($store['city']))
+                        $parts[] = $store['city'];
+                    echo htmlspecialchars(implode(', ', $parts));
+                    ?>
+                </p>
+                <div class="stars">
+                    <i class="fas fa-star"></i> 5.0 <span style="color:#b0a8a6">(New)</span>
+                </div>
+            </div>
 
             <div>
                 <h2 class="section-title">Services</h2>
@@ -355,69 +395,65 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                 </div>
             </div>
 
-          <div>
-    <h3 class="info-header">Social Media</h3>
-    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-        
-        <?php 
-        $socials = [
-            'website'   => ['icon' => 'fas fa-globe',     'val' => $store['website'] ?? '',        'type' => 'url'],
-            'instagram' => ['icon' => 'fab fa-instagram', 'val' => $store['instagram_link'] ?? '', 'type' => 'instagram'],
-            'facebook'  => ['icon' => 'fab fa-facebook',  'val' => $store['facebook_link'] ?? '',  'type' => 'url'],
-            'tiktok'    => ['icon' => 'fab fa-tiktok',    'val' => $store['tiktok_link'] ?? '',    'type' => 'tiktok'],
-            'twitter'   => ['icon' => 'fab fa-twitter',   'val' => $store['twitter_link'] ?? '',   'type' => 'twitter']
-        ];
-        
-        $hasSocial = false;
-        
-        foreach($socials as $key => $data): 
-            $input = trim($data['val']);
-            
-            if(!empty($input)):
-                $hasSocial = true;
-                $finalLink = $input;
+            <div>
+                <h3 class="info-header">Social Media</h3>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
 
-                // LÓGICA INTELIGENTE:
-                // Si NO empieza por http/https, asumimos que es un usuario o enlace incompleto
-                if (!preg_match("~^(?:f|ht)tps?://~i", $input)) {
-                    
-                    // Quitamos el '@' inicial si el usuario lo puso (ej: @miusuario -> miusuario)
-                    $cleanUser = ltrim($input, '@');
+                    <?php
+                    $socials = [
+                        'website' => ['icon' => 'fas fa-globe', 'val' => $store['website'] ?? '', 'type' => 'url'],
+                        'instagram' => ['icon' => 'fab fa-instagram', 'val' => $store['instagram_link'] ?? '', 'type' => 'instagram'],
+                        'facebook' => ['icon' => 'fab fa-facebook', 'val' => $store['facebook_link'] ?? '', 'type' => 'url'],
+                        'tiktok' => ['icon' => 'fab fa-tiktok', 'val' => $store['tiktok_link'] ?? '', 'type' => 'tiktok'],
+                        'twitter' => ['icon' => 'fab fa-twitter', 'val' => $store['twitter_link'] ?? '', 'type' => 'twitter']
+                    ];
 
-                    switch ($data['type']) {
-                        case 'tiktok':
-                            $finalLink = "https://www.tiktok.com/@" . $cleanUser;
-                            break;
-                            
-                        case 'instagram':
-                            $finalLink = "https://www.instagram.com/" . $cleanUser;
-                            break;
-                            
-                        case 'twitter':
-                            $finalLink = "https://twitter.com/" . $cleanUser;
-                            break;
-                            
-                        default:
-                            $finalLink = "https://" . $input;
-                            break;
-                    }
-                }
-        ?>
-            <a href="<?php echo htmlspecialchars($finalLink); ?>" target="_blank" rel="noopener noreferrer" 
-               style="color: #cbbba6; text-decoration: none; font-size: 22px; transition: color 0.3s;"
-               onmouseover="this.style.color='#fff'" 
-               onmouseout="this.style.color='#cbbba6'">
-                <i class="<?php echo $data['icon']; ?>"></i>
-            </a>
-        <?php 
-            endif;
-        endforeach; 
-        
-        if(!$hasSocial): ?>
-            <p style="font-size: 13px; color: #666; font-style: italic;">No social media linked.</p>
-        <?php endif; ?>
-    </div>
-</div>
+                    $hasSocial = false;
+
+                    foreach ($socials as $key => $data):
+                        $input = trim($data['val']);
+
+                        if (!empty($input)):
+                            $hasSocial = true;
+                            $finalLink = $input;
+
+                            if (!preg_match("~^(?:f|ht)tps?://~i", $input)) {
+
+                                $cleanUser = ltrim($input, '@');
+
+                                switch ($data['type']) {
+                                    case 'tiktok':
+                                        $finalLink = "https://www.tiktok.com/@" . $cleanUser;
+                                        break;
+
+                                    case 'instagram':
+                                        $finalLink = "https://www.instagram.com/" . $cleanUser;
+                                        break;
+
+                                    case 'twitter':
+                                        $finalLink = "https://twitter.com/" . $cleanUser;
+                                        break;
+
+                                    default:
+                                        $finalLink = "https://" . $input;
+                                        break;
+                                }
+                            }
+                            ?>
+                            <a href="<?php echo htmlspecialchars($finalLink); ?>" target="_blank" rel="noopener noreferrer"
+                                style="color: #cbbba6; text-decoration: none; font-size: 22px; transition: color 0.3s;"
+                                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbbba6'">
+                                <i class="<?php echo $data['icon']; ?>"></i>
+                            </a>
+                        <?php
+                        endif;
+                    endforeach;
+
+                    if (!$hasSocial): ?>
+                        <p style="font-size: 13px; color: #666; font-style: italic;">No social media linked.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -461,13 +497,13 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; 2026 EasyPoint. All rights reserved.</p>
+            <p>© 2026 EasyPoint. All rights reserved.</p>
         </div>
     </footer>
 
     <div id="auth-modal" class="modal-overlay">
         <div class="modal-box">
-            <span class="close-modal">&times;</span>
+            <span class="close-modal">×</span>
 
             <div id="login-view">
                 <h2 class="modal-title">Welcome Back</h2>
@@ -519,7 +555,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
     <div id="store-modal" class="modal-overlay">
         <div class="modal-box">
             <span class="close-store-modal"
-                style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer;">&times;</span>
+                style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer;">×</span>
 
             <h2 class="modal-title">Register your Business</h2>
             <p class="modal-subtitle">List your store on EasyPoint</p>
@@ -554,7 +590,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
             </form>
         </div>
     </div>
-<script src="../public/js/script-business-service.js"></script>
+    <script src="../public/js/script-business-service.js"></script>
 </body>
 
 </html>

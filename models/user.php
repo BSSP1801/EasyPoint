@@ -279,28 +279,25 @@ class User
     }
 }
 
-public function getUserAppointments($userId)
-{
-    try {
-        $query = "SELECT a.id, a.appointment_date, a.appointment_time, a.status, 
-                         s.name as service_name, s.price, s.duration,
-                         store.id as store_id, store.business_name as store_name, bp.logo_url as store_logo
-                  FROM appointments a
-                  JOIN services s ON a.service_id = s.id
-                  JOIN users store ON s.user_id = store.id
-                  LEFT JOIN business_profiles bp ON store.id = bp.user_id
-                  WHERE a.user_id = :user_id
-                  ORDER BY a.appointment_date ASC, a.appointment_time ASC";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':user_id', $userId);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    } catch (PDOException $e) {
-        error_log("Error fetching user appointments: " . $e->getMessage());
-        return [];
-    }
+public function getUserAppointments($userId) {
+    $db = new Database();
+    $conn = $db->getConnection();
+    
+    // Obtenemos la cita, los detalles del servicio y el nombre del negocio (store)
+    $stmt = $conn->prepare("
+        SELECT a.id, a.appointment_date, a.appointment_time, a.status,
+               s.name as service_name, s.duration, s.price,
+               u_store.business_name as store_name, u_store.address as store_address,
+               u_store.phone as store_phone
+        FROM appointments a
+        JOIN services s ON a.service_id = s.id
+        JOIN users u_store ON s.user_id = u_store.id
+        WHERE a.user_id = :user_id
+        ORDER BY a.appointment_date DESC, a.appointment_time DESC
+    ");
+    
+    $stmt->execute([':user_id' => $userId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 public function updateAppointmentStatus($appointmentId, $newStatus, $storeId)
@@ -329,5 +326,88 @@ public function updateAppointmentStatus($appointmentId, $newStatus, $storeId)
         }
     }
 
+    public function getAllStores($category = null, $searchQuery = null)
+{
+    try {
+        $sql = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, bp.logo_url, bp.business_type 
+              FROM users u 
+              INNER JOIN business_profiles bp ON u.id = bp.user_id 
+              WHERE u.role = 'store' AND bp.is_public = 1";
+
+        // Filtro por categoría
+        if ($category && $category !== 'All') {
+            $sql .= " AND bp.business_type = :category";
+        }
+
+        // Filtro por texto (búsqueda por nombre o ciudad)
+        if ($searchQuery) {
+            $sql .= " AND (u.business_name LIKE :search OR u.city LIKE :search)";
+        }
+
+        $sql .= " ORDER BY u.created_at DESC"; // Sin LIMIT
+
+        $stmt = $this->conn->prepare($sql);
+
+        if ($category && $category !== 'All') {
+            $stmt->bindParam(':category', $category);
+        }
+        if ($searchQuery) {
+            $term = "%" . $searchQuery . "%";
+            $stmt->bindParam(':search', $term);
+        }
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error fetching all stores: " . $e->getMessage());
+        return [];
+    }
+}
+    
+
+    // Búsqueda de tiendas por servicio, nombre o ubicación
+  public function searchStores($searchTerm = null, $location = null, $category = null)
+{
+    // DISTINCT es importante para no duplicar tiendas si coinciden varios servicios
+    $query = "SELECT DISTINCT u.id, u.business_name, u.address, u.city, u.postal_code, u.created_at, 
+                     bp.logo_url, bp.business_type, bp.description
+              FROM users u 
+              LEFT JOIN services s ON u.id = s.user_id 
+              INNER JOIN business_profiles bp ON u.id = bp.user_id 
+              WHERE u.role = 'store' AND bp.is_public = 1";
+    
+    $params = [];
+
+    // Filtro por texto (Nombre negocio, nombre servicio o tipo)
+    if (!empty($searchTerm)) {
+        $query .= " AND (s.name LIKE :search OR u.business_name LIKE :business_search OR bp.business_type LIKE :type_search)";
+        $params[':search'] = "%" . $searchTerm . "%";
+        $params[':business_search'] = "%" . $searchTerm . "%";
+        $params[':type_search'] = "%" . $searchTerm . "%";
+    }
+
+    // Filtro por ubicación (Ciudad)
+    if (!empty($location)) {
+        $query .= " AND u.city LIKE :location";
+        $params[':location'] = "%" . $location . "%";
+    }
+
+    // Filtro por categoría (NUEVO)
+    if (!empty($category) && $category !== 'All') {
+        $query .= " AND bp.business_type = :category";
+        $params[':category'] = $category;
+    }
+
+    $query .= " ORDER BY u.created_at DESC";
+
+    $stmt = $this->conn->prepare($query);
+    
+    foreach ($params as $key => $value) {
+        $stmt->bindValue($key, $value);
+    }
+
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }
 ?>

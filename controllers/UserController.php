@@ -168,7 +168,7 @@ class UserController
             header('Content-Type: application/json');
             $userModel = new User();
             $uploadDir = __DIR__ . '/../public/assets/uploads/';
-            
+
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
             }
@@ -177,11 +177,13 @@ class UserController
             $handleUpload = function ($fileKey) use ($uploadDir) {
                 if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
                     $maxFileSize = 5 * 1024 * 1024; // 5MB
-                    if ($_FILES[$fileKey]['size'] > $maxFileSize) throw new Exception("File $fileKey too large.");
-                    
+                    if ($_FILES[$fileKey]['size'] > $maxFileSize)
+                        throw new Exception("File $fileKey too large.");
+
                     $allowed = ['image/jpeg', 'image/png', 'image/webp'];
                     $mime = mime_content_type($_FILES[$fileKey]['tmp_name']);
-                    if (!in_array($mime, $allowed)) throw new Exception("Invalid format for $fileKey.");
+                    if (!in_array($mime, $allowed))
+                        throw new Exception("Invalid format for $fileKey.");
 
                     $ext = pathinfo($_FILES[$fileKey]['name'], PATHINFO_EXTENSION);
                     $filename = uniqid('img_') . '.' . $ext;
@@ -196,21 +198,21 @@ class UserController
             try {
                 $data = [
                     'business_name' => $_POST['business_name'] ?? '',
-                    'phone'         => $_POST['phone'] ?? '',
-                    'address'       => $_POST['address'] ?? '',
-                    'city'          => $_POST['city'] ?? '',
-                    'postal_code'   => $_POST['postal_code'] ?? '',
-                    'description'   => $_POST['description'] ?? '',
+                    'phone' => $_POST['phone'] ?? '',
+                    'address' => $_POST['address'] ?? '',
+                    'city' => $_POST['city'] ?? '',
+                    'postal_code' => $_POST['postal_code'] ?? '',
+                    'description' => $_POST['description'] ?? '',
                     'business_type' => $_POST['business_type'] ?? 'General',
-                    'is_public'     => isset($_POST['is_public']) ? 1 : 0,
-                    'website'       => $_POST['website'] ?? '',
-                    'instagram'     => $_POST['instagram'] ?? '',
-                    'facebook'      => $_POST['facebook'] ?? '',
-                    'twitter'       => $_POST['twitter'] ?? '',
-                    'tiktok'        => $_POST['tiktok'] ?? '',
-                    'logo_url'      => $handleUpload('logo'),
-                    'banner_url'    => $handleUpload('banner')
-                   
+                    'is_public' => isset($_POST['is_public']) ? 1 : 0,
+                    'website' => $_POST['website'] ?? '',
+                    'instagram' => $_POST['instagram'] ?? '',
+                    'facebook' => $_POST['facebook'] ?? '',
+                    'twitter' => $_POST['twitter'] ?? '',
+                    'tiktok' => $_POST['tiktok'] ?? '',
+                    'logo_url' => $handleUpload('logo'),
+                    'banner_url' => $handleUpload('banner')
+
                 ];
 
                 if (!$userModel->updateBusinessProfile($_SESSION['user_id'], $data)) {
@@ -259,9 +261,9 @@ class UserController
                 'price' => $_POST['service_price'],
                 'duration' => $_POST['service_duration']
             ];
-            
+
             $serviceId = $serviceModel->create($_SESSION['user_id'], $data);
-            
+
             if ($serviceId) {
                 $data['id'] = $serviceId; // Retornar el ID para el frontend
                 echo json_encode(['success' => true, 'service' => $data]);
@@ -290,13 +292,19 @@ class UserController
     public function viewBusiness()
     {
         $businessId = $_GET['id'] ?? null;
-        if (!$businessId) { header("Location: index.php"); exit(); }
+        if (!$businessId) {
+            header("Location: index.php");
+            exit();
+        }
 
         $userModel = new User();
         $businessData = $userModel->getFullProfile($businessId);
         $galleryImages = $userModel->getBusinessGallery($businessId);
 
-        if (!$businessData) { header("Location: index.php"); exit(); }
+        if (!$businessData) {
+            header("Location: index.php");
+            exit();
+        }
 
         require_once __DIR__ . '/../views/business-service.php';
     }
@@ -306,11 +314,11 @@ class UserController
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
-            $mail->Host = 'sandbox.smtp.mailtrap.io'; 
+            $mail->Host = 'sandbox.smtp.mailtrap.io';
             $mail->SMTPAuth = true;
-            $mail->Port = 2525; 
-            $mail->Username = '83b8fc135d6989'; 
-            $mail->Password = 'f5a90f6cf9f62a'; 
+            $mail->Port = 2525;
+            $mail->Username = '83b8fc135d6989';
+            $mail->Password = 'f5a90f6cf9f62a';
             $mail->Timeout = 3;
             $mail->setFrom('support@easypoint.com', 'EasyPoint Support');
             $mail->addAddress($to);
@@ -328,7 +336,7 @@ class UserController
     public function changeStatus()
     {
         header('Content-Type: application/json');
-        
+
         // Verificar sesión y rol
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'store') {
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
@@ -354,31 +362,32 @@ class UserController
             exit();
         }
     }
-  
-  public function searchClientHistory() {
-    header('Content-Type: application/json');
-    
-    // ... verificaciones de sesión (igual que antes) ...
-    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'store') {
-        echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-        exit();
-    }
 
-    $email = $_GET['email'] ?? '';
-    $storeId = $_SESSION['user_id'];
+    public function searchClientHistory()
+    {
+        header('Content-Type: application/json');
 
-    // Permitir búsquedas de al menos 3 caracteres para no sobrecargar
-    if (strlen($email) < 3) {
-        echo json_encode(['success' => false, 'message' => 'Type at least 3 characters']);
-        exit();
-    }
+        // ... verificaciones de sesión (igual que antes) ...
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'store') {
+            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+            exit();
+        }
 
-    $db = new Database();
-    $conn = $db->getConnection();
+        $email = $_GET['email'] ?? '';
+        $storeId = $_SESSION['user_id'];
 
-    try {
-        // CAMBIO PRINCIPAL: Usamos LIKE y concatenamos '%'
-        $stmt = $conn->prepare("
+        // Permitir búsquedas de al menos 3 caracteres para no sobrecargar
+        if (strlen($email) < 3) {
+            echo json_encode(['success' => false, 'message' => 'Type at least 3 characters']);
+            exit();
+        }
+
+        $db = new Database();
+        $conn = $db->getConnection();
+
+        try {
+            // CAMBIO PRINCIPAL: Usamos LIKE y concatenamos '%'
+            $stmt = $conn->prepare("
             SELECT a.appointment_date, a.appointment_time, a.status, s.name as service_name, u.email, u.username
             FROM appointments a
             JOIN users u ON a.user_id = u.id
@@ -386,24 +395,47 @@ class UserController
             WHERE u.email LIKE :email AND s.user_id = :store_id
             ORDER BY a.appointment_date DESC, a.appointment_time DESC
         ");
-        
-        $searchTerm = "%" . $email . "%";
 
-        $stmt->execute([
-            ':email' => $searchTerm,
-            ':store_id' => $storeId
-        ]);
+            $searchTerm = "%" . $email . "%";
 
-        $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->execute([
+                ':email' => $searchTerm,
+                ':store_id' => $storeId
+            ]);
 
-        echo json_encode([
-            'success' => true,
-            'appointments' => $appointments
-        ]);
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+            $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                'success' => true,
+                'appointments' => $appointments
+            ]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+        }
     }
+
+   public function search()
+{
+    // Capturamos todos los filtros posibles
+    $query = $_GET['q'] ?? '';
+    $location = $_GET['loc'] ?? '';
+    $category = $_GET['category'] ?? '';
+
+    $userModel = new User();
+
+    // Llamamos a la función unificada del modelo
+    $stores = $userModel->searchStores($query, $location, $category);
+
+    // Cargar la vista
+    require_once __DIR__ . '/../views/search-services.php';
 }
+
+// Puedes redirigir viewAllStores a search para no repetir código
+public function viewAllStores()
+{
+    $this->search();
+}
+
 
 
 }

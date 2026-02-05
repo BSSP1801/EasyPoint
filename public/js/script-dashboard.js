@@ -47,11 +47,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Definimos la función PRIMERO
-    window.renderAppointmentsList = function (appointments, titleText) {
+  window.renderAppointmentsList = function (appointments, titleText) {
         const container = document.getElementById('appointments-container');
         const title = document.getElementById('appointments-title');
 
         if (title) title.innerText = titleText;
+        
+        // Si no existe el contenedor (por ejemplo, estamos en una vista que no lo carga), salimos
+        if (!container) return; 
+
         container.innerHTML = '';
 
         if (!appointments || appointments.length === 0) {
@@ -67,17 +71,33 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (appt.status === 'cancelled') statusClass = 'cancelled';
 
             let buttonsHtml = '';
+            
+            // Detectar si es vista de Usuario (tiene store_name) o Tienda (tiene client_name)
+            const isUserView = appt.store_name ? true : false;
+            const counterpartName = isUserView ? appt.store_name : appt.client_name;
+            const iconClass = isUserView ? 'fas fa-store' : 'far fa-user';
 
             // Lógica de botones
             if (appt.appointment_date >= today) {
                 if (appt.status === 'pending') {
-                    buttonsHtml = `
-                        <div class="appt-actions">
-                            <button onclick="updateStatus(${appt.id}, 'confirmed')" class="btn-action btn-confirm" title="Confirm"><i class="fas fa-check"></i></button>
-                            <button onclick="updateStatus(${appt.id}, 'cancelled')" class="btn-action btn-cancel" title="Cancel"><i class="fas fa-times"></i></button>
-                        </div>
-                    `;
+                    if (isUserView) {
+                        // El usuario solo puede cancelar
+                        buttonsHtml = `
+                            <div class="appt-actions">
+                                <button onclick="updateStatus(${appt.id}, 'cancelled')" class="btn-action btn-cancel" title="Cancel Booking"><i class="fas fa-times"></i></button>
+                            </div>
+                        `;
+                    } else {
+                        // La tienda puede confirmar o cancelar
+                        buttonsHtml = `
+                            <div class="appt-actions">
+                                <button onclick="updateStatus(${appt.id}, 'confirmed')" class="btn-action btn-confirm" title="Confirm"><i class="fas fa-check"></i></button>
+                                <button onclick="updateStatus(${appt.id}, 'cancelled')" class="btn-action btn-cancel" title="Cancel"><i class="fas fa-times"></i></button>
+                            </div>
+                        `;
+                    }
                 } else if (appt.status === 'confirmed') {
+                    // Ambos pueden cancelar una confirmada (según lógica simple)
                     buttonsHtml = `
                         <div class="appt-actions">
                             <button onclick="updateStatus(${appt.id}, 'cancelled')" class="btn-action btn-cancel" title="Cancel"><i class="fas fa-times"></i></button>
@@ -94,9 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="status ${statusClass}">${appt.status.charAt(0).toUpperCase() + appt.status.slice(1)}</span>
                         </h4>
                         <p>
-                            <i class="far fa-user"></i> ${appt.client_name} | 
+                            <i class="${iconClass}"></i> ${counterpartName} | 
                             <i class="far fa-clock"></i> ${formatAppointmentDate(appt.appointment_date, appt.appointment_time)}
                         </p>
+                        ${isUserView && appt.store_address ? `<p style="font-size:12px; color:#666;"><i class="fas fa-map-marker-alt"></i> ${appt.store_address}</p>` : ''}
                     </div>
                     ${buttonsHtml}
                 </div>
@@ -554,15 +575,19 @@ function escapeHtml(unsafe) {
 }
 
 /* =========================
-       6. RESTAURAR VISTA TRAS RECARGA
-       ========================= */
-// Verificamos si hay una vista guardada en memoria
+   6. RESTAURAR VISTA TRAS RECARGA
+   ========================= */
 const savedView = sessionStorage.getItem('currentView');
-if (savedView) {
-    // Si existe, forzamos esa vista
-    switchMainView(null, savedView);
-} else {
-    // (Opcional) Si quieres forzar una por defecto si no hay nada guardado
-    // switchMainView(null, 'view-calendar');
-}
 
+if (savedView) {
+    // VERIFICACIÓN EXTRA: ¿Existe realmente ese elemento en el HTML actual?
+    const targetEl = document.getElementById(savedView);
+    
+    // Solo cambiamos si el elemento existe (evita que un usuario intente abrir vista de tienda)
+    if (targetEl) {
+        switchMainView(null, savedView);
+    } else {
+        // Si no existe (ej. cambio de rol), limpiamos la memoria
+        sessionStorage.removeItem('currentView');
+    }
+}
