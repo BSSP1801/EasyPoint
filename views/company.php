@@ -1,12 +1,8 @@
 <?php
-// views/company.php
-
-// Asegurar que la sesión esté iniciada si no lo está (aunque index.php ya lo hace)
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Variables para mantener la búsqueda funcional en el header si el usuario quiere buscar desde aquí
 $searchTerm = $_GET['q'] ?? '';
 $locationTerm = $_GET['loc'] ?? '';
 ?>
@@ -18,6 +14,7 @@ $locationTerm = $_GET['loc'] ?? '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EasyPoint - Company</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="public/css/styles-search-services.css">
     <link rel="stylesheet" href="public/css/styles-company.css">
 </head>
@@ -47,7 +44,6 @@ $locationTerm = $_GET['loc'] ?? '';
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
@@ -58,7 +54,6 @@ $locationTerm = $_GET['loc'] ?? '';
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
@@ -108,7 +103,6 @@ $locationTerm = $_GET['loc'] ?? '';
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
@@ -119,7 +113,6 @@ $locationTerm = $_GET['loc'] ?? '';
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
@@ -175,7 +168,7 @@ $locationTerm = $_GET['loc'] ?? '';
                     </div>
                     <div class="contact-info-item">
                         <i class="fa-solid fa-phone"></i>
-                        <span>+1 (555) 123-4567</span>
+                        <span>+34 632 11 25 71</span>
                     </div>
                     <div class="contact-info-item">
                         <i class="fa-solid fa-location-dot"></i>
@@ -188,7 +181,7 @@ $locationTerm = $_GET['loc'] ?? '';
                 </div>
 
                 <div>
-                    <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent! We will contact you shortly.');">
+                    <form class="contact-form" onsubmit="event.preventDefault(); showToast('Message Sent', 'Message sent! We will contact you shortly.', 'fa-paper-plane');">
                         <label>Your Name</label>
                         <input type="text" placeholder="John Doe" required>
                         
@@ -339,8 +332,8 @@ $locationTerm = $_GET['loc'] ?? '';
             </form>
         </div>
     </div>
-    
-    <script src="public/js/script.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="public/js/script.js"></script>
 </body>
 </html>

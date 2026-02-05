@@ -1,6 +1,4 @@
 <?php
-// views/business.php
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -16,7 +14,7 @@ $locationTerm = $_GET['loc'] ?? '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EasyPoint - For Business</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="public/css/styles-search-services.css">
     <link rel="stylesheet" href="public/css/styles-company.css">
 </head>
@@ -46,7 +44,6 @@ $locationTerm = $_GET['loc'] ?? '';
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
@@ -57,7 +54,6 @@ $locationTerm = $_GET['loc'] ?? '';
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
@@ -107,7 +103,6 @@ $locationTerm = $_GET['loc'] ?? '';
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
@@ -118,7 +113,6 @@ $locationTerm = $_GET['loc'] ?? '';
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
@@ -183,11 +177,11 @@ $locationTerm = $_GET['loc'] ?? '';
                     </div>
                     <div class="contact-info-item">
                         <i class="fa-solid fa-phone"></i>
-                        <span>+1 (555) 987-6543 (Priority Line)</span>
+                        <span>+34 632 11 25 71 (Priority Line)</span>
                     </div>
                     <div class="contact-info-item">
                         <i class="fa-solid fa-book-open"></i>
-                        <span><a href="#" style="color: inherit; text-decoration: underline;">Visit Knowledge Base</a></span>
+                        <span>Visit Knowledge Base</span>
                     </div>
                     <div class="contact-info-item">
                         <i class="fa-solid fa-clock"></i>
@@ -196,7 +190,7 @@ $locationTerm = $_GET['loc'] ?? '';
                 </div>
 
                 <div>
-                    <form class="contact-form" onsubmit="event.preventDefault(); alert('Support request sent. Ticket #99283 created.');">
+                    <form class="contact-form" onsubmit="event.preventDefault(); showToast('Support Request', 'Support request sent. Ticket #99283 created.', 'fa-clipboard-check');">
                         <label>Business Name</label>
                         <input type="text" placeholder="Your Salon/Shop Name" required>
                         
@@ -318,7 +312,7 @@ $locationTerm = $_GET['loc'] ?? '';
         </div>
     </div>
     
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="public/js/script.js"></script>
-
 </body>
 </html>
