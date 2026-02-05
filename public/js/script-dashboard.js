@@ -575,15 +575,19 @@ function escapeHtml(unsafe) {
 }
 
 /* =========================
-       6. RESTAURAR VISTA TRAS RECARGA
-       ========================= */
-// Verificamos si hay una vista guardada en memoria
+   6. RESTAURAR VISTA TRAS RECARGA
+   ========================= */
 const savedView = sessionStorage.getItem('currentView');
-if (savedView) {
-    // Si existe, forzamos esa vista
-    switchMainView(null, savedView);
-} else {
-    // (Opcional) Si quieres forzar una por defecto si no hay nada guardado
-    // switchMainView(null, 'view-calendar');
-}
 
+if (savedView) {
+    // VERIFICACIÓN EXTRA: ¿Existe realmente ese elemento en el HTML actual?
+    const targetEl = document.getElementById(savedView);
+    
+    // Solo cambiamos si el elemento existe (evita que un usuario intente abrir vista de tienda)
+    if (targetEl) {
+        switchMainView(null, savedView);
+    } else {
+        // Si no existe (ej. cambio de rol), limpiamos la memoria
+        sessionStorage.removeItem('currentView');
+    }
+}
