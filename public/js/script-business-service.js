@@ -1,4 +1,66 @@
+function showToast(message) {
+    const toast = document.getElementById("toast");
+    // Añadimos un icono de advertencia junto al mensaje
+    toast.innerHTML = `<i class="fa-solid fa-circle-exclamation" style="color: #a58668; font-size: 1.2em;"></i> <span>${message}</span>`;
+    
+    // Añadimos la clase para mostrarlo
+    toast.classList.add("show");
+
+    // Después de 3 segundos, lo quitamos
+    setTimeout(function() {
+        toast.classList.remove("show");
+    }, 3000);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+
+    const stars = document.querySelectorAll('.star-rating i');
+    const ratingInput = document.getElementById('rating-value');
+
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.getAttribute('data-rating');
+            ratingInput.value = rating;
+            
+            stars.forEach(s => {
+                if(s.getAttribute('data-rating') <= rating) {
+                    s.classList.replace('far', 'fas');
+                } else {
+                    s.classList.replace('fas', 'far');
+                }
+            });
+        });
+    });
+
+    const reviewForm = document.getElementById('review-form');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(reviewForm);
+            
+            if (formData.get('rating') === "0") {
+                showToast("Please, select a puntuation."); // Usamos el Toast
+                return;
+            }
+
+            try {
+                const response = await fetch('../index.php?action=add_review', {
+                    method: 'POST',
+                    body: JSON.stringify(Object.fromEntries(formData)),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    location.reload(); 
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    }
 
     // 1. Crear el Contenedor de Toasts de Bootstrap si no existe
     let toastContainer = document.querySelector('.toast-container');
