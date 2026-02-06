@@ -11,8 +11,8 @@ if (!isset($_GET['service_id']) || !isset($_GET['store_id'])) {
     exit();
 }
 
-$serviceId = (int)$_GET['service_id'];
-$storeId = (int)$_GET['store_id'];
+$serviceId = (int) $_GET['service_id'];
+$storeId = (int) $_GET['store_id'];
 
 $serviceModel = new Service();
 $userModel = new User();
@@ -45,6 +45,8 @@ if (!empty($store['opening_hours'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Service - EasyPoint</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="public/css/styles.css">
     <link rel="stylesheet" href="public/css/styles-book-service.css">
     <link rel="icon" type="image/svg+xml" href="public/assets/images/favicon.svg">
@@ -266,7 +268,8 @@ if (!empty($store['opening_hours'])) {
                     <div class="price-section">
                         <div class="price-row">
                             <span class="label">Total</span>
-                            <span class="price-value" id="totalPrice"><?php echo number_format($service['price'], 2); ?> €</span>
+                            <span class="price-value" id="totalPrice"><?php echo number_format($service['price'], 2); ?>
+                                €</span>
                         </div>
                     </div>
 
@@ -504,6 +507,8 @@ if (!empty($store['opening_hours'])) {
     </script>
 
     <script src="public/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="public/js/script-book-service.js"></script>
 </body>
 

@@ -115,32 +115,45 @@ function nextMonth() {
     renderCalendar();
 }
 
-function selectDate(date, button) {
-    // Remove previous selection
-    document.querySelectorAll('.day-btn.selected').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-
-    // Add selection to clicked button
+// MODIFICADO: Ahora es async y pide los slots ocupados
+async function selectDate(date, button) {
+    document.querySelectorAll('.day-btn.selected').forEach(btn => btn.classList.remove('selected'));
     button.classList.add('selected');
+    
     selectedDate = date;
-    selectedTime = null; // Reset time selection
+    selectedTime = null;
     selectedEmployee = null;
 
-    // Show time slots and generate them
-    generateTimeSlots(date);
+    // --- NUEVO: Consultar citas ocupadas ---
+    try {
+        const response = await fetch('index.php?action=get-booked-slots', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                service_id: SERVICE_DATA.id,
+                date: dateToYMD(date)
+            })
+        });
+        const result = await response.json();
+        const bookedTimes = result.success ? result.booked_times : [];
+        
+        // Pasar las horas ocupadas a la generación de slots
+        generateTimeSlots(date, bookedTimes); 
+    } catch (error) {
+        console.error("Error obteniendo citas:", error);
+        generateTimeSlots(date, []);
+    }
+    // ---------------------------------------
+
     document.getElementById('timeSlotsSection').style.display = 'block';
     document.getElementById('selectedInfo').style.display = 'block';
-
-    // Update date display
     const dateStr = date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     document.getElementById('selectedDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
-
-    // Clear time display
     document.getElementById('selectedTime').textContent = '-';
 }
 
-function generateTimeSlots(date) {
+// MODIFICADO: Acepta bookedTimes y filtra
+function generateTimeSlots(date, bookedTimes = []) {
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const dayName = days[date.getDay()];
     const dayHours = STORE_DATA.opening_hours[dayName];
@@ -165,9 +178,16 @@ function generateTimeSlots(date) {
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
         const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+        const fullTimeStr = timeStr + ":00"; // Formato SQL (HH:MM:SS)
 
         const slot = createTimeSlot(timeStr, date);
-        const hour = hours;
+        const hour = hours; // Necesario para la clasificación abajo
+        
+        // BLOQUEO: Si la hora está en la lista de ocupadas, desactivar botón
+        if (bookedTimes.includes(fullTimeStr)) {
+            slot.classList.add('disabled');
+            slot.disabled = true;
+        }
 
         // Categorize by time of day
         if (hour < 12) {
@@ -207,6 +227,9 @@ function selectTime(time, button, date) {
         btn.classList.remove('selected');
     });
 
+    // Si el botón está deshabilitado (ocupado/pasado), no hacer nada
+    if (button.disabled) return;
+
     button.classList.add('selected');
     selectedTime = time;
 
@@ -225,7 +248,7 @@ function showEmployeesSelection() {
     const employees = [
         { id: 1, name: 'Peluquero 1' },
         { id: 2, name: 'Peluquero 2' },
-        { id: 3, name: 'Peluquero 1' }
+        { id: 3, name: 'Peluquero 3' }
     ];
 
     employeeGrid.innerHTML = '';
@@ -340,13 +363,17 @@ function confirmBooking() {
     .then(result => {
         document.getElementById('loadingSpinner').style.display = 'none';
 
-        if (result.success) {
+        if (result.success === true) {
             showToast('Your appointment has been successfully booked!', 'success');
             setTimeout(() => {
-                window.location.href = 'index.php';
+                // --- CAMBIO AQUÍ ---
+                // Usamos STORE_DATA.id para volver al perfil del negocio.
+                // Asegúrate de que 'action=store' sea la ruta correcta en tu index.php
+                // Si tu ruta para ver una tienda es diferente (ej: 'business', 'profile', 'view-store'), cámbialo aquí.
+                window.location.href = 'index.php?action=view_business&id=' + STORE_DATA.id; 
             }, 2000);
         } else {
-            showToast('Error booking appointment: ' + result.message, 'error');
+            showToast('Error booking appointment: ' + (result.message || 'Unknown error'), 'error');
         }
     })
     .catch(error => {
@@ -382,3 +409,16 @@ document.addEventListener('click', function (event) {
         confirmCancel();
     }
 });
+window.showToast = function(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    
+    // Mostrar mensaje
+    toast.textContent = message;
+    toast.className = 'toast show ' + type;
+
+    // Ocultar después de 3 segundos
+    setTimeout(() => {
+        toast.className = toast.className.replace('show', '');
+    }, 3000);
+};
