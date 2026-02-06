@@ -201,9 +201,14 @@ class User
     public function getRecommendedStores($category = null)
     {
         try {
-            $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, bp.logo_url, bp.business_type 
+            // Añadimos AVG(r.rating) y COUNT(r.id) a la selección
+            $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, 
+                             bp.logo_url, bp.business_type,
+                             COALESCE(AVG(r.rating), 5) as avg_rating, 
+                             COUNT(r.id) as review_count
                   FROM users u 
                   INNER JOIN business_profiles bp ON u.id = bp.user_id 
+                  LEFT JOIN reviews r ON bp.id = r.business_profile_id
                   WHERE u.role = 'store' AND bp.is_public = 1";
 
             // Si hay categoría, añadimos el filtro
@@ -211,11 +216,11 @@ class User
                 $query .= " AND bp.business_type = :category";
             }
 
-            $query .= " ORDER BY u.created_at DESC LIMIT 8";
+            // Agrupamos por ID de usuario para calcular la media por tienda
+            $query .= " GROUP BY u.id ORDER BY u.created_at DESC LIMIT 8";
 
             $stmt = $this->conn->prepare($query);
             
-            // Vincular parámetro si existe
             if ($category) {
                 $stmt->bindParam(':category', $category);
             }
@@ -366,49 +371,54 @@ public function updateAppointmentStatus($appointmentId, $newStatus, $storeId)
     
 
     // Búsqueda de tiendas por servicio, nombre o ubicación
-  public function searchStores($searchTerm = null, $location = null, $category = null)
-{
-    // DISTINCT es importante para no duplicar tiendas si coinciden varios servicios
-    $query = "SELECT DISTINCT u.id, u.business_name, u.address, u.city, u.postal_code, u.created_at, 
-                     bp.logo_url, bp.business_type, bp.description
-              FROM users u 
-              LEFT JOIN services s ON u.id = s.user_id 
-              INNER JOIN business_profiles bp ON u.id = bp.user_id 
-              WHERE u.role = 'store' AND bp.is_public = 1";
-    
-    $params = [];
+  // Búsqueda de tiendas por servicio, nombre o ubicación - CON MEDIA Y CONTEO
+    public function searchStores($searchTerm = null, $location = null, $category = null)
+    {
+        // Usamos GROUP BY en lugar de DISTINCT para poder usar funciones de agregación (AVG, COUNT)
+        $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, u.created_at, 
+                         bp.logo_url, bp.business_type, bp.description,
+                         COALESCE(AVG(r.rating), 5) as avg_rating, 
+                         COUNT(DISTINCT r.id) as review_count
+                  FROM users u 
+                  INNER JOIN business_profiles bp ON u.id = bp.user_id 
+                  LEFT JOIN services s ON u.id = s.user_id 
+                  LEFT JOIN reviews r ON bp.id = r.business_profile_id
+                  WHERE u.role = 'store' AND bp.is_public = 1";
+        
+        $params = [];
 
-    // Filtro por texto (Nombre negocio, nombre servicio o tipo)
-    if (!empty($searchTerm)) {
-        $query .= " AND (s.name LIKE :search OR u.business_name LIKE :business_search OR bp.business_type LIKE :type_search)";
-        $params[':search'] = "%" . $searchTerm . "%";
-        $params[':business_search'] = "%" . $searchTerm . "%";
-        $params[':type_search'] = "%" . $searchTerm . "%";
+        // Filtro por texto
+        if (!empty($searchTerm)) {
+            $query .= " AND (s.name LIKE :search OR u.business_name LIKE :business_search OR bp.business_type LIKE :type_search)";
+            $params[':search'] = "%" . $searchTerm . "%";
+            $params[':business_search'] = "%" . $searchTerm . "%";
+            $params[':type_search'] = "%" . $searchTerm . "%";
+        }
+
+        // Filtro por ubicación
+        if (!empty($location)) {
+            $query .= " AND u.city LIKE :location";
+            $params[':location'] = "%" . $location . "%";
+        }
+
+        // Filtro por categoría
+        if (!empty($category) && $category !== 'All') {
+            $query .= " AND bp.business_type = :category";
+            $params[':category'] = $category;
+        }
+
+        // Agrupamos por ID de usuario para calcular la media única por tienda
+        $query .= " GROUP BY u.id ORDER BY u.created_at DESC";
+
+        $stmt = $this->conn->prepare($query);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    // Filtro por ubicación (Ciudad)
-    if (!empty($location)) {
-        $query .= " AND u.city LIKE :location";
-        $params[':location'] = "%" . $location . "%";
-    }
-
-    // Filtro por categoría (NUEVO)
-    if (!empty($category) && $category !== 'All') {
-        $query .= " AND bp.business_type = :category";
-        $params[':category'] = $category;
-    }
-
-    $query .= " ORDER BY u.created_at DESC";
-
-    $stmt = $this->conn->prepare($query);
-    
-    foreach ($params as $key => $value) {
-        $stmt->bindValue($key, $value);
-    }
-
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 
 public function updatePassword($userId, $newHash) {
     try {
@@ -423,7 +433,23 @@ public function updatePassword($userId, $newHash) {
     }
 }
 
-
+    public function getReviews($businessProfileId)
+    {
+        try {
+            $query = "SELECT r.*, u.username 
+                      FROM reviews r 
+                      JOIN users u ON r.user_id = u.id 
+                      WHERE r.business_profile_id = :pid 
+                      ORDER BY r.created_at DESC";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':pid', $businessProfileId);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error fetching reviews: " . $e->getMessage());
+            return [];
+        }
+    }
 
 }
 ?>

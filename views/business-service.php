@@ -27,6 +27,25 @@ if (!$store) {
     exit();
 }
 
+$reviews = $userModel->getReviews($store['business_profile_id']);
+
+$averageRating = 5.0; // Por defecto es la máxima si no hay reseñas
+$totalReviews = count($reviews);
+
+if ($totalReviews > 0) {
+    $sumRatings = 0;
+    foreach ($reviews as $review) {
+        $sumRatings += $review['rating'];
+    }
+    // Calculamos la media y redondeamos a 1 decimal (ej. 4.5)
+    $averageRating = number_format($sumRatings / $totalReviews, 1);
+}
+// --- FIN CÁLCULO DE MEDIA ---
+
+$serviceModel = new Service();
+
+$serviceModel = new Service();
+
 $serviceModel = new Service();
 $storeServices = $serviceModel->getAllByUserId($storeId);
 $targetUserId = $userData['user_id'] ?? $userData['id'];
@@ -50,6 +69,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EasyPoint</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../public/css/styles-business-service.css">
     <link rel="icon" type="image/svg+xml" href="public/assets/images/favicon.svg">
 </head>
@@ -83,7 +103,6 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="../index.php?action=dashboard" class="dropdown-item">
@@ -98,7 +117,6 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="../index.php?action=dashboard" class="dropdown-item">
@@ -172,7 +190,6 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="../index.php?action=dashboard" class="dropdown-item">
@@ -188,7 +205,6 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="../index.php?action=dashboard" class="dropdown-item">
@@ -280,9 +296,16 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                     echo htmlspecialchars(implode(', ', $parts));
                     ?>
                 </p>
-                <div class="stars">
-                    <i class="fas fa-star"></i> 5.0 <span style="color:#b0a8a6">(New)</span>
-                </div>
+                <div class="stars" style="color: #a58668; font-weight: bold;">
+    <i class="fas fa-star"></i> <?php echo $averageRating; ?> 
+    <span style="color:#b0a8a6; font-weight: normal; font-size: 0.9em;">
+        <?php if ($totalReviews > 0): ?>
+            (<?php echo $totalReviews; ?> opinions)
+        <?php else: ?>
+            (New)
+        <?php endif; ?>
+    </span>
+</div>
             </div>
 
             <div>
@@ -296,7 +319,7 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                             <div class="service-row"
                                 style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px;">
 
-                                <h4 style="margin: 0; font-size: 16px; color: #cbbba6; flex: 1;">
+                                <h4 style="margin: 0; font-size: 16px; color: #ffffff; flex: 1;">
                                     <?php echo htmlspecialchars($service['name']); ?>
                                 </h4>
 
@@ -321,6 +344,72 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
                     </div>
                 <?php endif; ?>
             </div>
+
+            <div class="reviews-section" style="margin-top: 40px; padding-top: 20px;">
+    <h2 class="section-title">Reviews</h2>
+
+    <?php if (isset($_SESSION['user_id'])): ?>
+        <form id="review-form" style="background: #2b201e; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+            <h3 style="color: #cbbba6; margin-top: 0;">Give a review</h3>
+<input type="hidden" name="business_id" value="<?php echo htmlspecialchars($store['business_profile_id']); ?>">            
+            <div class="star-rating" style="font-size: 24px; color: #a58668; margin-bottom: 15px; cursor: pointer;">
+                <i class="far fa-star" data-rating="1"></i>
+                <i class="far fa-star" data-rating="2"></i>
+                <i class="far fa-star" data-rating="3"></i>
+                <i class="far fa-star" data-rating="4"></i>
+                <i class="far fa-star" data-rating="5"></i>
+                <input type="hidden" name="rating" id="rating-value" value="0">
+            </div>
+
+            <textarea name="comment" maxlength="500" placeholder="Write your comment here (max. 500 characters)..." 
+    style="width: 100%; padding: 10px; border-radius: 8px; background: #3d2d2a; color: white; border: 1px solid #a58668; margin-bottom: 10px; resize: vertical; min-height: 80px;"></textarea>
+            
+            <button type="submit" class="book-btn" style="width: auto; padding: 10px 25px;">Send Review</button>
+        </form>
+    <?php else: ?>
+        <p style="color: #888; font-style: italic;">Log in to leave a review.</p>
+    <?php endif; ?>
+
+    <div id="reviews-list" style="margin-top: 20px;">
+    <?php if (empty($reviews)): ?>
+        <p style="color: #888; font-style: italic;">There are no reviews yet. Be the first to review it!</p>
+    <?php else: ?>
+        <?php foreach ($reviews as $review): ?>
+            <div class="review-item" style="border-bottom: 1px solid rgba(165, 134, 104, 0.2); padding: 15px 0;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <strong style="color: #cbbba6; font-size: 16px;">
+                        <?php echo htmlspecialchars($review['username']); ?>
+                    </strong>
+                    <div style="color: #a58668; font-size: 14px;">
+                        <?php for($i=1; $i<=5; $i++): ?>
+                            <i class="<?php echo $i <= $review['rating'] ? 'fas' : 'far'; ?> fa-star"></i>
+                        <?php endfor; ?>
+                    </div>
+                </div>
+
+                <div class="review-text-scroll" style="
+                    color: #ebe6d2; 
+                    font-size: 14px; 
+                    line-height: 1.5; 
+                    word-wrap: break-word;       
+                    overflow-wrap: break-word;   
+                    word-break: break-word;      
+                    max-height: 100px;           
+                    overflow-y: auto;            
+                    padding-right: 10px; /* Espacio extra para que no choque con la barra */
+                ">
+                    <?php echo nl2br(htmlspecialchars($review['comment'])); ?>
+                </div>
+
+                <small style="color: #888; font-size: 12px; display: block; margin-top: 8px;">
+                    <?php echo date('d/m/Y', strtotime($review['created_at'])); ?>
+                </small>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
+</div>
         </div>
 
         <div class="right-panel">
@@ -588,6 +677,9 @@ $businessName = htmlspecialchars($store['business_name'] ?? 'Negocio sin nombre'
             </form>
         </div>
     </div>
+
+    <div id="toast"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../public/js/script-business-service.js"></script>
 </body>
 
