@@ -229,6 +229,11 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             if (registerError) registerError.style.display = 'none';
             if (registerSuccess) registerSuccess.style.display = 'none';
+            
+            // Limpiar estilos de error previos
+            registerForm.querySelectorAll('.modal-input').forEach(input => {
+                input.style.boxShadow = '';
+            });
 
             const formData = new FormData(this);
             formData.append('role', 'user');
@@ -239,10 +244,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
                 .then(response => {
-                    if (!response.ok && response.status !== 400) throw new Error('Err: ' + response.status);
                     return response.text().then(text => {
                         try { return JSON.parse(text); }
-                        catch (e) { throw new Error('Invalid JSON'); }
+                        catch (e) { 
+                            console.error("Raw error:", text);
+                            throw new Error('Server returned invalid data.'); 
+                        }
                     });
                 })
                 .then(data => {
@@ -255,14 +262,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         setTimeout(() => { window.location.href = 'index.php'; }, 1000);
                     } else {
                         if (registerError) {
-                            registerError.textContent = 'Error: ' + data.message;
+                            registerError.textContent = data.message;
                             registerError.style.display = 'block';
+                        }
+                        // Marcar campo con error y hacer Focus
+                        if (data.field) {
+                            const fieldEl = registerForm.querySelector(`[name="${data.field}"]`);
+                            if (fieldEl) {
+                                fieldEl.style.boxShadow = 'inset 0 0 0 2px #f44336';
+                                fieldEl.focus();
+                                fieldEl.addEventListener('input', function() {
+                                    this.style.boxShadow = ''; // Quitar rojo al escribir
+                                }, { once: true });
+                            }
                         }
                     }
                 })
                 .catch(error => {
                     if (registerError) {
-                        registerError.textContent = 'Error: ' + error.message;
+                        registerError.textContent = error.message;
                         registerError.style.display = 'block';
                     }
                 });
@@ -274,6 +292,11 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             if (storeError) storeError.style.display = 'none';
             if (storeSuccess) storeSuccess.style.display = 'none';
+            
+            // Limpiar estilos de error previos
+            storeRegisterForm.querySelectorAll('.modal-input').forEach(input => {
+                input.style.boxShadow = '';
+            });
 
             const formData = new FormData(this);
             formData.append('role', 'store');
@@ -284,10 +307,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
                 .then(response => {
-                    if (!response.ok && response.status !== 400) throw new Error('Err: ' + response.status);
                     return response.text().then(text => {
                         try { return JSON.parse(text); }
-                        catch (e) { throw new Error('Invalid JSON'); }
+                        catch (e) { 
+                            console.error("Raw error:", text);
+                            throw new Error('Server returned invalid data.'); 
+                        }
                     });
                 })
                 .then(data => {
@@ -299,14 +324,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         setTimeout(() => { window.location.href = 'index.php'; }, 1000);
                     } else {
                         if (storeError) {
-                            storeError.textContent = 'Error: ' + data.message;
+                            storeError.textContent = data.message;
                             storeError.style.display = 'block';
+                        }
+                        // Marcar campo con error y hacer Focus
+                        if (data.field) {
+                            const fieldEl = storeRegisterForm.querySelector(`[name="${data.field}"]`);
+                            if (fieldEl) {
+                                fieldEl.style.boxShadow = 'inset 0 0 0 2px #f44336';
+                                fieldEl.focus();
+                                fieldEl.addEventListener('input', function() {
+                                    this.style.boxShadow = ''; // Quitar rojo al escribir
+                                }, { once: true });
+                            }
                         }
                     }
                 })
                 .catch(error => {
                     if (storeError) {
-                        storeError.textContent = 'Error: ' + error.message;
+                        storeError.textContent = error.message;
                         storeError.style.display = 'block';
                     }
                 });

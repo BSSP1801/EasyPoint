@@ -17,14 +17,19 @@ class User
     public function create($data)
     {
         try {
-            $checkQuery = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE username = :username OR email = :email";
+            // Evaluamos exactamente qué campo está duplicado
+            $checkQuery = "SELECT username, email FROM " . $this->table_name . " WHERE username = :username OR email = :email LIMIT 1";
             $checkStmt = $this->conn->prepare($checkQuery);
             $checkStmt->bindParam(":username", $data['username']);
             $checkStmt->bindParam(":email", $data['email']);
             $checkStmt->execute();
 
-            if ($checkStmt->fetchColumn() > 0) {
-                throw new Exception("The username or email is already registered.");
+            if ($row = $checkStmt->fetch(PDO::FETCH_ASSOC)) {
+                if (strtolower($row['email']) === strtolower($data['email'])) {
+                    throw new Exception("email:This email is already registered.");
+                } else {
+                    throw new Exception("username:This username is already taken.");
+                }
             }
 
             $query = "INSERT INTO " . $this->table_name . " 

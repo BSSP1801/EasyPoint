@@ -27,7 +27,7 @@ class UserController
                 ];
 
                 if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
-                    throw new Exception("All common fields are required.");
+                    throw new \Exception("All common fields are required.");
                 }
 
                 $user = new User();
@@ -59,11 +59,25 @@ class UserController
                     header("Location: index.php");
                     exit();
                 }
-            } catch (Exception $e) {
+           } catch (\Exception $e) {
                 if ($isAjax) {
+                    // Limpiamos cualquier warning previo de PHP para que no rompa el JSON
+                    if (ob_get_level() > 0) ob_clean();
+                    
                     header('Content-Type: application/json');
                     http_response_code(400);
-                    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+                    
+                    $errorMsg = $e->getMessage();
+                    $field = null;
+                    
+                    // Separamos el campo del mensaje si viene en formato "campo:mensaje"
+                    if (strpos($errorMsg, ':') !== false) {
+                        list($field, $message) = explode(':', $errorMsg, 2);
+                    } else {
+                        $message = $errorMsg;
+                    }
+                    
+                    echo json_encode(['success' => false, 'message' => $message, 'field' => $field]);
                     exit();
                 }
                 error_log("Registration error: " . $e->getMessage());

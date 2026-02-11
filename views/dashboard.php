@@ -43,7 +43,12 @@ $stats = [
 $currentDate = gmdate('Y-m-d'); // Usar gmdate para obtener UTC
 
 foreach ($myAppointments as $appt) {
-    // --- NUEVA CONDICIÓN: Solo contar si la fecha es hoy o futura ---
+    // 1. Ignorar por completo las citas canceladas para que no inflen los contadores
+    if ($appt['status'] === 'cancelled') {
+        continue;
+    }
+
+    // 2. Solo contar si la fecha es hoy o estrictamente en el futuro
     if ($appt['appointment_date'] >= $currentDate) {
 
         // Incrementamos el total de citas activas (futuras + hoy)
