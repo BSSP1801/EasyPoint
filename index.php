@@ -7,6 +7,7 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
 require_once __DIR__ . '/controllers/BookingController.php';
+require_once __DIR__ . '/controllers/ReviewController.php';
 require_once __DIR__ . '/models/service.php';
 
 session_start();
@@ -74,6 +75,10 @@ switch ($action) {
         exit();
     case 'delete_service':
         $controller->deleteService();
+        exit();
+       case 'add_review': 
+        header('Content-Type: application/json');
+        ReviewController::addReview();
         exit();
     case 'change_status':
         $controller->changeStatus();
