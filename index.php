@@ -7,7 +7,6 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
 require_once __DIR__ . '/controllers/BookingController.php';
-require_once __DIR__ . '/controllers/ReviewController.php'; 
 require_once __DIR__ . '/models/service.php';
 
 session_start();
@@ -100,10 +99,6 @@ switch ($action) {
         $_SESSION = array();
         header("Location: index.php");
         exit();
-    case 'add_review':
-        header('Content-Type: application/json');
-        ReviewController::addReview();
-        exit();        
 }
 
 ?>
@@ -351,19 +346,13 @@ switch ($action) {
                         $addressParts = [];
                         if (!empty($store['address']))
                             $addressParts[] = htmlspecialchars($store['address']);
+                        if (!empty($store['postal_code']))
+                            $addressParts[] = htmlspecialchars($store['postal_code']);
                         if (!empty($store['city']))
-                            $addressParts[] = htmlspecialchars($store['city']); // Simplificado para que quepa mejor
+                            $addressParts[] = htmlspecialchars($store['city']);
                         $fullAddress = implode(', ', $addressParts);
 
                         $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
-                        
-                        // --- NUEVO: Lógica de puntuación ---
-                        // Si la consulta trajo avg_rating úsalo, si no (ej. búsqueda) pon 5.0
-                        $ratingVal = isset($store['avg_rating']) ? number_format($store['avg_rating'], 1) : '5.0';
-                        $reviewCount = isset($store['review_count']) ? $store['review_count'] : 0;
-                        
-                        $reviewText = ($reviewCount > 0) ? "($reviewCount)" : "New";
-                        // -----------------------------------
                         ?>
 
                         <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>"
@@ -371,15 +360,9 @@ switch ($action) {
                             <article class="shop-card">
                                 <div class="image-container">
                                     <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
-                                    
                                     <div class="rating-label">
-                                        <i class="fas fa-star" style="margin-right: 3px;"></i> 
-                                        <?php echo $ratingVal; ?> 
-                                        <span class="reviews-text" style="margin-left: 3px;">
-                                            <?php echo $reviewText; ?>
-                                        </span>
+                                        5.0 <span class="reviews-text">New</span>
                                     </div>
-                                    
                                 </div>
                                 <div class="shop-info">
                                     <h3 class="shop-name"><?php echo $name; ?></h3>

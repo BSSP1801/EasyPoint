@@ -305,23 +305,23 @@ public function getUserAppointments($userId) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-public function updateAppointmentStatus($appointmentId, $newStatus, $storeId)
+public function updateAppointmentStatus($appointmentId, $newStatus, $userId)
     {
         try {
-            // Usamos JOIN para asegurarnos de que la cita pertenece a un servicio 
-            // creado por la tienda que está intentando modificarla ($storeId)
+            // Permitimos la actualización si quien lo solicita es el dueño del 
+            // servicio (tienda: s.user_id) O el cliente dueño de la cita (a.user_id)
             $query = "UPDATE appointments a 
                       INNER JOIN services s ON a.service_id = s.id 
                       SET a.status = :status 
-                      WHERE a.id = :id AND s.user_id = :store_id";
+                      WHERE a.id = :id AND (s.user_id = :user_id OR a.user_id = :user_id)";
 
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':status', $newStatus);
             $stmt->bindParam(':id', $appointmentId);
-            $stmt->bindParam(':store_id', $storeId);
+            $stmt->bindParam(':user_id', $userId);
 
             if ($stmt->execute()) {
-                // Verificar si realmente se modificó alguna fila (si no, es que no era su cita o el ID no existe)
+                // Verificar si realmente se modificó alguna fila
                 return $stmt->rowCount() > 0;
             }
             return false;

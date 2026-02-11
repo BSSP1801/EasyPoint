@@ -147,3 +147,12 @@ html {
     font-size: 13px;
     color: #ebe6d2;
 }
+/* --- MOBILE FIXES --- */
+@media (max-width: 768px) {
+    .company-container { padding: 20px 15px; }
+    .content-section { padding: 25px 20px; margin-bottom: 30px; }
+    .section-header h2 { font-size: 26px; }
+    .about-text { font-size: 15px; }
+    .contact-grid { gap: 25px; }
+    .send-btn { width: 100%; padding: 14px; }
+}

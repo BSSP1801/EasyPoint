@@ -116,48 +116,62 @@ function nextMonth() {
 }
 
 function selectDate(date, button) {
-    // Remove previous selection
     document.querySelectorAll('.day-btn.selected').forEach(btn => {
         btn.classList.remove('selected');
     });
 
-    // Add selection to clicked button
     button.classList.add('selected');
     selectedDate = date;
-    selectedTime = null; // Reset time selection
+    selectedTime = null; 
     selectedEmployee = null;
 
-    // Show time slots and generate them
-    generateTimeSlots(date);
-    document.getElementById('timeSlotsSection').style.display = 'block';
-    document.getElementById('selectedInfo').style.display = 'block';
-
-    // Update date display
     const dateStr = date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     document.getElementById('selectedDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
-
-    // Clear time display
     document.getElementById('selectedTime').textContent = '-';
+
+    // Hacer petición a la API para ver qué horas bloqueó toda la tienda
+    const dateFormatted = dateToYMD(date);
+    
+    fetch('index.php?action=get-booked-slots', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ service_id: SERVICE_DATA.id, date: dateFormatted })
+    })
+    .then(res => res.json())
+    .then(data => {
+        let bookedTimes = [];
+        if (data.success && data.booked_times) {
+            // Convertimos la data de BD "10:30:00" al formato de botones "10:30"
+            bookedTimes = data.booked_times.map(t => t.substring(0, 5));
+        }
+        generateTimeSlots(date, bookedTimes);
+        
+        document.getElementById('timeSlotsSection').style.display = 'block';
+        document.getElementById('selectedInfo').style.display = 'block';
+    })
+    .catch(err => {
+        console.error('Error fetching slots:', err);
+        generateTimeSlots(date, []); 
+        document.getElementById('timeSlotsSection').style.display = 'block';
+        document.getElementById('selectedInfo').style.display = 'block';
+    });
 }
 
-function generateTimeSlots(date) {
+function generateTimeSlots(date, bookedTimes = []) {
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const dayName = days[date.getDay()];
     const dayHours = STORE_DATA.opening_hours[dayName];
 
-    // Clear previous slots
     document.getElementById('morningSlots').innerHTML = '';
     document.getElementById('afternoonSlots').innerHTML = '';
     document.getElementById('eveningSlots').innerHTML = '';
 
     if (!dayHours.active) return;
 
-    const dateStr = dateToYMD(date);
     const [openHour, openMinute] = dayHours.open.split(':').map(Number);
     const [closeHour, closeMinute] = dayHours.close.split(':').map(Number);
-    const duration = SERVICE_DATA.duration;
+    const duration = SERVICE_DATA.duration; // Duración del servicio que el cliente quiere reservar
 
-    // Generate time slots
     const openTotalMinutes = openHour * 60 + openMinute;
     const closeTotalMinutes = closeHour * 60 + closeMinute;
 
@@ -166,10 +180,23 @@ function generateTimeSlots(date) {
         const minutes = totalMinutes % 60;
         const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
-        const slot = createTimeSlot(timeStr, date);
+        // Verificamos si algún fragmento de los minutos que ocuparemos se cruza con las horas ocupadas.
+        let isOverlapping = false;
+        for (let i = 0; i < duration; i += 30) {
+            let checkMin = totalMinutes + i;
+            let chH = Math.floor(checkMin / 60);
+            let chM = checkMin % 60;
+            let chStr = `${String(chH).padStart(2, '0')}:${String(chM).padStart(2, '0')}`;
+            
+            if (bookedTimes.includes(chStr)) {
+                isOverlapping = true;
+                break;
+            }
+        }
+
+        const slot = createTimeSlot(timeStr, date, isOverlapping);
         const hour = hours;
 
-        // Categorize by time of day
         if (hour < 12) {
             document.getElementById('morningSlots').appendChild(slot);
         } else if (hour < 18) {
@@ -180,18 +207,18 @@ function generateTimeSlots(date) {
     }
 }
 
-function createTimeSlot(time, date) {
+function createTimeSlot(time, date, isBooked) {
     const btn = document.createElement('button');
     btn.className = 'time-slot';
     btn.type = 'button';
     btn.textContent = time;
 
-    // Check if slot is in the past
     const [hours, minutes] = time.split(':').map(Number);
     const slotDate = new Date(date);
     slotDate.setHours(hours, minutes, 0, 0);
 
-    if (slotDate < new Date()) {
+    // Si ya pasó la hora O si choca con el listado de reservas, se desactiva
+    if (slotDate < new Date() || isBooked) {
         btn.classList.add('disabled');
         btn.disabled = true;
     } else {
@@ -200,7 +227,6 @@ function createTimeSlot(time, date) {
 
     return btn;
 }
-
 function selectTime(time, button, date) {
     // Remove previous selection
     document.querySelectorAll('.time-slot.selected').forEach(btn => {

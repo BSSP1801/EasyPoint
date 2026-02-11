@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    // AQUI ESTÁ LA CLAVE: Recargar la página
+                    // We reload the page to reflect changes. 
                     window.location.reload();
                 } else {
                     alert('Error: ' + data.message);

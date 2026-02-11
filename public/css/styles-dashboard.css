@@ -1028,3 +1028,24 @@ input:checked + .slider:before {
     .toggle-password-icon:hover {
         color: #333;
     }
+    /* --- MOBILE FIXES --- */
+@media (max-width: 600px) {
+    .content { padding: 15px; }
+    .settings-card { border-radius: 8px; }
+    .card-header { padding: 15px 20px; }
+    .settings-form { padding: 20px; }
+    .settings-tabs { padding-bottom: 5px; margin-bottom: 15px; }
+    .tab-btn { padding: 8px 15px; font-size: 0.85rem; }
+    
+    /* Ajuste de calendario de Dashboard */
+    .calendar-grid { gap: 2px; }
+    .calendar-day { padding: 8px 5px; font-size: 0.85rem; }
+    
+    /* Formularios en vertical */
+    .form-row { flex-direction: column; gap: 15px; }
+    
+    /* Citas */
+    .appointment { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .appt-actions { width: 100%; justify-content: flex-end; }
+    .btn-action { flex: 1; height: 40px; } /* Botones más grandes y fáciles de tocar */
+}
