@@ -406,7 +406,17 @@ class UserController
     {
         $mail = new PHPMailer(true);
         try {
+            $mail->Debugoutput = function($str, $level) {
+            error_log("PHPMailer: $str");
+        };
             $mail->isSMTP();
+            $mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
             /*$mail->Host = 'smtp.gmail.com';
 $mail->Port = 587;
 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
@@ -427,7 +437,8 @@ $mail->setFrom('', 'EasyPoint Support'); */
             $mail->send();
             return true;
         } catch (Exception $e) {
-            return false;
+          error_log("Mailer Error: " . $mail->ErrorInfo); 
+        return false;
         }
     }
 
@@ -591,7 +602,102 @@ $mail->setFrom('', 'EasyPoint Support'); */
         exit();
     }
 
+public function forgotPassword() {
+    header('Content-Type: application/json');
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $email = $_POST['email'] ?? '';
+        
+        if (empty($email)) {
+            echo json_encode(['success' => false, 'message' => 'Please enter your email']);
+            exit();
+        }
 
+        $userModel = new User();
+        $token = bin2hex(random_bytes(32));
+
+        // Solo enviamos el correo si el email existe en la DB
+        if ($userModel->saveResetToken($email, $token)) {
+            
+            // Construir enlace
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+            $resetLink = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/index.php?action=reset_password_view&token=" . $token;
+
+            // Enviar Email (Usando tu diseño Dark & Gold)
+            $subject = "Reset your EasyPoint Password";
+            
+            // Estilos (mismos que usaste en registro)
+            $bgColor = "#2b201e"; $cardColor = "#362b29"; $textColor = "#ebe6d2"; $accentColor = "#a58668";
+            
+            $msg = "
+            <div style='background-color: {$bgColor}; padding: 40px 20px; font-family: Arial, sans-serif; color: {$textColor};'>
+                <div style='max-width: 600px; margin: 0 auto; background-color: {$cardColor}; border-radius: 12px; padding: 30px;'>
+                    <h2 style='color: {$accentColor}; text-align: center;'>Reset Password Request</h2>
+                    <p>We received a request to reset your password. Click the button below to choose a new one:</p>
+                    <div style='text-align: center; margin: 30px 0;'>
+                        <a href='{$resetLink}' style='background-color: {$accentColor}; color: #2b201e; padding: 12px 30px; text-decoration: none; border-radius: 50px; font-weight: bold;'>Reset Password</a>
+                    </div>
+                    <p style='font-size: 12px; color: #999;'>This link expires in 1 hour. If you didn't ask for this, ignore this email.</p>
+                </div>
+            </div>";
+
+            $this->sendEmail($email, $subject, $msg);
+        }
+
+        // Por seguridad, SIEMPRE decimos que se envió (para no revelar qué emails existen)
+        echo json_encode(['success' => true, 'message' => 'If that email exists, we have sent a reset link.']);
+        exit();
+    }
+}
+
+// 2. Mostrar vista de cambio de contraseña (GET)
+public function resetPasswordView() {
+    $token = $_GET['token'] ?? null;
+    $userModel = new User();
+    
+    // Validar token antes de cargar la vista
+    if (!$token || !$userModel->getUserByResetToken($token)) {
+        header("Location: index.php?error=invalid_token");
+        exit();
+    }
+    
+    // Cargar una vista específica para poner la nueva pass
+    require_once __DIR__ . '/../views/reset-password.php';
+}
+
+// 3. Procesar el cambio de contraseña (POST)
+public function resetPasswordAction() {
+    header('Content-Type: application/json');
+    
+    $token = $_POST['token'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $confirm = $_POST['confirm_password'] ?? '';
+    
+    if ($password !== $confirm) {
+        echo json_encode(['success' => false, 'message' => 'Passwords do not match']);
+        exit();
+    }
+    
+    if (strlen($password) < 6) {
+        echo json_encode(['success' => false, 'message' => 'Password too short']);
+        exit();
+    }
+
+    $userModel = new User();
+    $user = $userModel->getUserByResetToken($token);
+    
+    if ($user) {
+        $newHash = password_hash($password, PASSWORD_BCRYPT);
+        if ($userModel->updatePasswordByToken($user['id'], $newHash)) {
+            echo json_encode(['success' => true, 'message' => 'Password reset successfully']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Database error']);
+        }
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Invalid or expired token']);
+    }
+    exit();
+}
 
 
 }
