@@ -324,9 +324,11 @@ public function confirmAccount($token)
         $conn = $db->getConnection();
 
         // Obtenemos la cita, los detalles del servicio y el nombre del negocio (store)
-        $stmt = $conn->prepare("
+       $stmt = $conn->prepare("
         SELECT a.id, a.appointment_date, a.appointment_time, a.status,
                s.name as service_name, s.duration, s.price,
+               /* AÑADIR ESTA LÍNEA ABAJO */
+               u_store.id as store_id, 
                u_store.business_name as store_name, u_store.address as store_address,
                u_store.phone as store_phone
         FROM appointments a
