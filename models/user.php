@@ -203,28 +203,26 @@ class User
     }
 
     // Tiendas recomendadas (Carrusel Home)
-    public function getRecommendedStores($category = null)
-    {
-        try {
-            // Añadimos AVG(r.rating) y COUNT(r.id) a la selección
-            $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, 
-                             bp.logo_url, bp.business_type,
-                             COALESCE(AVG(r.rating), 5) as avg_rating, 
-                             COUNT(r.id) as review_count
-                  FROM users u 
-                  INNER JOIN business_profiles bp ON u.id = bp.user_id 
-                  LEFT JOIN reviews r ON bp.id = r.business_profile_id
-                  WHERE u.role = 'store' AND bp.is_public = 1";
+   public function getRecommendedStores($category = null)
+{
+    try {
+        $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, 
+                         bp.logo_url, bp.business_type,
+                         COALESCE(AVG(r.rating), 0) as avg_rating, 
+                         COUNT(r.id) as review_count
+              FROM users u 
+              INNER JOIN business_profiles bp ON u.id = bp.user_id 
+              LEFT JOIN reviews r ON bp.id = r.business_profile_id
+              WHERE u.role = 'store' AND bp.is_public = 1";
 
-            // Si hay categoría, añadimos el filtro
-            if ($category) {
-                $query .= " AND bp.business_type = :category";
-            }
+        if ($category) {
+            $query .= " AND bp.business_type = :category";
+        }
 
-            // Agrupamos por ID de usuario para calcular la media por tienda
-            $query .= " GROUP BY u.id ORDER BY u.created_at DESC LIMIT 8";
+        // CAMBIO: Ordenar por valoración media descendente y luego por cantidad de reseñas
+        $query .= " GROUP BY u.id ORDER BY avg_rating DESC, review_count DESC LIMIT 8";
 
-            $stmt = $this->conn->prepare($query);
+        $stmt = $this->conn->prepare($query);
             
             if ($category) {
                 $stmt->bindParam(':category', $category);
