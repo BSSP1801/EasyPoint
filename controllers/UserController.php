@@ -9,81 +9,106 @@ require_once __DIR__ . '/../models/service.php'; // Asegurarse de incluir el mod
 class UserController
 {
     // Registro de usuario
-    public function register()
-    {
-        $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
+   public function register()
+{
+    $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            try {
-                $role = $_POST['role'] ?? 'user';
-                $data = [
-                    'username' => isset($_POST['username']) ? trim($_POST['username']) : '',
-                    'email' => isset($_POST['email']) ? trim($_POST['email']) : '',
-                    'password' => isset($_POST['password']) ? $_POST['password'] : '',
-                    'role' => $role,
-                    'business_name' => isset($_POST['business_name']) ? trim($_POST['business_name']) : null,
-                    'address' => isset($_POST['address']) ? trim($_POST['address']) : null,
-                    'postal_code' => isset($_POST['postal_code']) ? trim($_POST['postal_code']) : null
-                ];
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        try {
+            $role = $_POST['role'] ?? 'user';
+            $data = [
+                'username'      => isset($_POST['username']) ? trim($_POST['username']) : '',
+                'email'         => isset($_POST['email']) ? trim($_POST['email']) : '',
+                'password'      => isset($_POST['password']) ? $_POST['password'] : '',
+                'role'          => $role,
+                'business_name' => isset($_POST['business_name']) ? trim($_POST['business_name']) : null,
+                'address'       => isset($_POST['address']) ? trim($_POST['address']) : null,
+                'postal_code'   => isset($_POST['postal_code']) ? trim($_POST['postal_code']) : null
+            ];
 
-                if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
-                    throw new \Exception("All common fields are required.");
-                }
-
-                $user = new User();
-                $result = $user->create($data);
-
-                if ($result) {
-                    $createdUser = $user->login($data['username'], $data['password']);
-
-                    if ($createdUser) {
-                        $_SESSION['user_id'] = $createdUser['id'];
-                        $_SESSION['username'] = $createdUser['username'];
-                        $_SESSION['role'] = $createdUser['role'];
-                    }
-
-                    // Enviar email (opcional, en try/catch para no bloquear)
-                    try {
-                        $msg = "<h1>Welcome to EasyPoint!</h1><p>Your account has been created successfully.</p>";
-                        $this->sendEmail($data['email'], "Welcome to EasyPoint", $msg);
-                    } catch (Exception $e) {
-                        error_log("Email skipped: " . $e->getMessage());
-                    }
-
-                    if ($isAjax) {
-                        header('Content-Type: application/json');
-                        echo json_encode(['success' => true, 'message' => "Registration successful!", 'role' => $createdUser['role']]);
-                        exit();
-                    }
-
-                    header("Location: index.php");
-                    exit();
-                }
-           } catch (\Exception $e) {
-                if ($isAjax) {
-                    // Limpiamos cualquier warning previo de PHP para que no rompa el JSON
-                    if (ob_get_level() > 0) ob_clean();
-                    
-                    header('Content-Type: application/json');
-                    http_response_code(400);
-                    
-                    $errorMsg = $e->getMessage();
-                    $field = null;
-                    
-                    // Separamos el campo del mensaje si viene en formato "campo:mensaje"
-                    if (strpos($errorMsg, ':') !== false) {
-                        list($field, $message) = explode(':', $errorMsg, 2);
-                    } else {
-                        $message = $errorMsg;
-                    }
-                    
-                    echo json_encode(['success' => false, 'message' => $message, 'field' => $field]);
-                    exit();
-                }
-                error_log("Registration error: " . $e->getMessage());
+            if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
+                throw new \Exception("All common fields are required.");
             }
+
+            $user = new User();
+            // Llamamos a create() UNA SOLA VEZ y obtenemos el token generado
+            $token = $user->create($data);
+
+            if ($token) {
+                // 1. Definimos el enlace de confirmación
+                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+                $confirmLink = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/index.php?action=confirm&token=" . $token;
+
+                // 2. Intentamos enviar el correo
+                try {
+                    $subject = "Confirm your EasyPoint account";
+                    $msg = "<h1>Welcome to EasyPoint!</h1>
+                            <p>Please click the link below to confirm your email address and activate your account:</p>
+                            <p><a href='{$confirmLink}'>Confirm My Account</a></p>
+                            <p>If the link doesn't work, copy and paste this URL: <br>{$confirmLink}</p>";
+
+                    $this->sendEmail($data['email'], $subject, $msg);
+                } catch (Exception $e) {
+                    error_log("Email error: " . $e->getMessage());
+                    // Podrías decidir si lanzar una excepción aquí o dejar que el usuario se registre
+                }
+
+                // 3. Respuesta para AJAX o redirección normal
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        'success' => true, 
+                        'message' => "Registration successful! Please check your email to confirm your account."
+                    ]);
+                    exit();
+                }
+
+                header("Location: index.php?msg=check_email");
+                exit();
+            }
+
+        } catch (\Exception $e) {
+            if ($isAjax) {
+                if (ob_get_level() > 0) ob_clean();
+
+                header('Content-Type: application/json');
+                http_response_code(400);
+
+                $errorMsg = $e->getMessage();
+                $field = null;
+
+                if (strpos($errorMsg, ':') !== false) {
+                    list($field, $message) = explode(':', $errorMsg, 2);
+                } else {
+                    $message = $errorMsg;
+                }
+
+                echo json_encode(['success' => false, 'message' => $message, 'field' => $field]);
+                exit();
+            }
+            error_log("Registration error: " . $e->getMessage());
         }
     }
+}
+public function confirm()
+{
+    $token = $_GET['token'] ?? null;
+    
+    if ($token) {
+        $userModel = new User();
+        // Intentamos confirmar
+        if ($userModel->confirmAccount($token)) {
+            
+            header("Location: index.php?confirmed=1");
+        } else {
+            // Token inválido o expirado
+            header("Location: index.php?error=invalid_token");
+        }
+    } else {
+        header("Location: index.php");
+    }
+    exit();
+}
 
     // Login
     public function login()
@@ -347,7 +372,7 @@ class UserController
     }
 
 
-   public function changeStatus()
+    public function changeStatus()
     {
         header('Content-Type: application/json');
 
@@ -434,76 +459,77 @@ class UserController
         }
     }
 
-   public function search()
-{
-    // Capturamos todos los filtros posibles
-    $query = $_GET['q'] ?? '';
-    $location = $_GET['loc'] ?? '';
-    $category = $_GET['category'] ?? '';
+    public function search()
+    {
+        // Capturamos todos los filtros posibles
+        $query = $_GET['q'] ?? '';
+        $location = $_GET['loc'] ?? '';
+        $category = $_GET['category'] ?? '';
 
-    $userModel = new User();
+        $userModel = new User();
 
-    // Llamamos a la función unificada del modelo
-    $stores = $userModel->searchStores($query, $location, $category);
+        // Llamamos a la función unificada del modelo
+        $stores = $userModel->searchStores($query, $location, $category);
 
-    // Cargar la vista
-    require_once __DIR__ . '/../views/search-services.php';
-}
+        // Cargar la vista
+        require_once __DIR__ . '/../views/search-services.php';
+    }
 
-public function viewAllStores()
-{
-    $this->search();
-}
+    public function viewAllStores()
+    {
+        $this->search();
+    }
 
 
 
-public function changePassword() {
-    header('Content-Type: application/json');
-    
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id'])) {
-        echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    public function changePassword()
+    {
+        header('Content-Type: application/json');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id'])) {
+            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+            exit();
+        }
+
+        $current = $_POST['current_password'] ?? '';
+        $new = $_POST['new_password'] ?? '';
+        $confirm = $_POST['confirm_password'] ?? '';
+
+        // Validaciones básicas
+        if (empty($current) || empty($new) || empty($confirm)) {
+            echo json_encode(['success' => false, 'message' => 'All fields are required']);
+            exit();
+        }
+
+        if ($new !== $confirm) {
+            echo json_encode(['success' => false, 'message' => 'New passwords do not match']);
+            exit();
+        }
+
+        if (strlen($new) < 6) {
+            echo json_encode(['success' => false, 'message' => 'New password must be at least 6 characters']);
+            exit();
+        }
+
+        $userModel = new User();
+        // Obtenemos el usuario actual para verificar su contraseña hash
+        $user = $userModel->getById($_SESSION['user_id']);
+
+        if (!$user || !password_verify($current, $user['password'])) {
+            echo json_encode(['success' => false, 'message' => 'Incorrect current password']);
+            exit();
+        }
+
+        // Hasheamos la nueva contraseña y guardamos
+        $newHash = password_hash($new, PASSWORD_BCRYPT);
+
+        if ($userModel->updatePassword($_SESSION['user_id'], $newHash)) {
+            echo json_encode(['success' => true, 'message' => 'Password updated successfully']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Database error']);
+        }
         exit();
     }
-
-    $current = $_POST['current_password'] ?? '';
-    $new = $_POST['new_password'] ?? '';
-    $confirm = $_POST['confirm_password'] ?? '';
-
-    // Validaciones básicas
-    if (empty($current) || empty($new) || empty($confirm)) {
-        echo json_encode(['success' => false, 'message' => 'All fields are required']);
-        exit();
-    }
-
-    if ($new !== $confirm) {
-        echo json_encode(['success' => false, 'message' => 'New passwords do not match']);
-        exit();
-    }
-
-    if (strlen($new) < 6) {
-        echo json_encode(['success' => false, 'message' => 'New password must be at least 6 characters']);
-        exit();
-    }
-
-    $userModel = new User();
-    // Obtenemos el usuario actual para verificar su contraseña hash
-    $user = $userModel->getById($_SESSION['user_id']);
-
-    if (!$user || !password_verify($current, $user['password'])) {
-        echo json_encode(['success' => false, 'message' => 'Incorrect current password']);
-        exit();
-    }
-
-    // Hasheamos la nueva contraseña y guardamos
-    $newHash = password_hash($new, PASSWORD_BCRYPT);
-    
-    if ($userModel->updatePassword($_SESSION['user_id'], $newHash)) {
-        echo json_encode(['success' => true, 'message' => 'Password updated successfully']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Database error']);
-    }
-    exit();
-}
 
 
 

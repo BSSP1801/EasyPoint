@@ -51,6 +51,20 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('easyPointToast');
     }
 
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.has('confirmed')) {
+        showToast('Account Verified', 'Your email has been verified successfully. Please log in.', 'fa-check-circle');
+   
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    if (urlParams.get('error') === 'invalid_token') {
+        showToast('Error', 'Invalid or expired verification token.', 'fa-times-circle');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+
     document.body.addEventListener('click', function (e) {
         const link = e.target.closest('a');
         if (link && link.href.includes('action=logout')) {
@@ -256,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.success) {
                         localStorage.setItem('easyPointToast', JSON.stringify({
                             title: 'Account Created',
-                            message: 'Welcome to EasyPoint!',
+                            message: 'Welcome to EasyPoint! Please confirm your Email',
                             icon: 'fa-user-plus'
                         }));
                         setTimeout(() => { window.location.href = 'index.php'; }, 1000);

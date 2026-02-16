@@ -22,57 +22,12 @@ $locationTerm = $_GET['loc'] ?? '';
 
 <body>
 
-    <div class="sticky-header">
-        <div class="sticky-container">
-            <div class="sticky-logo"><a href="index.php">EasyPoint</a></div>
-
-            <form action="index.php" method="GET" class="sticky-search-bar">
-                <input type="hidden" name="action" value="search">
-                <div class="search-field">
-                    <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" name="q" placeholder="Search services" value="<?php echo htmlspecialchars($searchTerm); ?>">
-                </div>
-                <div class="search-field border-left">
-                    <span class="search-icon"><i class="fa-solid fa-location-dot"></i></span>
-                    <input type="text" name="loc" placeholder="Where?" value="<?php echo htmlspecialchars($locationTerm); ?>">
-                </div>
-                <button type="submit" class="sticky-search-btn">Search</button>
-            </form>
-
-            <div class="sticky-menu">
-                <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
-                    <div class="dropdown">
-                        <span class="user-link dropdown-toggle">
-                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                        </span>
-                        <div class="dropdown-menu">
-                            <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
-                            <a href="index.php?action=logout" class="dropdown-item"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-                        </div>
-                    </div>
-                <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
-                    <div class="dropdown">
-                        <span class="user-link dropdown-toggle">
-                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                        </span>
-                        <div class="dropdown-menu">
-                            <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
-                            <a href="index.php?action=logout" class="dropdown-item"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
-                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
+    <?php include "views/sticky-header.php"; ?>
 
     <header style="min-height: auto; padding-bottom: 20px;">
         <nav class="navigation-bar">
             <div class="logo"><a href="index.php">EasyPoint</a></div>
-            
+
             <form action="index.php" method="GET" class="hero-search-bar" style="
                 background-color: rgba(235, 230, 210, 0.1); 
                 border: 1px solid rgba(165, 134, 104, 0.3);
@@ -84,18 +39,25 @@ $locationTerm = $_GET['loc'] ?? '';
                 max-width: 600px;
                 margin: 0 20px;
                 backdrop-filter: blur(5px);">
-                
+
                 <input type="hidden" name="action" value="search">
                 <div class="search-field" style="flex: 1; display: flex; align-items: center; padding: 0 15px;">
-                    <span class="search-icon" style="color: #a58668; margin-right: 10px; font-size: 16px;"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" name="q" placeholder="Search services" value="<?php echo htmlspecialchars($searchTerm); ?>" style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #ebe6d2;">
+                    <span class="search-icon" style="color: #a58668; margin-right: 10px; font-size: 16px;"><i
+                            class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="q" placeholder="Search services"
+                        value="<?php echo htmlspecialchars($searchTerm); ?>"
+                        style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #ebe6d2;">
                 </div>
                 <div style="width: 1px; height: 25px; background-color: rgba(165, 134, 104, 0.3);"></div>
                 <div class="search-field" style="flex: 1; display: flex; align-items: center; padding: 0 15px;">
-                    <span class="search-icon" style="color: #a58668; margin-right: 10px; font-size: 16px;"><i class="fa-solid fa-location-dot"></i></span>
-                    <input type="text" name="loc" placeholder="Where?" value="<?php echo htmlspecialchars($locationTerm); ?>" style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #ebe6d2;">
+                    <span class="search-icon" style="color: #a58668; margin-right: 10px; font-size: 16px;"><i
+                            class="fa-solid fa-location-dot"></i></span>
+                    <input type="text" name="loc" placeholder="Where?"
+                        value="<?php echo htmlspecialchars($locationTerm); ?>"
+                        style="border: none; outline: none; width: 100%; font-size: 14px; background: transparent; color: #ebe6d2;">
                 </div>
-                <button type="submit" class="sticky-search-btn" style="background-color: #a58668; color: #2b201e; border: none; padding: 8px 24px; border-radius: 30px; cursor: pointer; font-weight: bold; margin-left: 5px; font-size: 14px;">Search</button>
+                <button type="submit" class="sticky-search-btn"
+                    style="background-color: #a58668; color: #2b201e; border: none; padding: 8px 24px; border-radius: 30px; cursor: pointer; font-weight: bold; margin-left: 5px; font-size: 14px;">Search</button>
             </form>
 
             <div class="user-menu">
@@ -106,8 +68,10 @@ $locationTerm = $_GET['loc'] ?? '';
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
                         </span>
                         <div class="dropdown-menu">
-                            <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
-                            <a href="index.php?action=logout" class="dropdown-item"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                            <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i>
+                                Dashboard</a>
+                            <a href="index.php?action=logout" class="dropdown-item"><i
+                                    class="fa-solid fa-right-from-bracket"></i> Logout</a>
                         </div>
                     </div>
                 <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
@@ -116,8 +80,10 @@ $locationTerm = $_GET['loc'] ?? '';
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
                         </span>
                         <div class="dropdown-menu">
-                            <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
-                            <a href="index.php?action=logout" class="dropdown-item"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                            <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i>
+                                Dashboard</a>
+                            <a href="index.php?action=logout" class="dropdown-item"><i
+                                    class="fa-solid fa-right-from-bracket"></i> Logout</a>
                         </div>
                     </div>
                 <?php else: ?>
@@ -126,7 +92,7 @@ $locationTerm = $_GET['loc'] ?? '';
                 <?php endif; ?>
             </div>
         </nav>
-        
+
         <div style="text-align: center; margin-top: 10px;">
             <h1 style="font-size: 36px; color: var(--text-main); font-weight: 600;">Company Information</h1>
             <p style="color: var(--soft-text); margin-top: 5px;">Learn more about who we are and get in touch</p>
@@ -134,20 +100,26 @@ $locationTerm = $_GET['loc'] ?? '';
     </header>
 
     <div class="company-container">
-        
+
         <section id="about" class="content-section">
             <div class="section-header">
                 <h2>About Us</h2>
             </div>
             <div class="about-text">
                 <p style="margin-bottom: 20px;">
-                    Welcome to <strong>EasyPoint</strong>, the premier destination for connecting clients with the best health, beauty, and wellness professionals in their area. Founded in 2026, our mission is simple: to make self-care accessible, convenient, and stress-free.
+                    Welcome to <strong>EasyPoint</strong>, the premier destination for connecting clients with the best
+                    health, beauty, and wellness professionals in their area. Founded in 2026, our mission is simple: to
+                    make self-care accessible, convenient, and stress-free.
                 </p>
                 <p style="margin-bottom: 20px;">
-                    We believe that everyone deserves to look and feel their best. That's why we've built a platform that empowers users to discover local talent, compare real reviews, and book appointments instantly—all in one place.
+                    We believe that everyone deserves to look and feel their best. That's why we've built a platform
+                    that empowers users to discover local talent, compare real reviews, and book appointments
+                    instantly—all in one place.
                 </p>
                 <p>
-                    For businesses, EasyPoint provides powerful tools to manage schedules, grow client bases, and showcase their best work. We are more than just a booking system; we are a community dedicated to excellence in service and style.
+                    For businesses, EasyPoint provides powerful tools to manage schedules, grow client bases, and
+                    showcase their best work. We are more than just a booking system; we are a community dedicated to
+                    excellence in service and style.
                 </p>
             </div>
         </section>
@@ -156,13 +128,14 @@ $locationTerm = $_GET['loc'] ?? '';
             <div class="section-header">
                 <h2>Contact Us</h2>
             </div>
-            
+
             <div class="contact-grid">
                 <div>
                     <p class="about-text" style="margin-bottom: 30px;">
-                        Have questions about using EasyPoint? Interested in partnering with us? We'd love to hear from you. Fill out the form or use the contact details below.
+                        Have questions about using EasyPoint? Interested in partnering with us? We'd love to hear from
+                        you. Fill out the form or use the contact details below.
                     </p>
-                    
+
                     <div class="contact-info-item">
                         <i class="fa-solid fa-envelope"></i>
                         <span>support@easypoint.com</span>
@@ -182,19 +155,20 @@ $locationTerm = $_GET['loc'] ?? '';
                 </div>
 
                 <div>
-                    <form class="contact-form" onsubmit="event.preventDefault(); showToast('Message Sent', 'Message sent! We will contact you shortly.', 'fa-paper-plane');">
+                    <form class="contact-form"
+                        onsubmit="event.preventDefault(); showToast('Message Sent', 'Message sent! We will contact you shortly.', 'fa-paper-plane');">
                         <label>Your Name</label>
                         <input type="text" placeholder="John Doe" required>
-                        
+
                         <label>Email Address</label>
                         <input type="email" placeholder="john@example.com" required>
-                        
+
                         <label>Subject</label>
                         <input type="text" placeholder="How can we help?" required>
-                        
+
                         <label>Message</label>
                         <textarea rows="5" placeholder="Tell us more..." required></textarea>
-                        
+
                         <button type="submit" class="send-btn">Send Message</button>
                     </form>
                 </div>
@@ -202,47 +176,9 @@ $locationTerm = $_GET['loc'] ?? '';
         </section>
 
     </div>
-
-    <footer class="main-footer">
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h2 class="footer-logo">EasyPoint</h2>
-                <p class="footer-desc">The easiest way to look and feel your best. Book appointments with top
-                    professionals near you.</p>
-                <div class="social-icons">
-                    <a href="https://facebook.com/"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="https://instagram.com/"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://x.com/"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="https://tiktok.com/"><i class="fa-brands fa-tiktok"></i></a>
-                </div>
-            </div>
-
-            <div class="footer-links-group">
-                <div class="footer-column">
-                    <h3>Company</h3>
-                    <a href="index.php?action=company">About Us</a>
-                    <a href="index.php?action=company#contact">Contact</a>
-                </div>
-
-                <div class="footer-column">
-                    <h3>For Business</h3>
-                    <a href="index.php?action=business">Partner with us</a>
-                    <a href="index.php?action=business#support">Support</a>
-                </div>
-
-                <div class="footer-column">
-                    <h3>Legal</h3>
-                    <a href="index.php?action=legal">Privacy Policy</a>
-                    <a href="index.php?action=legal#terms">Terms of Service</a>
-                    <a href="#">Cookies Settings</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p>&copy; 2026 EasyPoint. All rights reserved.</p>
-        </div>
-    </footer>
+    
+    <!-- FOOTER -->
+    <?php include "views/footer.php" ?>
 
     <div id="auth-modal" class="modal-overlay">
         <div class="modal-box">
@@ -337,4 +273,5 @@ $locationTerm = $_GET['loc'] ?? '';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="public/js/script.js"></script>
 </body>
+
 </html>
