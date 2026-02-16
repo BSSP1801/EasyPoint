@@ -46,6 +46,9 @@ switch ($action) {
     case 'register':
         $controller->register();
         exit();
+    case 'confirm':
+        $controller->confirm();
+        exit();
     case 'login':
         $controller->login();
         exit();
@@ -121,72 +124,14 @@ switch ($action) {
 </head>
 
 <body>
-    <div class="sticky-header">
-        <div class="sticky-container">
-            <div class="sticky-logo"><a href="/index.php">EasyPoint</a></div>
-
-            <form action="index.php" method="GET" class="sticky-search-bar">
-                <input type="hidden" name="action" value="search">
-                <div class="search-field">
-                    <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" name="q" placeholder="Search services">
-                </div>
-                <div class="search-field border-left">
-                    <span class="search-icon"><i class="fa-solid fa-location-dot"></i></span>
-                    <input type="text" name="loc" placeholder="Where?">
-                </div>
-                <button type="submit" class="sticky-search-btn">Search</button>
-            </form>
-
-            <div class="sticky-menu">
-                <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-
-                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
-
-                    <div class="dropdown">
-                        <span class="user-link dropdown-toggle">
-                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                        </span>
-                        <div class="dropdown-menu">
-                            <a href="index.php?action=dashboard" class="dropdown-item">
-                                <i class="fa-solid fa-gauge"></i> Dashboard
-                            </a>
-                            <a href="index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
-                                <i class="fa-solid fa-right-from-bracket"></i> Logout
-                            </a>
-                        </div>
-                    </div>
-
-                <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
-
-                    <div class="dropdown">
-                        <span class="user-link dropdown-toggle">
-                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                        </span>
-                        <div class="dropdown-menu">
-                            <a href="index.php?action=dashboard" class="dropdown-item">
-                                <i class="fa-solid fa-gauge"></i> Dashboard
-                            </a>
-                            <a href="index.php?action=logout" class="dropdown-item" onclick="sessionStorage.clear()">
-                                <i class="fa-solid fa-right-from-bracket"></i> Logout
-                            </a>
-                        </div>
-                    </div>
-
-                <?php else: ?>
-                    <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
-                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
+    <?php include "views/sticky-header.php"; ?>
     <header>
         <nav class="navigation-bar">
             <div class="logo"><a href="/index.php">EasyPoint</a></div>
             <div class="user-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
 
-                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
+
 
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
@@ -545,46 +490,7 @@ switch ($action) {
         </div>
     </section>
 
-    <footer class="main-footer">
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h2 class="footer-logo">EasyPoint</h2>
-                <p class="footer-desc">The easiest way to look and feel your best. Book appointments with top
-                    professionals near you.</p>
-                <div class="social-icons">
-                    <a href="https://facebook.com/"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="https://instagram.com/"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://x.com/"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="https://tiktok.com/"><i class="fa-brands fa-tiktok"></i></a>
-                </div>
-            </div>
-
-            <div class="footer-links-group">
-                <div class="footer-column">
-                    <h3>Company</h3>
-                    <a href="index.php?action=company">About Us</a>
-                    <a href="index.php?action=company#contact">Contact</a>
-                </div>
-
-                <div class="footer-column">
-                    <h3>For Business</h3>
-                    <a href="index.php?action=business">Partner with us</a>
-                    <a href="index.php?action=business#support">Support</a>
-                </div>
-
-                <div class="footer-column">
-                    <h3>Legal</h3>
-                    <a href="index.php?action=legal">Privacy Policy</a>
-                    <a href="index.php?action=legal#terms">Terms of Service</a>
-                    <a href="#">Cookies Settings</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p>&copy; 2026 EasyPoint. All rights reserved.</p>
-        </div>
-    </footer>
+    <?php include "views/footer.php" ?>
 
 
     <div id="auth-modal" class="modal-overlay">

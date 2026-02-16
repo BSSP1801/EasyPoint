@@ -51,68 +51,12 @@ if (!empty($store['opening_hours'])) {
 </head>
 
 <body>
-    <div class="sticky-header">
-        <div class="sticky-container">
-            <div class="sticky-logo"><a href="/index.php">EasyPoint</a></div>
-
-            <div class="sticky-search-bar">
-                <div class="search-field">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" placeholder="Search services">
-                </div>
-                <div class="search-field border-left">
-                    <span class="search-icon">📍</span>
-                    <input type="text" placeholder="Where?">
-                </div>
-                <button class="sticky-search-btn">Search</button>
-            </div>
-
-            <div class="sticky-menu">
-                <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
-
-                    <div class="dropdown">
-                        <span class="user-link dropdown-toggle">
-                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
-                        </span>
-                        <div class="dropdown-menu">
-                            <a href="index.php?action=dashboard" class="dropdown-item">
-                                <i class="fa-solid fa-gauge"></i> Dashboard
-                            </a>
-                            <a href="index.php?action=logout" class="dropdown-item">
-                                <i class="fa-solid fa-right-from-bracket"></i> Logout
-                            </a>
-                        </div>
-                    </div>
-                <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
-                    <div class="dropdown">
-                        <span class="user-link dropdown-toggle">
-                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
-                        </span>
-                        <div class="dropdown-menu">
-                            <a href="index.php?action=dashboard" class="dropdown-item">
-                                <i class="fa-solid fa-gauge"></i> Dashboard
-                            </a>
-                            <a href="index.php?action=logout" class="dropdown-item">
-                                <i class="fa-solid fa-right-from-bracket"></i> Logout
-                            </a>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
-                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
+    <?php include "views/sticky-header.php"; ?>
     <header>
         <nav class="navigation-bar">
             <div class="logo"><a href="/index.php">EasyPoint</a></div>
             <div class="user-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
 
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
@@ -442,46 +386,9 @@ if (!empty($store['opening_hours'])) {
     <!-- TOAST NOTIFICATION -->
     <div id="toast" class="toast"></div>
 
-    <footer class="main-footer">
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h2 class="footer-logo">EasyPoint</h2>
-                <p class="footer-desc">The easiest way to look and feel your best. Book appointments with top
-                    professionals near you.</p>
-                <div class="social-icons">
-                    <a href="https://facebook.com/"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="https://instagram.com/"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://x.com/"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="https://tiktok.com/"><i class="fa-brands fa-tiktok"></i></a>
-                </div>
-            </div>
 
-            <div class="footer-links-group">
-                <div class="footer-column">
-                    <h3>Company</h3>
-                    <a href="index.php?action=company">About Us</a>
-                    <a href="index.php?action=company#contact">Contact</a>
-                </div>
-
-                <div class="footer-column">
-                    <h3>For Business</h3>
-                    <a href="index.php?action=business">Partner with us</a>
-                    <a href="index.php?action=business#support">Support</a>
-                </div>
-
-                <div class="footer-column">
-                    <h3>Legal</h3>
-                    <a href="index.php?action=legal">Privacy Policy</a>
-                    <a href="index.php?action=legal#terms">Terms of Service</a>
-                    <a href="#">Cookies Settings</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p>&copy; 2026 EasyPoint. All rights reserved.</p>
-        </div>
-    </footer>
+    <!-- FOOTER -->
+   <?php include "views/footer.php" ?>
 
     <!-- Data Storage for JavaScript -->
     <script>

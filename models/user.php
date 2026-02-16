@@ -32,9 +32,11 @@ class User
                 }
             }
 
+            $token = bin2hex(random_bytes(16));
+
             $query = "INSERT INTO " . $this->table_name . " 
-                  (username, email, password, role, business_name, address, postal_code, is_confirmed) 
-                  VALUES (:username, :email, :password, :role, :business_name, :address, :postal_code, 0)";
+              (username, email, password, role, business_name, address, postal_code, is_confirmed, token) 
+              VALUES (:username, :email, :password, :role, :business_name, :address, :postal_code, 0, :token)";
 
             $stmt = $this->conn->prepare($query);
 
@@ -53,14 +55,42 @@ class User
             $stmt->bindParam(":business_name", $business_name);
             $stmt->bindParam(":address", $address);
             $stmt->bindParam(":postal_code", $postal_code);
+            $stmt->bindParam(":token", $token);
+        
 
-            return $stmt->execute();
+            if ($stmt->execute()) {
+                return $token; 
+            }
+        return false;
 
         } catch (PDOException $e) {
             error_log("DB Error: " . $e->getMessage());
             throw new Exception("A database error occurred.");
         }
     }
+
+
+//Token Validation
+public function confirmAccount($token)
+{
+    try {
+        // Buscamos si existe un usuario con ese token y que no esté confirmado
+        $query = "UPDATE " . $this->table_name . " 
+                  SET is_confirmed = 1, token = NULL 
+                  WHERE token = :token AND is_confirmed = 0";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":token", $token);
+        $stmt->execute();
+        
+        // Retorna true si se modificó alguna fila
+        return $stmt->rowCount() > 0;
+    } catch (PDOException $e) {
+        error_log("Error confirmando cuenta: " . $e->getMessage());
+        return false;
+    }
+}
+
 
     // Login
     public function login($username_or_email, $password)
@@ -130,7 +160,8 @@ class User
     }
 
     // Helper para obtener solo el ID del perfil de negocio (útil para subidas rápidas)
-    public function getBusinessProfileByUserId($userId) {
+    public function getBusinessProfileByUserId($userId)
+    {
         $query = "SELECT id FROM business_profiles WHERE user_id = :uid LIMIT 1";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':uid', $userId);
@@ -203,10 +234,10 @@ class User
     }
 
     // Tiendas recomendadas (Carrusel Home)
-   public function getRecommendedStores($category = null)
-{
-    try {
-        $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, 
+    public function getRecommendedStores($category = null)
+    {
+        try {
+            $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, 
                          bp.logo_url, bp.business_type,
                          COALESCE(AVG(r.rating), 0) as avg_rating, 
                          COUNT(r.id) as review_count
@@ -215,19 +246,19 @@ class User
               LEFT JOIN reviews r ON bp.id = r.business_profile_id
               WHERE u.role = 'store' AND bp.is_public = 1";
 
-        if ($category) {
-            $query .= " AND bp.business_type = :category";
-        }
+            if ($category) {
+                $query .= " AND bp.business_type = :category";
+            }
 
-        // CAMBIO: Ordenar por valoración media descendente y luego por cantidad de reseñas
-        $query .= " GROUP BY u.id ORDER BY avg_rating DESC, review_count DESC LIMIT 8";
+            // CAMBIO: Ordenar por valoración media descendente y luego por cantidad de reseñas
+            $query .= " GROUP BY u.id ORDER BY avg_rating DESC, review_count DESC LIMIT 8";
 
-        $stmt = $this->conn->prepare($query);
-            
+            $stmt = $this->conn->prepare($query);
+
             if ($category) {
                 $stmt->bindParam(':category', $category);
             }
-            
+
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -263,11 +294,11 @@ class User
 
 
     public function getStoreAppointments($storeId)
-{
-    try {
+    {
+        try {
 
-        
-        $query = "SELECT a.id, a.appointment_date, a.appointment_time, a.status, 
+
+            $query = "SELECT a.id, a.appointment_date, a.appointment_time, a.status, 
                          u.email as client_name, 
                          s.name as service_name, s.price, s.duration
                   FROM appointments a
@@ -276,23 +307,24 @@ class User
                   WHERE s.user_id = :store_id  
                   ORDER BY a.appointment_date ASC, a.appointment_time ASC";
 
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':store_id', $storeId);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':store_id', $storeId);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    } catch (PDOException $e) {
-        error_log("Error fetching store appointments: " . $e->getMessage());
-        return [];
+        } catch (PDOException $e) {
+            error_log("Error fetching store appointments: " . $e->getMessage());
+            return [];
+        }
     }
-}
 
-public function getUserAppointments($userId) {
-    $db = new Database();
-    $conn = $db->getConnection();
-    
-    // Obtenemos la cita, los detalles del servicio y el nombre del negocio (store)
-    $stmt = $conn->prepare("
+    public function getUserAppointments($userId)
+    {
+        $db = new Database();
+        $conn = $db->getConnection();
+
+        // Obtenemos la cita, los detalles del servicio y el nombre del negocio (store)
+        $stmt = $conn->prepare("
         SELECT a.id, a.appointment_date, a.appointment_time, a.status,
                s.name as service_name, s.duration, s.price,
                u_store.business_name as store_name, u_store.address as store_address,
@@ -303,12 +335,12 @@ public function getUserAppointments($userId) {
         WHERE a.user_id = :user_id
         ORDER BY a.appointment_date DESC, a.appointment_time DESC
     ");
-    
-    $stmt->execute([':user_id' => $userId]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 
-public function updateAppointmentStatus($appointmentId, $newStatus, $userId)
+        $stmt->execute([':user_id' => $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function updateAppointmentStatus($appointmentId, $newStatus, $userId)
     {
         try {
             // Permitimos la actualización si quien lo solicita es el dueño del 
@@ -335,46 +367,46 @@ public function updateAppointmentStatus($appointmentId, $newStatus, $userId)
     }
 
     public function getAllStores($category = null, $searchQuery = null)
-{
-    try {
-        $sql = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, bp.logo_url, bp.business_type 
+    {
+        try {
+            $sql = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, bp.logo_url, bp.business_type 
               FROM users u 
               INNER JOIN business_profiles bp ON u.id = bp.user_id 
               WHERE u.role = 'store' AND bp.is_public = 1";
 
-        // Filtro por categoría
-        if ($category && $category !== 'All') {
-            $sql .= " AND bp.business_type = :category";
+            // Filtro por categoría
+            if ($category && $category !== 'All') {
+                $sql .= " AND bp.business_type = :category";
+            }
+
+            // Filtro por texto (búsqueda por nombre o ciudad)
+            if ($searchQuery) {
+                $sql .= " AND (u.business_name LIKE :search OR u.city LIKE :search)";
+            }
+
+            $sql .= " ORDER BY u.created_at DESC"; // Sin LIMIT
+
+            $stmt = $this->conn->prepare($sql);
+
+            if ($category && $category !== 'All') {
+                $stmt->bindParam(':category', $category);
+            }
+            if ($searchQuery) {
+                $term = "%" . $searchQuery . "%";
+                $stmt->bindParam(':search', $term);
+            }
+
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error fetching all stores: " . $e->getMessage());
+            return [];
         }
-
-        // Filtro por texto (búsqueda por nombre o ciudad)
-        if ($searchQuery) {
-            $sql .= " AND (u.business_name LIKE :search OR u.city LIKE :search)";
-        }
-
-        $sql .= " ORDER BY u.created_at DESC"; // Sin LIMIT
-
-        $stmt = $this->conn->prepare($sql);
-
-        if ($category && $category !== 'All') {
-            $stmt->bindParam(':category', $category);
-        }
-        if ($searchQuery) {
-            $term = "%" . $searchQuery . "%";
-            $stmt->bindParam(':search', $term);
-        }
-
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        error_log("Error fetching all stores: " . $e->getMessage());
-        return [];
     }
-}
-    
+
 
     // Búsqueda de tiendas por servicio, nombre o ubicación
-  // Búsqueda de tiendas por servicio, nombre o ubicación - CON MEDIA Y CONTEO
+    // Búsqueda de tiendas por servicio, nombre o ubicación - CON MEDIA Y CONTEO
     public function searchStores($searchTerm = null, $location = null, $category = null)
     {
         // Usamos GROUP BY en lugar de DISTINCT para poder usar funciones de agregación (AVG, COUNT)
@@ -387,7 +419,7 @@ public function updateAppointmentStatus($appointmentId, $newStatus, $userId)
                   LEFT JOIN services s ON u.id = s.user_id 
                   LEFT JOIN reviews r ON bp.id = r.business_profile_id
                   WHERE u.role = 'store' AND bp.is_public = 1";
-        
+
         $params = [];
 
         // Filtro por texto
@@ -414,7 +446,7 @@ public function updateAppointmentStatus($appointmentId, $newStatus, $userId)
         $query .= " GROUP BY u.id ORDER BY u.created_at DESC";
 
         $stmt = $this->conn->prepare($query);
-        
+
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value);
         }
@@ -423,18 +455,19 @@ public function updateAppointmentStatus($appointmentId, $newStatus, $userId)
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-public function updatePassword($userId, $newHash) {
-    try {
-        $query = "UPDATE " . $this->table_name . " SET password = :password WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':password', $newHash);
-        $stmt->bindParam(':id', $userId);
-        return $stmt->execute();
-    } catch (PDOException $e) {
-        error_log("Error updating password: " . $e->getMessage());
-        return false;
+    public function updatePassword($userId, $newHash)
+    {
+        try {
+            $query = "UPDATE " . $this->table_name . " SET password = :password WHERE id = :id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':password', $newHash);
+            $stmt->bindParam(':id', $userId);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error updating password: " . $e->getMessage());
+            return false;
+        }
     }
-}
 
     public function getReviews($businessProfileId)
     {
