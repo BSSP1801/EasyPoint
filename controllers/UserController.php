@@ -9,106 +9,160 @@ require_once __DIR__ . '/../models/service.php'; // Asegurarse de incluir el mod
 class UserController
 {
     // Registro de usuario
-   public function register()
-{
-    $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
+    public function register()
+    {
+        $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        try {
-            $role = $_POST['role'] ?? 'user';
-            $data = [
-                'username'      => isset($_POST['username']) ? trim($_POST['username']) : '',
-                'email'         => isset($_POST['email']) ? trim($_POST['email']) : '',
-                'password'      => isset($_POST['password']) ? $_POST['password'] : '',
-                'role'          => $role,
-                'business_name' => isset($_POST['business_name']) ? trim($_POST['business_name']) : null,
-                'address'       => isset($_POST['address']) ? trim($_POST['address']) : null,
-                'postal_code'   => isset($_POST['postal_code']) ? trim($_POST['postal_code']) : null
-            ];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $role = $_POST['role'] ?? 'user';
+                $data = [
+                    'username' => isset($_POST['username']) ? trim($_POST['username']) : '',
+                    'email' => isset($_POST['email']) ? trim($_POST['email']) : '',
+                    'password' => isset($_POST['password']) ? $_POST['password'] : '',
+                    'role' => $role,
+                    'business_name' => isset($_POST['business_name']) ? trim($_POST['business_name']) : null,
+                    'address' => isset($_POST['address']) ? trim($_POST['address']) : null,
+                    'postal_code' => isset($_POST['postal_code']) ? trim($_POST['postal_code']) : null
+                ];
 
-            if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
-                throw new \Exception("All common fields are required.");
-            }
-
-            $user = new User();
-            // Llamamos a create() UNA SOLA VEZ y obtenemos el token generado
-            $token = $user->create($data);
-
-            if ($token) {
-                // 1. Definimos el enlace de confirmación
-                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
-                $confirmLink = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/index.php?action=confirm&token=" . $token;
-
-                // 2. Intentamos enviar el correo
-                try {
-                    $subject = "Confirm your EasyPoint account";
-                    $msg = "<h1>Welcome to EasyPoint!</h1>
-                            <p>Please click the link below to confirm your email address and activate your account:</p>
-                            <p><a href='{$confirmLink}'>Confirm My Account</a></p>
-                            <p>If the link doesn't work, copy and paste this URL: <br>{$confirmLink}</p>";
-
-                    $this->sendEmail($data['email'], $subject, $msg);
-                } catch (Exception $e) {
-                    error_log("Email error: " . $e->getMessage());
-                    // Podrías decidir si lanzar una excepción aquí o dejar que el usuario se registre
+                if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
+                    throw new \Exception("All common fields are required.");
                 }
 
-                // 3. Respuesta para AJAX o redirección normal
-                if ($isAjax) {
-                    header('Content-Type: application/json');
-                    echo json_encode([
-                        'success' => true, 
-                        'message' => "Registration successful! Please check your email to confirm your account."
-                    ]);
+                $user = new User();
+                // Llamamos a create() UNA SOLA VEZ y obtenemos el token generado
+                $token = $user->create($data);
+
+                if ($token) {
+                    // 1. Definimos el enlace de confirmación
+                    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+                    $confirmLink = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/index.php?action=confirm&token=" . $token;
+
+                    // 2. Intentamos enviar el correo
+                    try {
+                        $subject = "Welcome to EasyPoint - Verify your email";
+
+                        // Variables de estilo extraídas de tu CSS
+                        $bgColor = "#2b201e";      // Tu fondo oscuro
+                        $cardColor = "#362b29";    // Un tono un poco más claro para la tarjeta
+                        $textColor = "#ebe6d2";    // Tu color de texto
+                        $accentColor = "#a58668";  // Tu dorado/marrón
+                        $btnText = "#2b201e";      // Texto oscuro para el botón (para contraste)
+
+                        // Construcción del mensaje HTML
+                        $msg = "
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    </head>
+    <body style='margin: 0; padding: 0; background-color: {$bgColor}; font-family: Helvetica, Arial, sans-serif; color: {$textColor};'>
+        <div style='background-color: {$bgColor}; padding: 40px 20px;'>
+            
+            <div style='max-width: 600px; margin: 0 auto; background-color: {$cardColor}; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4);'>
+                
+                <div style='background-color: {$bgColor}; padding: 25px; text-align: center; border-bottom: 2px solid {$accentColor};'>
+                    <h1 style='margin: 0; color: {$textColor}; font-size: 28px; letter-spacing: 1px;'>EasyPoint</h1>
+                </div>
+
+                <div style='padding: 40px 30px;'>
+                    <h2 style='color: {$accentColor}; margin-top: 0; font-size: 24px;'>Welcome, " . htmlspecialchars($data['username']) . "!</h2>
+                    
+                    <p style='font-size: 16px; line-height: 1.6; color: {$textColor}; margin-bottom: 25px;'>
+                        Thank you for joining EasyPoint. You are just one step away from booking appointments with the best professionals near you.
+                    </p>
+                    
+                    <p style='font-size: 16px; line-height: 1.6; color: {$textColor}; margin-bottom: 35px;'>
+                        Please confirm your email address to activate your account and start using our platform.
+                    </p>
+
+                    <div style='text-align: center; margin-bottom: 35px;'>
+                        <a href='{$confirmLink}' style='background-color: {$accentColor}; color: {$btnText}; padding: 14px 35px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 15px rgba(165, 134, 104, 0.3);'>
+                            Verify My Account
+                        </a>
+                    </div>
+
+                    <p style='font-size: 13px; color: #999; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;'>
+                        If the button above doesn't work, copy and paste this link into your browser:<br>
+                        <a href='{$confirmLink}' style='color: {$accentColor}; text-decoration: none; word-break: break-all;'>{$confirmLink}</a>
+                    </p>
+                </div>
+
+                <div style='background-color: #231a18; padding: 20px; text-align: center; font-size: 12px; color: #777;'>
+                    <p style='margin: 5px 0;'>&copy; 2026 EasyPoint. All rights reserved.</p>
+                    <p style='margin: 0;'>Valencia, Spain</p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    ";
+
+                        $this->sendEmail($data['email'], $subject, $msg);
+                    } catch (Exception $e) {
+                        error_log("Email error: " . $e->getMessage());
+                        // Podrías decidir si lanzar una excepción aquí o dejar que el usuario se registre
+                    }
+
+                    // 3. Respuesta para AJAX o redirección normal
+                    if ($isAjax) {
+                        header('Content-Type: application/json');
+                        echo json_encode([
+                            'success' => true,
+                            'message' => "Registration successful! Please check your email to confirm your account."
+                        ]);
+                        exit();
+                    }
+
+                    header("Location: index.php?msg=check_email");
                     exit();
                 }
 
-                header("Location: index.php?msg=check_email");
-                exit();
-            }
+            } catch (\Exception $e) {
+                if ($isAjax) {
+                    if (ob_get_level() > 0)
+                        ob_clean();
 
-        } catch (\Exception $e) {
-            if ($isAjax) {
-                if (ob_get_level() > 0) ob_clean();
+                    header('Content-Type: application/json');
+                    http_response_code(400);
 
-                header('Content-Type: application/json');
-                http_response_code(400);
+                    $errorMsg = $e->getMessage();
+                    $field = null;
 
-                $errorMsg = $e->getMessage();
-                $field = null;
+                    if (strpos($errorMsg, ':') !== false) {
+                        list($field, $message) = explode(':', $errorMsg, 2);
+                    } else {
+                        $message = $errorMsg;
+                    }
 
-                if (strpos($errorMsg, ':') !== false) {
-                    list($field, $message) = explode(':', $errorMsg, 2);
-                } else {
-                    $message = $errorMsg;
+                    echo json_encode(['success' => false, 'message' => $message, 'field' => $field]);
+                    exit();
                 }
-
-                echo json_encode(['success' => false, 'message' => $message, 'field' => $field]);
-                exit();
+                error_log("Registration error: " . $e->getMessage());
             }
-            error_log("Registration error: " . $e->getMessage());
         }
     }
-}
-public function confirm()
-{
-    $token = $_GET['token'] ?? null;
-    
-    if ($token) {
-        $userModel = new User();
-        // Intentamos confirmar
-        if ($userModel->confirmAccount($token)) {
-            
-            header("Location: index.php?confirmed=1");
+    public function confirm()
+    {
+        $token = $_GET['token'] ?? null;
+
+        if ($token) {
+            $userModel = new User();
+            // Intentamos confirmar
+            if ($userModel->confirmAccount($token)) {
+
+                header("Location: index.php?confirmed=1");
+            } else {
+                // Token inválido o expirado
+                header("Location: index.php?error=invalid_token");
+            }
         } else {
-            // Token inválido o expirado
-            header("Location: index.php?error=invalid_token");
+            header("Location: index.php");
         }
-    } else {
-        header("Location: index.php");
+        exit();
     }
-    exit();
-}
 
     // Login
     public function login()
@@ -353,7 +407,13 @@ public function confirm()
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
-            $mail->Host = 'sandbox.smtp.mailtrap.io';
+            /*$mail->Host = 'smtp.gmail.com';
+$mail->Port = 587;
+$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+$mail->Username = '';
+$mail->Password = 'contraseña_de_aplicacion_de_16_letras'; // NO tu contraseña normal
+$mail->setFrom('', 'EasyPoint Support'); */
+            $mail->Host = 'smtp-relay.brevo.com';
             $mail->SMTPAuth = true;
             $mail->Port = 2525;
             $mail->Username = '83b8fc135d6989';
