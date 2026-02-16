@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/controllers/UserController.php';
 require_once __DIR__ . '/controllers/BookingController.php';
-require_once __DIR__ . '/controllers/ReviewController.php'; 
+require_once __DIR__ . '/controllers/ReviewController.php';
 require_once __DIR__ . '/models/service.php';
 
 session_start();
@@ -32,14 +32,14 @@ if ($action === 'home') {
 
 switch ($action) {
     case 'company':
-        require_once __DIR__ .'/views/company.php';
+        require_once __DIR__ . '/views/company.php';
         exit();
     case 'business':
         require_once __DIR__ . '/views/business.php';
         exit();
     case 'legal':
         require_once __DIR__ . '/views/legal.php';
-        exit();    
+        exit();
     case 'search':
         $controller->search();
         exit();
@@ -76,6 +76,10 @@ switch ($action) {
     case 'delete_service':
         $controller->deleteService();
         exit();
+    case 'add_review':
+        header('Content-Type: application/json');
+        ReviewController::addReview();
+        exit();
     case 'change_status':
         $controller->changeStatus();
         exit();
@@ -100,10 +104,6 @@ switch ($action) {
         $_SESSION = array();
         header("Location: index.php");
         exit();
-    case 'add_review':
-        header('Content-Type: application/json');
-        ReviewController::addReview();
-        exit();        
 }
 
 ?>
@@ -351,19 +351,17 @@ switch ($action) {
                         $addressParts = [];
                         if (!empty($store['address']))
                             $addressParts[] = htmlspecialchars($store['address']);
+                        if (!empty($store['postal_code']))
+                            $addressParts[] = htmlspecialchars($store['postal_code']);
                         if (!empty($store['city']))
-                            $addressParts[] = htmlspecialchars($store['city']); // Simplificado para que quepa mejor
+                            $addressParts[] = htmlspecialchars($store['city']);
                         $fullAddress = implode(', ', $addressParts);
 
                         $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
-                        
-                        // --- NUEVO: Lógica de puntuación ---
-                        // Si la consulta trajo avg_rating úsalo, si no (ej. búsqueda) pon 5.0
                         $ratingVal = isset($store['avg_rating']) ? number_format($store['avg_rating'], 1) : '5.0';
                         $reviewCount = isset($store['review_count']) ? $store['review_count'] : 0;
-                        
+
                         $reviewText = ($reviewCount > 0) ? "($reviewCount)" : "New";
-                        // -----------------------------------
                         ?>
 
                         <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>"
@@ -371,15 +369,12 @@ switch ($action) {
                             <article class="shop-card">
                                 <div class="image-container">
                                     <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
-                                    
                                     <div class="rating-label">
-                                        <i class="fas fa-star" style="margin-right: 3px;"></i> 
-                                        <?php echo $ratingVal; ?> 
-                                        <span class="reviews-text" style="margin-left: 3px;">
-                                            <?php echo $reviewText; ?>
+                                        <?php echo number_format($store['avg_rating'], 1); ?>
+                                        <span class="reviews-text">
+                                            <?php echo ($store['review_count'] > 0) ? '(' . $store['review_count'] . ')' : 'New'; ?>
                                         </span>
                                     </div>
-                                    
                                 </div>
                                 <div class="shop-info">
                                     <h3 class="shop-name"><?php echo $name; ?></h3>
@@ -453,77 +448,97 @@ switch ($action) {
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-10 col-lg-8">
-                    
+
                     <h2 class="features-title text-center">Frequently Asked Questions</h2>
                     <p class="subtitle text-center mb-5">Find answers to common questions about EasyPoint</p>
-    
+
                     <div class="accordion" id="faqAccordion">
-                        
+
                         <div class="accordion-item easypoint-accordion">
                             <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                     How do I book an appointment?
                                 </button>
                             </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                                data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    It's very simple. Use the search bar to find a service (like "haircut") or a specific business. Select the store you like, choose a service, pick a date and time, and confirm your booking. You will need to log in to finalize the appointment.
+                                    It's very simple. Use the search bar to find a service (like "haircut") or a
+                                    specific business. Select the store you like, choose a service, pick a date and
+                                    time, and confirm your booking. You will need to log in to finalize the appointment.
                                 </div>
                             </div>
                         </div>
-    
+
                         <div class="accordion-item easypoint-accordion">
                             <h2 class="accordion-header" id="headingTwo">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                                     Is it free to use EasyPoint?
                                 </button>
                             </h2>
-                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                                data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    Yes! For customers, browsing and booking appointments on EasyPoint is completely free. You only pay the business for the service you receive, according to their prices.
+                                    Yes! For customers, browsing and booking appointments on EasyPoint is completely
+                                    free. You only pay the business for the service you receive, according to their
+                                    prices.
                                 </div>
                             </div>
                         </div>
-    
+
                         <div class="accordion-item easypoint-accordion">
                             <h2 class="accordion-header" id="headingThree">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                                     Can I cancel or reschedule my appointment?
                                 </button>
                             </h2>
-                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                                data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    Yes, you can manage your bookings from your <strong>Dashboard</strong> under the "Appointments" tab. Please note that cancellations are subject to the specific policy of each business.
+                                    Yes, you can manage your bookings from your <strong>Dashboard</strong> under the
+                                    "Appointments" tab. Please note that cancellations are subject to the specific
+                                    policy of each business.
                                 </div>
                             </div>
                         </div>
-    
+
                         <div class="accordion-item easypoint-accordion">
                             <h2 class="accordion-header" id="headingFour">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
                                     Do I need to pay online?
                                 </button>
                             </h2>
-                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+                                data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    Currently, EasyPoint is a booking platform. Payments are typically handled directly at the business location after you receive your service, unless the store specifies otherwise.
+                                    Currently, EasyPoint is a booking platform. Payments are typically handled directly
+                                    at the business location after you receive your service, unless the store specifies
+                                    otherwise.
                                 </div>
                             </div>
                         </div>
 
                         <div class="accordion-item easypoint-accordion">
                             <h2 class="accordion-header" id="headingFive">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
                                     I own a business, how can I list it here?
                                 </button>
                             </h2>
-                            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive"
+                                data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    We would love to have you! Click on the "List your business" button in the menu, create a business account, and fill in your details. Once registered, you can start managing your services and receiving bookings immediately.
+                                    We would love to have you! Click on the "List your business" button in the menu,
+                                    create a business account, and fill in your details. Once registered, you can start
+                                    managing your services and receiving bookings immediately.
                                 </div>
                             </div>
                         </div>
-    
+
                     </div>
                 </div>
             </div>
@@ -665,4 +680,5 @@ switch ($action) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="public/js/script.js"></script>
 </body>
+
 </html>

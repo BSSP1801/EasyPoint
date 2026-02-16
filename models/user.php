@@ -17,14 +17,19 @@ class User
     public function create($data)
     {
         try {
-            $checkQuery = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE username = :username OR email = :email";
+            // Evaluamos exactamente qué campo está duplicado
+            $checkQuery = "SELECT username, email FROM " . $this->table_name . " WHERE username = :username OR email = :email LIMIT 1";
             $checkStmt = $this->conn->prepare($checkQuery);
             $checkStmt->bindParam(":username", $data['username']);
             $checkStmt->bindParam(":email", $data['email']);
             $checkStmt->execute();
 
-            if ($checkStmt->fetchColumn() > 0) {
-                throw new Exception("The username or email is already registered.");
+            if ($row = $checkStmt->fetch(PDO::FETCH_ASSOC)) {
+                if (strtolower($row['email']) === strtolower($data['email'])) {
+                    throw new Exception("email:This email is already registered.");
+                } else {
+                    throw new Exception("username:This username is already taken.");
+                }
             }
 
             $query = "INSERT INTO " . $this->table_name . " 
@@ -198,28 +203,26 @@ class User
     }
 
     // Tiendas recomendadas (Carrusel Home)
-    public function getRecommendedStores($category = null)
-    {
-        try {
-            // Añadimos AVG(r.rating) y COUNT(r.id) a la selección
-            $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, 
-                             bp.logo_url, bp.business_type,
-                             COALESCE(AVG(r.rating), 5) as avg_rating, 
-                             COUNT(r.id) as review_count
-                  FROM users u 
-                  INNER JOIN business_profiles bp ON u.id = bp.user_id 
-                  LEFT JOIN reviews r ON bp.id = r.business_profile_id
-                  WHERE u.role = 'store' AND bp.is_public = 1";
+   public function getRecommendedStores($category = null)
+{
+    try {
+        $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, 
+                         bp.logo_url, bp.business_type,
+                         COALESCE(AVG(r.rating), 0) as avg_rating, 
+                         COUNT(r.id) as review_count
+              FROM users u 
+              INNER JOIN business_profiles bp ON u.id = bp.user_id 
+              LEFT JOIN reviews r ON bp.id = r.business_profile_id
+              WHERE u.role = 'store' AND bp.is_public = 1";
 
-            // Si hay categoría, añadimos el filtro
-            if ($category) {
-                $query .= " AND bp.business_type = :category";
-            }
+        if ($category) {
+            $query .= " AND bp.business_type = :category";
+        }
 
-            // Agrupamos por ID de usuario para calcular la media por tienda
-            $query .= " GROUP BY u.id ORDER BY u.created_at DESC LIMIT 8";
+        // CAMBIO: Ordenar por valoración media descendente y luego por cantidad de reseñas
+        $query .= " GROUP BY u.id ORDER BY avg_rating DESC, review_count DESC LIMIT 8";
 
-            $stmt = $this->conn->prepare($query);
+        $stmt = $this->conn->prepare($query);
             
             if ($category) {
                 $stmt->bindParam(':category', $category);
@@ -305,23 +308,23 @@ public function getUserAppointments($userId) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-public function updateAppointmentStatus($appointmentId, $newStatus, $storeId)
+public function updateAppointmentStatus($appointmentId, $newStatus, $userId)
     {
         try {
-            // Usamos JOIN para asegurarnos de que la cita pertenece a un servicio 
-            // creado por la tienda que está intentando modificarla ($storeId)
+            // Permitimos la actualización si quien lo solicita es el dueño del 
+            // servicio (tienda: s.user_id) O el cliente dueño de la cita (a.user_id)
             $query = "UPDATE appointments a 
                       INNER JOIN services s ON a.service_id = s.id 
                       SET a.status = :status 
-                      WHERE a.id = :id AND s.user_id = :store_id";
+                      WHERE a.id = :id AND (s.user_id = :user_id OR a.user_id = :user_id)";
 
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':status', $newStatus);
             $stmt->bindParam(':id', $appointmentId);
-            $stmt->bindParam(':store_id', $storeId);
+            $stmt->bindParam(':user_id', $userId);
 
             if ($stmt->execute()) {
-                // Verificar si realmente se modificó alguna fila (si no, es que no era su cita o el ID no existe)
+                // Verificar si realmente se modificó alguna fila
                 return $stmt->rowCount() > 0;
             }
             return false;

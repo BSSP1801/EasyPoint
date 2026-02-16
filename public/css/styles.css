@@ -1195,3 +1195,27 @@ header {
         padding: 15px;
     }
 }
+
+/* --- MOBILE FIXES --- */
+@media (max-width: 768px) {
+    .main-title { font-size: 36px; }
+    .subtitle { font-size: 16px; padding: 0 15px; }
+    .features-section { padding: 40px 20px; }
+    .main-footer { padding: 40px 20px 20px; }
+    .sticky-container { padding: 0 15px; }
+    .hero-search-bar { flex-direction: column; border-radius: 12px !important; }
+    .hero-search-bar .search-field { width: 100%; padding: 10px !important; }
+    .hero-search-bar > div { width: 100% !important; height: 1px !important; } /* Divider horizontal */
+}
+
+@media (max-width: 480px) {
+    .main-title { font-size: 28px; }
+    .search-bar { width: 95%; height: 45px; }
+    .category-list { gap: 15px; }
+    header { height: auto; min-height: 500px; padding-top: 20px; }
+    .central-content { margin-top: 20px; }
+    .footer-links-group { gap: 30px; flex-direction: column; width: 100%; }
+    .footer-column { text-align: center; }
+    .social-icons { justify-content: center; }
+    .footer-logo, .footer-desc { text-align: center; }
+}

@@ -27,7 +27,7 @@ class UserController
                 ];
 
                 if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
-                    throw new Exception("All common fields are required.");
+                    throw new \Exception("All common fields are required.");
                 }
 
                 $user = new User();
@@ -59,11 +59,25 @@ class UserController
                     header("Location: index.php");
                     exit();
                 }
-            } catch (Exception $e) {
+           } catch (\Exception $e) {
                 if ($isAjax) {
+                    // Limpiamos cualquier warning previo de PHP para que no rompa el JSON
+                    if (ob_get_level() > 0) ob_clean();
+                    
                     header('Content-Type: application/json');
                     http_response_code(400);
-                    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+                    
+                    $errorMsg = $e->getMessage();
+                    $field = null;
+                    
+                    // Separamos el campo del mensaje si viene en formato "campo:mensaje"
+                    if (strpos($errorMsg, ':') !== false) {
+                        list($field, $message) = explode(':', $errorMsg, 2);
+                    } else {
+                        $message = $errorMsg;
+                    }
+                    
+                    echo json_encode(['success' => false, 'message' => $message, 'field' => $field]);
                     exit();
                 }
                 error_log("Registration error: " . $e->getMessage());
@@ -333,12 +347,12 @@ class UserController
     }
 
 
-    public function changeStatus()
+   public function changeStatus()
     {
         header('Content-Type: application/json');
 
-        // Verificar sesión y rol
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'store') {
+        // 1. Solo verificamos si la sesión está iniciada (sin bloquear el rol todavía)
+        if (!isset($_SESSION['user_id'])) {
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
             exit();
         }
@@ -347,6 +361,13 @@ class UserController
             $id = $_POST['id'] ?? null;
             $status = $_POST['status'] ?? null;
 
+            // 2. Seguridad: Si es un cliente regular ('user'), SOLAMENTE puede cancelar citas
+            if ($_SESSION['role'] === 'user' && $status !== 'cancelled') {
+                echo json_encode(['success' => false, 'message' => 'Unauthorized: Users can only cancel appointments']);
+                exit();
+            }
+
+            // 3. Procesar si el estado es válido
             if ($id && $status && in_array($status, ['confirmed', 'cancelled'])) {
                 $userModel = new User();
                 $success = $userModel->updateAppointmentStatus($id, $status, $_SESSION['user_id']);
@@ -362,7 +383,6 @@ class UserController
             exit();
         }
     }
-
     public function searchClientHistory()
     {
         header('Content-Type: application/json');

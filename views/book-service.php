@@ -502,7 +502,7 @@ if (!empty($store['opening_hours'])) {
         const USER_LOGGED = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
         const USER_ID = <?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'null'; ?>;
     </script>
-
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="public/js/script.js"></script>
     <script src="public/js/script-book-service.js"></script>
 </body>

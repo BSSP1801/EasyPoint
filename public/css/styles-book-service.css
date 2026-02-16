@@ -809,3 +809,20 @@
 header {
     height: 64px;
 }
+
+/* --- MOBILE FIXES --- */
+@media (max-width: 480px) {
+    .booking-container { padding: 0 10px; margin: 20px auto; }
+    .booking-left-panel, .order-summary { padding: 15px; }
+    .day-btn { font-size: 12px; }
+    .time-slots-wrapper { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 20px; 
+        max-height: none; 
+        overflow-y: visible; 
+    }
+    .employee-grid { grid-template-columns: repeat(2, 1fr); }
+    .modal-actions { grid-template-columns: 1fr; gap: 10px; }
+    .calendar-legend { flex-wrap: wrap; gap: 10px; }
+}
