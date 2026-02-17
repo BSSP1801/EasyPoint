@@ -35,86 +35,19 @@ class UserController
                 $token = $user->create($data);
 
                 if ($token) {
-                    // 1. Definimos el enlace de confirmación
-                    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
-                    $confirmLink = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/index.php?action=confirm&token=" . $token;
-
-                    // 2. Intentamos enviar el correo
-                    try {
-                        $subject = "Welcome to EasyPoint - Verify your email";
-
-                        // Variables de estilo extraídas de tu CSS
-                        $bgColor = "#2b201e";      // Tu fondo oscuro
-                        $cardColor = "#362b29";    // Un tono un poco más claro para la tarjeta
-                        $textColor = "#ebe6d2";    // Tu color de texto
-                        $accentColor = "#a58668";  // Tu dorado/marrón
-                        $btnText = "#2b201e";      // Texto oscuro para el botón (para contraste)
-
-                        // Construcción del mensaje HTML
-                        $msg = "
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset='UTF-8'>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    </head>
-    <body style='margin: 0; padding: 0; background-color: {$bgColor}; font-family: Helvetica, Arial, sans-serif; color: {$textColor};'>
-        <div style='background-color: {$bgColor}; padding: 40px 20px;'>
-            
-            <div style='max-width: 600px; margin: 0 auto; background-color: {$cardColor}; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4);'>
                 
-                <div style='background-color: {$bgColor}; padding: 25px; text-align: center; border-bottom: 2px solid {$accentColor};'>
-                    <h1 style='margin: 0; color: {$textColor}; font-size: 28px; letter-spacing: 1px;'>EasyPoint</h1>
-                </div>
-
-                <div style='padding: 40px 30px;'>
-                    <h2 style='color: {$accentColor}; margin-top: 0; font-size: 24px;'>Welcome, " . htmlspecialchars($data['username']) . "!</h2>
-                    
-                    <p style='font-size: 16px; line-height: 1.6; color: {$textColor}; margin-bottom: 25px;'>
-                        Thank you for joining EasyPoint. You are just one step away from booking appointments with the best professionals near you.
-                    </p>
-                    
-                    <p style='font-size: 16px; line-height: 1.6; color: {$textColor}; margin-bottom: 35px;'>
-                        Please confirm your email address to activate your account and start using our platform.
-                    </p>
-
-                    <div style='text-align: center; margin-bottom: 35px;'>
-                        <a href='{$confirmLink}' style='background-color: {$accentColor}; color: {$btnText}; padding: 14px 35px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 15px rgba(165, 134, 104, 0.3);'>
-                            Verify My Account
-                        </a>
-                    </div>
-
-                    <p style='font-size: 13px; color: #999; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;'>
-                        If the button above doesn't work, copy and paste this link into your browser:<br>
-                        <a href='{$confirmLink}' style='color: {$accentColor}; text-decoration: none; word-break: break-all;'>{$confirmLink}</a>
-                    </p>
-                </div>
-
-                <div style='background-color: #231a18; padding: 20px; text-align: center; font-size: 12px; color: #777;'>
-                    <p style='margin: 5px 0;'>&copy; 2026 EasyPoint. All rights reserved.</p>
-                    <p style='margin: 0;'>Valencia, Spain</p>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-    ";
-
-                        $this->sendEmail($data['email'], $subject, $msg);
-                    } catch (Exception $e) {
-                        error_log("Email error: " . $e->getMessage());
-                        // Podrías decidir si lanzar una excepción aquí o dejar que el usuario se registre
-                    }
-
                     // 3. Respuesta para AJAX o redirección normal
                     if ($isAjax) {
-                        header('Content-Type: application/json');
-                        echo json_encode([
-                            'success' => true,
-                            'message' => "Registration successful! Please check your email to confirm your account."
-                        ]);
-                        exit();
-                    }
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        'success' => true, 
+                        'message' => "Account created! Sending verification email...",
+                        'token' => $token,           // <--- Enviamos el token al JS
+                        'username' => $data['username'], // <--- Enviamos el nombre al JS
+                        'email' => $data['email']    // <--- Enviamos el email al JS
+                    ]);
+                    exit();
+                }
 
                     header("Location: index.php?msg=check_email");
                     exit();
@@ -599,6 +532,8 @@ class UserController
         exit();
     }
 
+
+
 public function forgotPassword() {
     header('Content-Type: application/json');
     
@@ -611,38 +546,29 @@ public function forgotPassword() {
         }
 
         $userModel = new User();
+        // Generamos un token seguro
         $token = bin2hex(random_bytes(32));
 
-        // Solo enviamos el correo si el email existe en la DB
+        // Guardamos el token en la base de datos
         if ($userModel->saveResetToken($email, $token)) {
             
-            // Construir enlace
+            // Construimos el enlace de recuperación
             $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
             $resetLink = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/index.php?action=reset_password_view&token=" . $token;
 
-            // Enviar Email (Usando tu diseño Dark & Gold)
-            $subject = "Reset your EasyPoint Password";
-            
-            // Estilos (mismos que usaste en registro)
-            $bgColor = "#2b201e"; $cardColor = "#362b29"; $textColor = "#ebe6d2"; $accentColor = "#a58668";
-            
-            $msg = "
-            <div style='background-color: {$bgColor}; padding: 40px 20px; font-family: Arial, sans-serif; color: {$textColor};'>
-                <div style='max-width: 600px; margin: 0 auto; background-color: {$cardColor}; border-radius: 12px; padding: 30px;'>
-                    <h2 style='color: {$accentColor}; text-align: center;'>Reset Password Request</h2>
-                    <p>We received a request to reset your password. Click the button below to choose a new one:</p>
-                    <div style='text-align: center; margin: 30px 0;'>
-                        <a href='{$resetLink}' style='background-color: {$accentColor}; color: #2b201e; padding: 12px 30px; text-decoration: none; border-radius: 50px; font-weight: bold;'>Reset Password</a>
-                    </div>
-                    <p style='font-size: 12px; color: #999;'>This link expires in 1 hour. If you didn't ask for this, ignore this email.</p>
-                </div>
-            </div>";
-
-            $this->sendEmail($email, $subject, $msg);
+            // --- CAMBIO CLAVE ---
+            // Devolvemos el link y el email al JavaScript para que EmailJS los use.
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Token generated',
+                'reset_link' => $resetLink, // Dato para EmailJS
+                'email' => $email           // Dato para EmailJS (Evita el error "recipients address empty")
+            ]);
+        } else {
+            // Si el email no existe, enviamos un falso éxito por seguridad, 
+            // pero con una marca para que el JS sepa qué hacer (o no hacer nada).
+            echo json_encode(['success' => true, 'fake_success' => true]);
         }
-
-        // Por seguridad, SIEMPRE decimos que se envió (para no revelar qué emails existen)
-        echo json_encode(['success' => true, 'message' => 'If that email exists, we have sent a reset link.']);
         exit();
     }
 }

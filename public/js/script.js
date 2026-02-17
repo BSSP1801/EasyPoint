@@ -238,66 +238,76 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (registerForm) {
+   if (registerForm) {
         registerForm.addEventListener('submit', function (e) {
             e.preventDefault();
+            
+            // UI Cleanup
             if (registerError) registerError.style.display = 'none';
             if (registerSuccess) registerSuccess.style.display = 'none';
-            
-            // Limpiar estilos de error previos
-            registerForm.querySelectorAll('.modal-input').forEach(input => {
-                input.style.boxShadow = '';
-            });
+            registerForm.querySelectorAll('.modal-input').forEach(input => input.style.boxShadow = '');
 
             const formData = new FormData(this);
             formData.append('role', 'user');
 
+            // 1. Llamada al Backend (PHP) para crear el usuario en la DB
             fetch('index.php?action=register', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-                .then(response => {
-                    return response.text().then(text => {
-                        try { return JSON.parse(text); }
-                        catch (e) { 
-                            console.error("Raw error:", text);
-                            throw new Error('Server returned invalid data.'); 
-                        }
-                    });
-                })
-                .then(data => {
-                    if (data.success) {
-                        localStorage.setItem('easyPointToast', JSON.stringify({
-                            title: 'Account Created',
-                            message: 'Welcome to EasyPoint! Please confirm your Email',
-                            icon: 'fa-user-plus'
-                        }));
-                        setTimeout(() => { window.location.href = 'index.php'; }, 1000);
-                    } else {
-                        if (registerError) {
-                            registerError.textContent = data.message;
-                            registerError.style.display = 'block';
-                        }
-                        // Marcar campo con error y hacer Focus
-                        if (data.field) {
-                            const fieldEl = registerForm.querySelector(`[name="${data.field}"]`);
-                            if (fieldEl) {
-                                fieldEl.style.boxShadow = 'inset 0 0 0 2px #f44336';
-                                fieldEl.focus();
-                                fieldEl.addEventListener('input', function() {
-                                    this.style.boxShadow = ''; // Quitar rojo al escribir
-                                }, { once: true });
-                            }
-                        }
+            .then(response => response.json()) // Asumimos que el PHP siempre devuelve JSON ahora
+            .then(data => {
+                if (data.success) {
+                    
+                    // 2. Si PHP dice OK, usamos EmailJS
+                    // Construimos el enlace de confirmación
+                    const protocol = window.location.protocol;
+                    const host = window.location.host;
+                    const confirmLink = `${protocol}//${host}/index.php?action=confirm&token=${data.token}`;
+
+                    // Parámetros para la plantilla de EmailJS
+                    const emailParams = {
+                        to_email: data.email,       
+                        username: data.username,    
+                        link: confirmLink           
+                    };
+
+                    const serviceID = 'service_gvkzrux';   // Ej: 'service_gmail'
+                    const templateID = 'template_113f5wb'; 
+
+                    // Enviamos el correo
+                    emailjs.send(serviceID, templateID, emailParams)
+                        .then(() => {
+                            // ÉXITO TOTAL
+                            localStorage.setItem('easyPointToast', JSON.stringify({
+                                title: 'Email Sent!', 
+                                message: 'Check your inbox to confirm your account.', 
+                                icon: 'fa-envelope'
+                            }));
+                            window.location.href = 'index.php';
+                        }, (err) => {
+                            // FALLÓ EL CORREO (Pero la cuenta se creó)
+                            console.error('EmailJS Error:', err);
+                            // Aún así redirigimos o avisamos
+                            alert('Account created, but email failed to send. Please contact support.');
+                            window.location.href = 'index.php';
+                        });
+
+                } else {
+                    // Error de PHP (Usuario duplicado, etc)
+                    if (registerError) { 
+                        registerError.textContent = data.message; 
+                        registerError.style.display = 'block'; 
                     }
-                })
-                .catch(error => {
-                    if (registerError) {
-                        registerError.textContent = error.message;
-                        registerError.style.display = 'block';
-                    }
-                });
+                }
+            })
+            .catch(error => {
+                if (registerError) { 
+                    registerError.textContent = "System error occurred."; 
+                    registerError.style.display = 'block'; 
+                }
+            });
         });
     }
 
@@ -414,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = this.querySelector('button');
             
             btn.disabled = true;
-            btn.textContent = 'Sending...';
+            btn.textContent = 'Processing...';
             msgDiv.style.display = 'none';
 
             fetch('index.php?action=forgot_password', {
@@ -422,17 +432,57 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(res => res.json())
             .then(data => {
-                msgDiv.textContent = data.message;
-                msgDiv.style.display = 'block';
-                msgDiv.style.color = data.success ? 'green' : 'red';
-                btn.disabled = false;
-                btn.textContent = 'Send Link';
-                
-                if(data.success) this.reset();
+                if(data.success) {
+                    // Si es un "falso éxito" (email no existe), mostramos mensaje y salimos
+                    if (data.fake_success) {
+                        msgDiv.textContent = 'If your email exists, a reset link has been sent.';
+                        msgDiv.style.display = 'block';
+                        msgDiv.style.color = 'green';
+                        btn.disabled = false;
+                        btn.textContent = 'Send Link';
+                        return;
+                    }
+
+                    // --- AQUÍ SE USA EL EMAIL QUE AHORA SÍ LLEGA DEL PHP ---
+                    const templateParams = {
+                        to_email: data.email,       // Ahora data.email TIENE valor
+                        reset_link: data.reset_link 
+                    };
+
+                    // Reemplaza con tus IDs de EmailJS
+                    const serviceID = 'service_gvkzrux'; 
+                    const templateID = 'template_5t9jqn4'; // ID de la plantilla de "Forgot Password"
+
+                    emailjs.send(serviceID, templateID, templateParams)
+                        .then(() => {
+                            msgDiv.textContent = 'Reset link sent! Check your inbox.';
+                            msgDiv.style.display = 'block';
+                            msgDiv.style.color = 'green';
+                            this.reset();
+                        })
+                        .catch((err) => {
+                            console.error('EmailJS Error:', err);
+                            msgDiv.textContent = 'Error sending email.';
+                            msgDiv.style.color = 'red';
+                            msgDiv.style.display = 'block';
+                        })
+                        .finally(() => {
+                            btn.disabled = false;
+                            btn.textContent = 'Send Link';
+                        });
+
+                } else {
+                    msgDiv.textContent = data.message;
+                    msgDiv.style.display = 'block';
+                    msgDiv.style.color = 'red';
+                    btn.disabled = false;
+                    btn.textContent = 'Send Link';
+                }
             })
             .catch(() => {
-                msgDiv.textContent = 'Error sending email.';
+                msgDiv.textContent = 'Server error.';
                 msgDiv.style.color = 'red';
+                msgDiv.style.display = 'block';
                 btn.disabled = false;
                 btn.textContent = 'Send Link';
             });
