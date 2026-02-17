@@ -30,10 +30,10 @@ header {
     width: 100%;
     height: auto;
     min-height: 170px;
-    padding-bottom: 10px;
+    padding: 15px 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     background: radial-gradient(circle at top, #3a2b28 0%, #2b201e 100%);
     color: var(--text-main);
 }
@@ -155,6 +155,86 @@ header {
     text-decoration: none;
     font-size: 13px;
     font-weight: 500;
+}
+
+@media (max-width: 1000px) {
+    .sticky-search-bar {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .sticky-container {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 0 15px;
+    }
+
+    .sticky-logo {
+        font-size: 18px;
+        flex: 0 0 auto;
+    }
+
+    .sticky-menu {
+        flex: 1;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .business-button,
+    .sticky-business-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+        white-space: nowrap;
+        border-radius: 4px;
+    }
+
+    .user-link,
+    .login-link,
+    .logout-link {
+        font-size: 12px;
+    }
+
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-toggle {
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .dropdown-menu {
+        min-width: 160px;
+        right: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .sticky-container {
+        padding: 0 12px;
+    }
+
+    .sticky-logo {
+        font-size: 16px;
+    }
+
+    .sticky-menu {
+        gap: 8px;
+    }
+
+    .business-button,
+    .sticky-business-btn {
+        padding: 5px 10px;
+        font-size: 10px;
+    }
+
+    .user-link,
+    .login-link,
+    .logout-link {
+        font-size: 10px;
+    }
 }
 
 /* Dropdown */
@@ -757,18 +837,6 @@ a:hover {
     color: #a58668;
 }
 
-.category-list {
-
-    & a,
-    a:link,
-    a:hover,
-    a:visited,
-    a:active {
-        color: var(--accent);
-        text-decoration: none;
-    }
-}
-
 /* --- MOBILE FIXES --- */
 @media (max-width: 768px) {
     .main-container {
@@ -838,19 +906,18 @@ a:hover {
         flex-shrink: 0;
     }
 
-    .search-bar {
+    .hero-search-bar {
+        max-width: 360px !important;
+        width: 95% !important;
+        height: 38px !important;
+        padding: 3px !important;
+        margin: 12px auto !important;
         flex-basis: 100%;
         order: 10;
-        max-width: 360px;
-        /* ligeramente más pequeña en móvil */
-        width: 100%;
-        padding: 0 10px;
-        height: 32px;
-        margin: 8px auto 0;
     }
 
-    .search-input {
-        font-size: 11px;
+    .search-field input {
+        font-size: 11px !important;
     }
 
     .user-menu {

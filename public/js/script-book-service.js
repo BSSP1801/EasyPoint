@@ -290,6 +290,8 @@ function proceedToConfirmation() {
 
     // Check if user is logged in
     if (!USER_LOGGED) {
+        // Store current URL to return after login
+        sessionStorage.setItem('returnUrl', window.location.href);
         // Open auth modal using the existing function from script.js
         const authModal = document.getElementById('auth-modal');
         if (authModal) {
@@ -337,6 +339,13 @@ function continueProceedBooking() {
 }
 
 function confirmBooking() {
+    // Validate user role - only clients can book appointments
+    if (USER_ROLE === 'store') {
+        document.getElementById('confirmationModal').style.display = 'none';
+        showToast('Businesses cannot book appointments. Only clients can make reservations.', 'error');
+        return;
+    }
+
     // Show spinner
     document.getElementById('loadingSpinner').style.display = 'block';
     document.getElementById('confirmationModal').style.display = 'none';
