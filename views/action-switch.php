@@ -1,13 +1,13 @@
 <?php
 switch ($action) {
     case 'company':
-        require_once __DIR__ . '/views/company.php';
+        require_once __DIR__ . '/company.php';
         exit();
     case 'business':
-        require_once __DIR__ . '/views/business.php';
+        require_once __DIR__ . '/business.php';
         exit();
     case 'legal':
-        require_once __DIR__ . '/views/legal.php';
+        require_once __DIR__ . '/legal.php';
         exit();
     case 'search':
         $controller->search();
@@ -40,7 +40,7 @@ switch ($action) {
             header("Location: index.php");
             exit();
         }
-        require_once __DIR__ . '/views/book-service.php';
+        require_once __DIR__ . '/book-service.php';
         exit();
     case 'add_service':
         $controller->addService();

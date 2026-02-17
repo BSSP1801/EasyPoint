@@ -417,19 +417,16 @@ class UserController
                 'allow_self_signed' => true
             )
         );
-            /*$mail->Host = 'smtp.gmail.com';
-$mail->Port = 587;
-$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-$mail->Username = '';
-$mail->Password = 'contraseña_de_aplicacion_de_16_letras'; // NO tu contraseña normal
-$mail->setFrom('', 'EasyPoint Support'); */
+           
+            $mail->isSMTP();
             $mail->Host = 'smtp-relay.brevo.com';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->SMTPAuth = true;
-            $mail->Port = 2525;
-            $mail->Username = '83b8fc135d6989';
-            $mail->Password = 'f5a90f6cf9f62a';
-            $mail->Timeout = 3;
-            $mail->setFrom('support@easypoint.com', 'EasyPoint Support');
+            $mail->Port = 587;
+            $mail->Username = 'brunosalcedo1801@gmail.com';
+            $mail->Password = 'bskBRvreynkfOv3';
+            $mail->Timeout = 10;
+            $mail->setFrom('brunosalcedo1801@gmail.com', 'EasyPoint Support');
             $mail->addAddress($to);
             $mail->isHTML(true);
             $mail->Subject = $subject;
