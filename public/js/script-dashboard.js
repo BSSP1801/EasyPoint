@@ -53,24 +53,24 @@ document.addEventListener('DOMContentLoaded', () => {
         // Parse without timezone conversion
         const [year, month, day] = dateStr.split('-').map(Number);
         const [hours, minutes] = timeStr.split(':').map(Number);
-        
+
         // Create date WITHOUT timezone conversion - just use the local date values
         const date = new Date(year, month - 1, day, hours, minutes);
-        
+
         const options = { weekday: 'short', month: 'short', day: 'numeric' };
         const timeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
         return date.toLocaleDateString('en-US', options) + ' - ' + timeFormatted;
     }
 
     // Definimos la función PRIMERO
-  window.renderAppointmentsList = function (appointments, titleText) {
+    window.renderAppointmentsList = function (appointments, titleText) {
         const container = document.getElementById('appointments-container');
         const title = document.getElementById('appointments-title');
 
         if (title) title.innerText = titleText;
-        
+
         // Si no existe el contenedor (por ejemplo, estamos en una vista que no lo carga), salimos
-        if (!container) return; 
+        if (!container) return;
 
         container.innerHTML = '';
 
@@ -87,12 +87,17 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (appt.status === 'cancelled') statusClass = 'cancelled';
 
             let buttonsHtml = '';
-            
+
             // Detectar si es vista de Usuario (tiene store_name) o Tienda (tiene client_name)
             const isUserView = appt.store_name ? true : false;
             const counterpartName = isUserView ? appt.store_name : appt.client_name;
             const iconClass = isUserView ? 'fas fa-store' : 'far fa-user';
+            let profileUrl = '#'; // Por defecto no lleva a ningún lado
 
+            if (isUserView && appt.store_id) {
+                // Si soy usuario, el enlace lleva al perfil de la tienda
+                profileUrl = `index.php?action=view_business&id=${appt.store_id}`;
+            }
             // Lógica de botones
             if (appt.appointment_date >= today) {
                 if (appt.status === 'pending') {
@@ -130,9 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="status ${statusClass}">${appt.status.charAt(0).toUpperCase() + appt.status.slice(1)}</span>
                         </h4>
                         <p>
-                            <i class="${iconClass}"></i> ${counterpartName} | 
-                            <i class="far fa-clock"></i> ${formatAppointmentDate(appt.appointment_date, appt.appointment_time)}
-                        </p>
+                        <i class="${iconClass}"></i>
+                        <a href="${profileUrl}" style="text-decoration: none; color: inherit; font-weight: bold;"> ${counterpartName}</a> | 
+                        <i class="far fa-clock"></i> ${formatAppointmentDate(appt.appointment_date, appt.appointment_time)}
+                    </p>
                         ${isUserView && appt.store_address ? `<p style="font-size:12px; color:#666;"><i class="fas fa-map-marker-alt"></i> ${appt.store_address}</p>` : ''}
                     </div>
                     ${buttonsHtml}
@@ -597,7 +603,7 @@ const savedView = sessionStorage.getItem('currentView');
 if (savedView) {
     // VERIFICACIÓN EXTRA: ¿Existe realmente ese elemento en el HTML actual?
     const targetEl = document.getElementById(savedView);
-    
+
     // Solo cambiamos si el elemento existe (evita que un usuario intente abrir vista de tienda)
     if (targetEl) {
         switchMainView(null, savedView);
@@ -612,13 +618,13 @@ if (savedView) {
    ========================= */
 
 
-window.submitPasswordChange = function(e) {
+window.submitPasswordChange = function (e) {
     e.preventDefault();
-    
+
     const form = document.getElementById('change-password-form');
     const msgDiv = document.getElementById('password-msg');
     const btn = form.querySelector('button[type="submit"]');
-    
+
     // UI Feedback
     const originalText = btn.innerText;
     btn.innerText = 'Updating...';
@@ -632,41 +638,41 @@ window.submitPasswordChange = function(e) {
         method: 'POST',
         body: formData
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            msgDiv.style.color = 'green';
-            msgDiv.innerText = data.message;
-            form.reset();
-        } else {
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                msgDiv.style.color = 'green';
+                msgDiv.innerText = data.message;
+                form.reset();
+            } else {
+                msgDiv.style.color = 'red';
+                msgDiv.innerText = data.message;
+            }
+        })
+        .catch(err => {
+            console.error(err);
             msgDiv.style.color = 'red';
-            msgDiv.innerText = data.message;
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        msgDiv.style.color = 'red';
-        msgDiv.innerText = 'Connection error. Please try again.';
-    })
-    .finally(() => {
-        btn.innerText = originalText;
-        btn.disabled = false;
-        
-        // Limpiar mensaje de éxito después de 3 segundos
-        if (msgDiv.style.color === 'green') {
-            setTimeout(() => { msgDiv.innerText = ''; }, 3000);
-        }
-    });
+            msgDiv.innerText = 'Connection error. Please try again.';
+        })
+        .finally(() => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+
+            // Limpiar mensaje de éxito después de 3 segundos
+            if (msgDiv.style.color === 'green') {
+                setTimeout(() => { msgDiv.innerText = ''; }, 3000);
+            }
+        });
 };
 
 
 /* =========================
    9. TOGGLE VISIBILIDAD CONTRASEÑA (EL OJITO)
    ========================= */
-window.togglePasswordVisibility = function(iconBtn) {
+window.togglePasswordVisibility = function (iconBtn) {
     // Encontramos el input que es el hermano anterior del icono dentro del mismo div .password-group
     const inputField = iconBtn.previousElementSibling;
-    
+
     if (!inputField || (inputField.tagName !== 'INPUT')) return;
 
     // Verificamos el estado actual y cambiamos

@@ -24,54 +24,7 @@ $locationTerm = $_GET['loc'] ?? '';
 
 <body>
 
-    <div class="sticky-header">
-        <div class="sticky-container">
-            <div class="sticky-logo"><a href="index.php">EasyPoint</a></div>
-
-            <form action="index.php" method="GET" class="sticky-search-bar">
-                <input type="hidden" name="action" value="search">
-                <div class="search-field">
-                    <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" name="q" placeholder="Search services" value="<?php echo htmlspecialchars($searchTerm); ?>">
-                </div>
-                <div class="search-field border-left">
-                    <span class="search-icon"><i class="fa-solid fa-location-dot"></i></span>
-                    <input type="text" name="loc" placeholder="Where?" value="<?php echo htmlspecialchars($locationTerm); ?>">
-                </div>
-                <button type="submit" class="sticky-search-btn">Search</button>
-            </form>
-
-            <div class="sticky-menu">
-                <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
-                    <div class="dropdown">
-                        <span class="user-link dropdown-toggle">
-                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
-                        </span>
-                        <div class="dropdown-menu">
-                            <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
-                            <a href="index.php?action=logout" class="dropdown-item"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-                        </div>
-                    </div>
-                <?php elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'store'): ?>
-                    <div class="dropdown">
-                        <span class="user-link dropdown-toggle">
-                            Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
-                        </span>
-                        <div class="dropdown-menu">
-                            <a href="index.php?action=dashboard" class="dropdown-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
-                            <a href="index.php?action=logout" class="dropdown-item"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
-                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
+    <?php include "views/sticky-header.php"; ?>
 
     <header style="min-height: auto; padding-bottom: 20px;">
         <nav class="navigation-bar">
@@ -104,7 +57,6 @@ $locationTerm = $_GET['loc'] ?? '';
 
             <div class="user-menu">
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
-                    <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
@@ -203,102 +155,14 @@ $locationTerm = $_GET['loc'] ?? '';
 
     </div>
 
-    <footer class="main-footer">
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h2 class="footer-logo">EasyPoint</h2>
-                <p class="footer-desc">The easiest way to look and feel your best. Book appointments with top
-                    professionals near you.</p>
-                <div class="social-icons">
-                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-                </div>
-            </div>
+    <!-- FOOTER -->
+    <?php include "views/footer.php" ?>
 
-            <div class="footer-links-group">
-                <div class="footer-column">
-                    <h3>Company</h3>
-                    <a href="index.php?action=company">About Us</a>
-                    <a href="index.php?action=company#contact">Contact</a>
-                </div>
 
-                <div class="footer-column">
-                    <h3>For Business</h3>
-                    <a href="index.php?action=business">Partner with us</a>
-                    <a href="index.php?action=business#support">Support</a>
-                </div>
+    <!-- MODALS -->
+        <?php include "views/modals.php"; ?>
 
-                <div class="footer-column">
-                    <h3>Legal</h3>
-                    <a href="index.php?action=legal">Privacy Policy</a>
-                    <a href="index.php?action=legal#terms">Terms of Service</a>
-                    <a href="#">Cookies Settings</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p>&copy; 2026 EasyPoint. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <div id="auth-modal" class="modal-overlay">
-        <div class="modal-box">
-            <span class="close-modal">&times;</span>
-            <div id="login-view">
-                <h2 class="modal-title">Welcome Back</h2>
-                <p class="modal-subtitle">Log in to book your next appointment</p>
-                <div id="login-error" style="color: red; margin-bottom: 10px; display: none;"></div>
-                <form id="login-form">
-                    <div class="form-group">
-                        <label>Email or Username</label>
-                        <input type="text" name="identifier" required class="modal-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" name="password" required class="modal-input">
-                    </div>
-                    <button type="submit" class="modal-btn">Log In</button>
-                </form>
-                <div class="switch-form">Don't have an account? <span id="go-to-register">Sign up</span></div>
-            </div>
-            <div id="register-view" class="hidden">
-                <h2 class="modal-title">Create Account</h2>
-                <p class="modal-subtitle">Join EasyPoint today</p>
-                <div id="register-error" style="color: red; margin-bottom: 10px; display: none;"></div>
-                <div id="register-success" style="color: green; margin-bottom: 10px; display: none;"></div>
-                <form id="register-form">
-                    <div class="form-group"><label>Username</label><input type="text" name="username" required class="modal-input"></div>
-                    <div class="form-group"><label>Email</label><input type="email" name="email" required class="modal-input"></div>
-                    <div class="form-group"><label>Password</label><input type="password" name="password" required class="modal-input"></div>
-                    <button type="submit" class="modal-btn">Sign Up</button>
-                </form>
-                <div class="switch-form">Already have an account? <span id="go-to-login">Log In</span></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="store-modal" class="modal-overlay">
-        <div class="modal-box">
-            <span class="close-store-modal" style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer;">&times;</span>
-            <h2 class="modal-title">Register your Business</h2>
-            <p class="modal-subtitle">List your store on EasyPoint</p>
-            <div id="store-error" style="color: red; margin-bottom: 10px; display: none;"></div>
-            <div id="store-success" style="color: green; margin-bottom: 10px; display: none;"></div>
-            <form id="store-register-form">
-                <div class="form-group"><label>Username</label><input type="text" name="username" required class="modal-input"></div>
-                <div class="form-group"><label>Email</label><input type="email" name="email" required class="modal-input"></div>
-                <div class="form-group"><label>Password</label><input type="password" name="password" required class="modal-input"></div>
-                <div class="form-group"><label>Business Name</label><input type="text" name="business_name" required class="modal-input"></div>
-                <div class="form-group"><label>Address</label><input type="text" name="address" required class="modal-input"></div>
-                <div class="form-group"><label>Postal Code</label><input type="text" name="postal_code" class="modal-input"></div>
-                <button type="submit" class="modal-btn">Create Business Account</button>
-            </form>
-        </div>
-    </div>
-    
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="public/js/script.js"></script>
 
 </body>
