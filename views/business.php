@@ -174,60 +174,7 @@ $locationTerm = $_GET['loc'] ?? '';
     <!-- FOOTER -->
     <?php include "views/footer.php" ?>
 
-    <div id="auth-modal" class="modal-overlay">
-        <div class="modal-box">
-            <span class="close-modal">&times;</span>
-            <div id="login-view">
-                <h2 class="modal-title">Welcome Back</h2>
-                <p class="modal-subtitle">Log in to book your next appointment</p>
-                <div id="login-error" style="color: red; margin-bottom: 10px; display: none;"></div>
-                <form id="login-form">
-                    <div class="form-group">
-                        <label>Email or Username</label>
-                        <input type="text" name="identifier" required class="modal-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" name="password" required class="modal-input">
-                    </div>
-                    <button type="submit" class="modal-btn">Log In</button>
-                </form>
-                <div class="switch-form">Don't have an account? <span id="go-to-register">Sign up</span></div>
-            </div>
-            <div id="register-view" class="hidden">
-                <h2 class="modal-title">Create Account</h2>
-                <p class="modal-subtitle">Join EasyPoint today</p>
-                <div id="register-error" style="color: red; margin-bottom: 10px; display: none;"></div>
-                <div id="register-success" style="color: green; margin-bottom: 10px; display: none;"></div>
-                <form id="register-form">
-                    <div class="form-group"><label>Username</label><input type="text" name="username" required class="modal-input"></div>
-                    <div class="form-group"><label>Email</label><input type="email" name="email" required class="modal-input"></div>
-                    <div class="form-group"><label>Password</label><input type="password" name="password" required class="modal-input"></div>
-                    <button type="submit" class="modal-btn">Sign Up</button>
-                </form>
-                <div class="switch-form">Already have an account? <span id="go-to-login">Log In</span></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="store-modal" class="modal-overlay">
-        <div class="modal-box">
-            <span class="close-store-modal" style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer;">&times;</span>
-            <h2 class="modal-title">Register your Business</h2>
-            <p class="modal-subtitle">List your store on EasyPoint</p>
-            <div id="store-error" style="color: red; margin-bottom: 10px; display: none;"></div>
-            <div id="store-success" style="color: green; margin-bottom: 10px; display: none;"></div>
-            <form id="store-register-form">
-                <div class="form-group"><label>Username</label><input type="text" name="username" required class="modal-input"></div>
-                <div class="form-group"><label>Email</label><input type="email" name="email" required class="modal-input"></div>
-                <div class="form-group"><label>Password</label><input type="password" name="password" required class="modal-input"></div>
-                <div class="form-group"><label>Business Name</label><input type="text" name="business_name" required class="modal-input"></div>
-                <div class="form-group"><label>Address</label><input type="text" name="address" required class="modal-input"></div>
-                <div class="form-group"><label>Postal Code</label><input type="text" name="postal_code" class="modal-input"></div>
-                <button type="submit" class="modal-btn">Create Business Account</button>
-            </form>
-        </div>
-    </div>
+    <?php include "views/modals.php"; ?>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="public/js/script.js"></script>

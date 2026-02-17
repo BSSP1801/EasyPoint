@@ -56,12 +56,12 @@ class User
             $stmt->bindParam(":address", $address);
             $stmt->bindParam(":postal_code", $postal_code);
             $stmt->bindParam(":token", $token);
-        
+
 
             if ($stmt->execute()) {
-                return $token; 
+                return $token;
             }
-        return false;
+            return false;
 
         } catch (PDOException $e) {
             error_log("DB Error: " . $e->getMessage());
@@ -70,26 +70,26 @@ class User
     }
 
 
-//Token Validation
-public function confirmAccount($token)
-{
-    try {
-        // Buscamos si existe un usuario con ese token y que no esté confirmado
-        $query = "UPDATE " . $this->table_name . " 
+    //Token Validation
+    public function confirmAccount($token)
+    {
+        try {
+            // Buscamos si existe un usuario con ese token y que no esté confirmado
+            $query = "UPDATE " . $this->table_name . " 
                   SET is_confirmed = 1, token = NULL 
                   WHERE token = :token AND is_confirmed = 0";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":token", $token);
-        $stmt->execute();
-        
-        // Retorna true si se modificó alguna fila
-        return $stmt->rowCount() > 0;
-    } catch (PDOException $e) {
-        error_log("Error confirmando cuenta: " . $e->getMessage());
-        return false;
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":token", $token);
+            $stmt->execute();
+
+            // Retorna true si se modificó alguna fila
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            error_log("Error confirmando cuenta: " . $e->getMessage());
+            return false;
+        }
     }
-}
 
 
     // Login
@@ -324,7 +324,7 @@ public function confirmAccount($token)
         $conn = $db->getConnection();
 
         // Obtenemos la cita, los detalles del servicio y el nombre del negocio (store)
-       $stmt = $conn->prepare("
+        $stmt = $conn->prepare("
         SELECT a.id, a.appointment_date, a.appointment_time, a.status,
                s.name as service_name, s.duration, s.price,
                /* AÑADIR ESTA LÍNEA ABAJO */
@@ -489,5 +489,62 @@ public function confirmAccount($token)
         }
     }
 
+    public function saveResetToken($email, $token)
+    {
+        // El token expira en 1 hora
+        $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+        $query = "UPDATE " . $this->table_name . " 
+              SET reset_token = :token, reset_expires = :expires 
+              WHERE email = :email";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':token', $token);
+        $stmt->bindParam(':expires', $expires);
+        $stmt->bindParam(':email', $email);
+
+        // Devolvemos true si se actualizó al menos una fila (el email existe)
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+    // Verificar token y obtener usuario
+    public function getUserByResetToken($token)
+    {
+        $query = "SELECT id, username, email FROM " . $this->table_name . " 
+              WHERE reset_token = :token 
+              AND reset_expires > NOW() 
+              LIMIT 1";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':token', $token);
+        $stmt->execute();
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Actualizar contraseña tras el reseteo
+    public function updatePasswordByToken($userId, $newHash)
+    {
+        $query = "UPDATE " . $this->table_name . " 
+              SET password = :password, reset_token = NULL, reset_expires = NULL 
+              WHERE id = :id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':password', $newHash);
+        $stmt->bindParam(':id', $userId);
+
+        return $stmt->execute();
+    }
+
+
+
+
+
 }
+
+
+
+
+
 ?>

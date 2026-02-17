@@ -362,4 +362,80 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         });
     }
+
+
+
+
+
+
+
+    const forgotModal = document.getElementById('forgot-modal');
+    const goToForgot = document.getElementById('go-to-forgot');
+    const backToLogin = document.getElementById('back-to-login');
+    const closeForgot = document.querySelector('.close-forgot-modal');
+    const forgotForm = document.getElementById('forgot-form');
+
+    // Abrir modal Forgot Password desde Login
+    if (goToForgot) {
+        goToForgot.addEventListener('click', () => {
+            if (authModal) authModal.style.display = 'none'; // Cierra login
+            if (forgotModal) forgotModal.style.display = 'flex'; // Abre forgot
+        });
+    }
+
+    // Volver a Login desde Forgot
+    if (backToLogin) {
+        backToLogin.addEventListener('click', () => {
+            if (forgotModal) forgotModal.style.display = 'none';
+            openAuthModal(); // Función que ya tienes para abrir login
+        });
+    }
+
+    // Cerrar modal Forgot
+    if (closeForgot) {
+        closeForgot.addEventListener('click', () => {
+            forgotModal.style.display = 'none';
+        });
+    }
+
+    // Cerrar al hacer clic fuera
+    if (forgotModal) {
+        forgotModal.addEventListener('mousedown', (e) => {
+            if (e.target === forgotModal) forgotModal.style.display = 'none';
+        });
+    }
+
+    // Enviar formulario Forgot Password
+    if (forgotForm) {
+        forgotForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const msgDiv = document.getElementById('forgot-message');
+            const formData = new FormData(this);
+            const btn = this.querySelector('button');
+            
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            msgDiv.style.display = 'none';
+
+            fetch('index.php?action=forgot_password', {
+                method: 'POST', body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                msgDiv.textContent = data.message;
+                msgDiv.style.display = 'block';
+                msgDiv.style.color = data.success ? 'green' : 'red';
+                btn.disabled = false;
+                btn.textContent = 'Send Link';
+                
+                if(data.success) this.reset();
+            })
+            .catch(() => {
+                msgDiv.textContent = 'Error sending email.';
+                msgDiv.style.color = 'red';
+                btn.disabled = false;
+                btn.textContent = 'Send Link';
+            });
+        });
+    }
 });

@@ -84,8 +84,7 @@
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="../index.php?action=login" class="login-link" onclick="openLoginModal(event)">Log In/Sign
-                        Up</a>
+                     <a href="index.php?action=login" class="login-link">Log In/Sign Up</a>
                     <a href="#" class="business-button" onclick="openStoreModal(event)">List your business</a>
                 <?php endif; ?>
             </div>
