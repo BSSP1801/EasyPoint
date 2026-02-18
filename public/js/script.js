@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.success) {
                     
-                    // 2. Si PHP dice OK, usamos EmailJS
+          
                     // Construimos el enlace de confirmación
                     const protocol = window.location.protocol;
                     const host = window.location.host;
@@ -273,8 +273,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         link: confirmLink           
                     };
 
-                    const serviceID = 'service_gvkzrux';   // Ej: 'service_gmail'
-                    const templateID = 'template_113f5wb'; 
+                    const serviceID = 'service_j3uerom';   
+                    const templateID = 'template_uc2xvzb'; 
 
                     // Enviamos el correo
                     emailjs.send(serviceID, templateID, emailParams)
@@ -450,8 +450,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
 
                     // Reemplaza con tus IDs de EmailJS
-                    const serviceID = 'service_gvkzrux'; 
-                    const templateID = 'template_5t9jqn4'; // ID de la plantilla de "Forgot Password"
+                    const serviceID = 'service_j3uerom'; 
+                    const templateID = 'template_cbqquyq'; // ID de la plantilla de "Forgot Password"
 
                     emailjs.send(serviceID, templateID, templateParams)
                         .then(() => {

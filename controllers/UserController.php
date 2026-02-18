@@ -356,10 +356,10 @@ class UserController
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->SMTPAuth = true;
             $mail->Port = 587;
-            $mail->Username = 'brunosalcedo1801@gmail.com';
-            $mail->Password = 'bskBRvreynkfOv3';
+            $mail->Username = 'easypointproyect@gmail.com';
+            $mail->Password = 'INu1EgB9oa5h78dYt';
             $mail->Timeout = 10;
-            $mail->setFrom('brunosalcedo1801@gmail.com', 'EasyPoint Support');
+            $mail->setFrom('easypointproyect@gmail.com', 'EasyPoint Support');
             $mail->addAddress($to);
             $mail->isHTML(true);
             $mail->Subject = $subject;
@@ -561,8 +561,8 @@ public function forgotPassword() {
             echo json_encode([
                 'success' => true, 
                 'message' => 'Token generated',
-                'reset_link' => $resetLink, // Dato para EmailJS
-                'email' => $email           // Dato para EmailJS (Evita el error "recipients address empty")
+                'reset_link' => $resetLink, 
+                'email' => $email        
             ]);
         } else {
             // Si el email no existe, enviamos un falso éxito por seguridad, 

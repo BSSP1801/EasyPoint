@@ -424,7 +424,7 @@ include "views/action-switch.php";
 <script type="text/javascript">
    (function(){
       // Reemplaza con tu PUBLIC KEY real de EmailJS
-      emailjs.init("5nOpjFzrcJVfQF496");
+      emailjs.init("INu1EgB9oa5h78dYt");
    })();
 </script>
 </body>
