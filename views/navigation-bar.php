@@ -53,7 +53,6 @@
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="../index.php?action=dashboard" class="dropdown-item">
