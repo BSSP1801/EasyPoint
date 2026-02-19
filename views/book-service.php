@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../models/service.php';
 require_once __DIR__ . '/../models/user.php';
 
-// Verificar que tenemos los parámetros necesarios
+// Verify we have the required parameters
 if (!isset($_GET['service_id']) || !isset($_GET['store_id'])) {
     header("Location: index.php");
     exit();
@@ -17,21 +17,21 @@ $storeId = (int)$_GET['store_id'];
 $serviceModel = new Service();
 $userModel = new User();
 
-// Obtener datos del servicio
+// Get service data
 $service = $serviceModel->getServiceById($serviceId);
 if (!$service || $service['user_id'] != $storeId) {
     header("Location: index.php");
     exit();
 }
 
-// Obtener datos de la tienda y su horario
+// Get store data and its schedule
 $store = $userModel->getFullProfile($storeId);
 if (!$store) {
     header("Location: index.php");
     exit();
 }
 
-// Parsear horario de apertura
+// Parse opening hours
 $openingHours = [];
 if (!empty($store['opening_hours'])) {
     $openingHours = json_decode($store['opening_hours'], true);

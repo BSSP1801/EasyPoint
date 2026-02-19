@@ -5,21 +5,21 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Seguridad
+// Security
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
     exit();
 }
 
-// 3. Cargar datos necesarios para el HTML
+// 3. Load data needed for the HTML
 require_once dirname(__DIR__) . '/models/service.php';
 require_once dirname(__DIR__) . '/models/user.php';
 
-// Cargar servicios
+// Load services
 $serviceModel = new Service();
 $myServices = $serviceModel->getAllByUserId($_SESSION['user_id']);
 
-// Cargar datos del usuario y perfil
+// Load user and profile data
 $userModel = new User();
 $userData = $userModel->getFullProfile($_SESSION['user_id']);
 
@@ -40,39 +40,40 @@ $stats = [
 
 // Use UTC for date calculations to avoid timezone issues
 // The dates are stored as YYYY-MM-DD in UTC in the database
-$currentDate = gmdate('Y-m-d'); // Usar gmdate para obtener UTC
+$currentDate = gmdate('Y-m-d'); // Use gmdate to get UTC
 
 foreach ($myAppointments as $appt) {
-    // 1. Ignorar por completo las citas canceladas para que no inflen los contadores
+    // 1. Completely ignore cancelled appointments so they don't inflate counters
     if ($appt['status'] === 'cancelled') {
         continue;
     }
 
-    // 2. Solo contar si la fecha es hoy o estrictamente en el futuro
+    // 2. Only count if the date is today or strictly in the future
     if ($appt['appointment_date'] >= $currentDate) {
 
-        // Incrementamos el total de citas activas (futuras + hoy)
+    // Increment the total of active appointments (future + today)
         $stats['total']++;
 
-        // Contar por Estado
+    // Count by status
         if ($appt['status'] === 'pending') {
             $stats['pending']++;
         } elseif ($appt['status'] === 'confirmed') {
             $stats['confirmed']++;
         }
 
-        // Contar si es específicamente para Hoy
+    // Count if it is specifically for today
         if ($appt['appointment_date'] === $currentDate) {
             $stats['today']++;
         }
     }
 }
 
-// --- LÓGICA DE VISUALIZACIÓN POR DEFAULT ---
+$
+// --- DEFAULT VIEW LOGIC ---
 $role = $_SESSION['role'] ?? 'user';
 
-// Si es usuario, la vista por defecto es CALENDARIO (view-calendar)
-// Si es tienda/admin, la vista por defecto es DASHBOARD (view-dashboard)
+// If role is 'user', default view is CALENDAR (view-calendar)
+// If role is 'store' or 'admin', default view is DASHBOARD (view-dashboard)
 $calendarClass = ($role === 'user') ? 'main-view' : 'main-view hidden';
 $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main-view hidden';
 
@@ -583,10 +584,8 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
 
     </main>
     <script>
-        // 1. Pasamos TODAS las citas a JS (incluyendo pasadas) para el filtrado dinámico
         const allAppointments = <?php echo json_encode($myAppointments ?? []); ?>;
 
-        // 2. Extraemos fechas solo para los puntitos del calendario (excluyendo canceladas)
         const appointmentDates = allAppointments
             .filter(a => a.status !== 'cancelled')
             .map(a => a.appointment_date);

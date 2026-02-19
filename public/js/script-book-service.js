@@ -129,7 +129,7 @@ function selectDate(date, button) {
     document.getElementById('selectedDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
     document.getElementById('selectedTime').textContent = '-';
 
-    // Hacer petición a la API para ver qué horas bloqueó toda la tienda
+    // Make a request to the API to see which times the whole store booked
     const dateFormatted = dateToYMD(date);
     
     fetch('index.php?action=get-booked-slots', {
@@ -141,7 +141,7 @@ function selectDate(date, button) {
     .then(data => {
         let bookedTimes = [];
         if (data.success && data.booked_times) {
-            // Convertimos la data de BD "10:30:00" al formato de botones "10:30"
+        // Convert DB data "10:30:00" to button format "10:30"
             bookedTimes = data.booked_times.map(t => t.substring(0, 5));
         }
         generateTimeSlots(date, bookedTimes);
@@ -170,7 +170,7 @@ function generateTimeSlots(date, bookedTimes = []) {
 
     const [openHour, openMinute] = dayHours.open.split(':').map(Number);
     const [closeHour, closeMinute] = dayHours.close.split(':').map(Number);
-    const duration = SERVICE_DATA.duration; // Duración del servicio que el cliente quiere reservar
+    const duration = SERVICE_DATA.duration; // Duration of the service the client wants to book
 
     const openTotalMinutes = openHour * 60 + openMinute;
     const closeTotalMinutes = closeHour * 60 + closeMinute;
@@ -180,7 +180,7 @@ function generateTimeSlots(date, bookedTimes = []) {
         const minutes = totalMinutes % 60;
         const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
-        // Verificamos si algún fragmento de los minutos que ocuparemos se cruza con las horas ocupadas.
+    // Check if any fragment of the minutes we will use overlaps with booked times.
         let isOverlapping = false;
         for (let i = 0; i < duration; i += 30) {
             let checkMin = totalMinutes + i;
@@ -217,7 +217,7 @@ function createTimeSlot(time, date, isBooked) {
     const slotDate = new Date(date);
     slotDate.setHours(hours, minutes, 0, 0);
 
-    // Si ya pasó la hora O si choca con el listado de reservas, se desactiva
+    // If the slot time has already passed OR it collides with booked times, disable it
     if (slotDate < new Date() || isBooked) {
         btn.classList.add('disabled');
         btn.disabled = true;

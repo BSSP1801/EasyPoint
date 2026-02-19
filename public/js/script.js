@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(this);
             formData.append('role', 'user');
 
-            // 1. Llamada al Backend (PHP) para crear el usuario en la DB
+            // 1. Backend call (PHP) to create the user in the DB
             fetch('index.php?action=register', {
                 method: 'POST',
                 body: formData,
@@ -261,12 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.success) {
                     
           
-                    // Construimos el enlace de confirmación
+                    // Build the confirmation link
                     const protocol = window.location.protocol;
                     const host = window.location.host;
                     const confirmLink = `${protocol}//${host}/index.php?action=confirm&token=${data.token}`;
 
-                    // Parámetros para la plantilla de EmailJS
+                    // Parameters for the EmailJS template
                     const emailParams = {
                         to_email: data.email,       
                         username: data.username,    
@@ -276,10 +276,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const serviceID = 'service_j3uerom';   
                     const templateID = 'template_uc2xvzb'; 
 
-                    // Enviamos el correo
+                    // Send the email
                     emailjs.send(serviceID, templateID, emailParams)
                         .then(() => {
-                            // ÉXITO TOTAL
+                            // SUCCESS
                             localStorage.setItem('easyPointToast', JSON.stringify({
                                 title: 'Email Sent!', 
                                 message: 'Check your inbox to confirm your account.', 
@@ -287,15 +287,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             }));
                             window.location.href = 'index.php';
                         }, (err) => {
-                            // FALLÓ EL CORREO (Pero la cuenta se creó)
+                            // EMAIL FAILED (But the account was created)
                             console.error('EmailJS Error:', err);
-                            // Aún así redirigimos o avisamos
+                            // Still redirect or notify
                             alert('Account created, but email failed to send. Please contact support.');
                             window.location.href = 'index.php';
                         });
 
                 } else {
-                    // Error de PHP (Usuario duplicado, etc)
+                    // PHP error (duplicate user, etc)
                     if (registerError) { 
                         registerError.textContent = data.message; 
                         registerError.style.display = 'block'; 
@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (storeError) storeError.style.display = 'none';
             if (storeSuccess) storeSuccess.style.display = 'none';
             
-            // Limpiar estilos de error previos
+            // Clear previous error styles
             storeRegisterForm.querySelectorAll('.modal-input').forEach(input => {
                 input.style.boxShadow = '';
             });
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 fieldEl.style.boxShadow = 'inset 0 0 0 2px #f44336';
                                 fieldEl.focus();
                                 fieldEl.addEventListener('input', function() {
-                                    this.style.boxShadow = ''; // Quitar rojo al escribir
+                                    this.style.boxShadow = ''; // Remove red when typing
                                 }, { once: true });
                             }
                         }
@@ -385,11 +385,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeForgot = document.querySelector('.close-forgot-modal');
     const forgotForm = document.getElementById('forgot-form');
 
-    // Abrir modal Forgot Password desde Login
+    // Open Forgot Password modal from Login
     if (goToForgot) {
         goToForgot.addEventListener('click', () => {
-            if (authModal) authModal.style.display = 'none'; // Cierra login
-            if (forgotModal) forgotModal.style.display = 'flex'; // Abre forgot
+            if (authModal) authModal.style.display = 'none'; // Close login
+            if (forgotModal) forgotModal.style.display = 'flex'; // Open forgot
         });
     }
 
@@ -397,25 +397,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (backToLogin) {
         backToLogin.addEventListener('click', () => {
             if (forgotModal) forgotModal.style.display = 'none';
-            openAuthModal(); // Función que ya tienes para abrir login
+            openAuthModal(); // Function you already have to open login
         });
     }
 
-    // Cerrar modal Forgot
+    // Close Forgot modal
     if (closeForgot) {
         closeForgot.addEventListener('click', () => {
             forgotModal.style.display = 'none';
         });
     }
 
-    // Cerrar al hacer clic fuera
+    // Close when clicking outside
     if (forgotModal) {
         forgotModal.addEventListener('mousedown', (e) => {
             if (e.target === forgotModal) forgotModal.style.display = 'none';
         });
     }
 
-    // Enviar formulario Forgot Password
+    // Submit Forgot Password form
     if (forgotForm) {
         forgotForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -433,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    // Si es un "falso éxito" (email no existe), mostramos mensaje y salimos
+                    // If it's a "fake success" (email doesn't exist), show message and exit
                     if (data.fake_success) {
                         msgDiv.textContent = 'If your email exists, a reset link has been sent.';
                         msgDiv.style.display = 'block';
@@ -443,15 +443,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
 
-                    // --- AQUÍ SE USA EL EMAIL QUE AHORA SÍ LLEGA DEL PHP ---
+                    // --- HERE WE USE THE EMAIL THAT NOW DOES COME FROM PHP ---
                     const templateParams = {
                         to_email: data.email,       // Ahora data.email TIENE valor
                         reset_link: data.reset_link 
                     };
 
-                    // Reemplaza con tus IDs de EmailJS
+                    // Replace with your EmailJS IDs
                     const serviceID = 'service_j3uerom'; 
-                    const templateID = 'template_cbqquyq'; // ID de la plantilla de "Forgot Password"
+                    const templateID = 'template_cbqquyq'; // Template ID for "Forgot Password"
 
                     emailjs.send(serviceID, templateID, templateParams)
                         .then(() => {

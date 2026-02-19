@@ -4,11 +4,11 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 require_once __DIR__ . '/../models/user.php';
-require_once __DIR__ . '/../models/service.php'; // Asegurarse de incluir el modelo de servicio
+require_once __DIR__ . '/../models/service.php'; // Ensure service model is included
 
 class UserController
 {
-    // Registro de usuario
+    // User registration
     public function register()
     {
         $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
@@ -31,12 +31,12 @@ class UserController
                 }
 
                 $user = new User();
-                // Llamamos a create() UNA SOLA VEZ y obtenemos el token generado
+                // Call create() ONCE and get the generated token
                 $token = $user->create($data);
 
                 if ($token) {
                 
-                    // 3. Respuesta para AJAX o redirección normal
+                    // 3. Response for AJAX or normal redirect
                     if ($isAjax) {
                     header('Content-Type: application/json');
                     echo json_encode([
@@ -83,12 +83,12 @@ class UserController
 
         if ($token) {
             $userModel = new User();
-            // Intentamos confirmar
+            // Attempt to confirm
             if ($userModel->confirmAccount($token)) {
 
                 header("Location: index.php?confirmed=1");
             } else {
-                // Token inválido o expirado
+                // Invalid or expired token
                 header("Location: index.php?error=invalid_token");
             }
         } else {
@@ -143,7 +143,7 @@ class UserController
         }
     }
 
-    // Cargar Vista Dashboard
+    // Load Dashboard View
     public function dashboard()
     {
         if (!isset($_SESSION['user_id'])) {
@@ -158,7 +158,7 @@ class UserController
         require_once __DIR__ . '/../views/dashboard.php';
     }
 
-    // Actualizar Horario (AJAX)
+    // Update Schedule (AJAX)
     public function updateSchedule()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id'])) {
@@ -187,7 +187,7 @@ class UserController
         exit();
     }
 
-    // Actualizar Info de Negocio e Imágenes (AJAX)
+    // Update Business Info and Images (AJAX)
     public function updateBusinessInfo()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
@@ -199,7 +199,7 @@ class UserController
                 mkdir($uploadDir, 0777, true);
             }
 
-            // Helper para subidas únicas
+            // Helper for single uploads
             $handleUpload = function ($fileKey) use ($uploadDir) {
                 if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
                     $maxFileSize = 5 * 1024 * 1024; // 5MB
@@ -245,7 +245,7 @@ class UserController
                     throw new Exception("Database error updating profile.");
                 }
 
-                // Galería
+                // Gallery
                 if (isset($_FILES['gallery'])) {
                     $galleryPaths = [];
                     foreach ($_FILES['gallery']['name'] as $key => $val) {
@@ -276,7 +276,7 @@ class UserController
         }
     }
 
-    // Añadir Servicio (AJAX)
+    // Add Service (AJAX)
     public function addService()
     {
         header('Content-Type: application/json');
@@ -300,7 +300,7 @@ class UserController
         }
     }
 
-    // Borrar Servicio (AJAX)
+    // Delete Service (AJAX)
     public function deleteService()
     {
         header('Content-Type: application/json');
@@ -377,7 +377,7 @@ class UserController
     {
         header('Content-Type: application/json');
 
-        // 1. Solo verificamos si la sesión está iniciada (sin bloquear el rol todavía)
+    // 1. Only check if session is started (don't enforce role yet)
         if (!isset($_SESSION['user_id'])) {
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
             exit();
@@ -387,13 +387,13 @@ class UserController
             $id = $_POST['id'] ?? null;
             $status = $_POST['status'] ?? null;
 
-            // 2. Seguridad: Si es un cliente regular ('user'), SOLAMENTE puede cancelar citas
+            // 2. Security: If a regular customer ('user'), they can ONLY cancel appointments
             if ($_SESSION['role'] === 'user' && $status !== 'cancelled') {
                 echo json_encode(['success' => false, 'message' => 'Unauthorized: Users can only cancel appointments']);
                 exit();
             }
 
-            // 3. Procesar si el estado es válido
+            // 3. Process if the status is valid
             if ($id && $status && in_array($status, ['confirmed', 'cancelled'])) {
                 $userModel = new User();
                 $success = $userModel->updateAppointmentStatus($id, $status, $_SESSION['user_id']);
@@ -413,7 +413,7 @@ class UserController
     {
         header('Content-Type: application/json');
 
-        // ... verificaciones de sesión (igual que antes) ...
+    // ... session checks (same as before) ...
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'store') {
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
             exit();
@@ -422,7 +422,7 @@ class UserController
         $email = $_GET['email'] ?? '';
         $storeId = $_SESSION['user_id'];
 
-        // Permitir búsquedas de al menos 3 caracteres para no sobrecargar
+    // Allow searches of at least 3 characters to avoid overload
         if (strlen($email) < 3) {
             echo json_encode(['success' => false, 'message' => 'Type at least 3 characters']);
             exit();
@@ -432,7 +432,7 @@ class UserController
         $conn = $db->getConnection();
 
         try {
-            // CAMBIO PRINCIPAL: Usamos LIKE y concatenamos '%'
+            // MAIN CHANGE: Use LIKE and concatenate '%'
             $stmt = $conn->prepare("
             SELECT a.appointment_date, a.appointment_time, a.status, s.name as service_name, u.email, u.username
             FROM appointments a
@@ -462,17 +462,17 @@ class UserController
 
     public function search()
     {
-        // Capturamos todos los filtros posibles
+    // Capture all possible filters
         $query = $_GET['q'] ?? '';
         $location = $_GET['loc'] ?? '';
         $category = $_GET['category'] ?? '';
 
         $userModel = new User();
 
-        // Llamamos a la función unificada del modelo
+    // Call the model's unified function
         $stores = $userModel->searchStores($query, $location, $category);
 
-        // Cargar la vista
+    // Load the view
         require_once __DIR__ . '/../views/search-services.php';
     }
 
@@ -496,7 +496,7 @@ class UserController
         $new = $_POST['new_password'] ?? '';
         $confirm = $_POST['confirm_password'] ?? '';
 
-        // Validaciones básicas
+    // Basic validations
         if (empty($current) || empty($new) || empty($confirm)) {
             echo json_encode(['success' => false, 'message' => 'All fields are required']);
             exit();
@@ -513,7 +513,7 @@ class UserController
         }
 
         $userModel = new User();
-        // Obtenemos el usuario actual para verificar su contraseña hash
+    // Get current user to verify password hash
         $user = $userModel->getById($_SESSION['user_id']);
 
         if (!$user || !password_verify($current, $user['password'])) {
@@ -521,7 +521,7 @@ class UserController
             exit();
         }
 
-        // Hasheamos la nueva contraseña y guardamos
+    // Hash the new password and save
         $newHash = password_hash($new, PASSWORD_BCRYPT);
 
         if ($userModel->updatePassword($_SESSION['user_id'], $newHash)) {
@@ -546,18 +546,18 @@ public function forgotPassword() {
         }
 
         $userModel = new User();
-        // Generamos un token seguro
+    // Generate a secure token
         $token = bin2hex(random_bytes(32));
 
-        // Guardamos el token en la base de datos
+    // Save the token in the database
         if ($userModel->saveResetToken($email, $token)) {
             
-            // Construimos el enlace de recuperación
+            // Build the recovery link
             $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
             $resetLink = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/index.php?action=reset_password_view&token=" . $token;
 
-            // --- CAMBIO CLAVE ---
-            // Devolvemos el link y el email al JavaScript para que EmailJS los use.
+            // --- KEY CHANGE ---
+            // Return the link and email to JavaScript for EmailJS to use.
             echo json_encode([
                 'success' => true, 
                 'message' => 'Token generated',
@@ -565,30 +565,30 @@ public function forgotPassword() {
                 'email' => $email        
             ]);
         } else {
-            // Si el email no existe, enviamos un falso éxito por seguridad, 
-            // pero con una marca para que el JS sepa qué hacer (o no hacer nada).
+            // If the email doesn't exist, return a fake success for security,
+            // with a flag so the JS knows what to do (or do nothing).
             echo json_encode(['success' => true, 'fake_success' => true]);
         }
         exit();
     }
 }
 
-// 2. Mostrar vista de cambio de contraseña (GET)
+// 2. Show password change view (GET)
 public function resetPasswordView() {
     $token = $_GET['token'] ?? null;
     $userModel = new User();
     
-    // Validar token antes de cargar la vista
+    // Validate token before loading the view
     if (!$token || !$userModel->getUserByResetToken($token)) {
         header("Location: index.php?error=invalid_token");
         exit();
     }
     
-    // Cargar una vista específica para poner la nueva pass
+    // Load a specific view to set the new password
     require_once __DIR__ . '/../views/reset-password.php';
 }
 
-// 3. Procesar el cambio de contraseña (POST)
+// 3. Process password change (POST)
 public function resetPasswordAction() {
     header('Content-Type: application/json');
     
