@@ -1179,12 +1179,10 @@ header {
 
 .carousel-main {
     position: relative;
-    /* Lower the height from 500px to 400px or 450px so it doesn't look so narrow */
     height: 420px;
     width: 100%;
 }
 
-/* The track where the photos move */
 .carousel-track {
     display: flex;
     height: 100%;
@@ -1392,25 +1390,25 @@ header .login-link,
    BOOTSTRAP TOAST OVERRIDES (Dark Theme)
    ========================================= */
 
-/* Contenedor fijo en la esquina superior derecha */
+/* Fixed container in the top-right corner */
 .toast-container {
     z-index: 10000;
-    /* Asegurar que esté encima de todo */
+    /* Ensure it sits above everything */
 }
 
-/* Personalización del Toast de Bootstrap */
+/* Bootstrap toast customization */
 .toast-easypoint {
     background-color: var(--card-bg) !important;
     /* #3a2b28 */
     color: var(--text-main);
     border: 1px solid var(--accent);
-    /* Borde dorado */
+    /* Golden border */
     border-left: 5px solid var(--accent);
-    /* Acento lateral más grueso */
+    /* Thicker side accent */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
-/* El botón de cerrar (X) necesita ser blanco/claro */
+/* Close (X) button needs to be white/light */
 .toast-easypoint .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
     opacity: 0.8;
@@ -1435,27 +1433,27 @@ header .login-link,
 /* Estilo para la barra de desplazamiento en las reseñas */
 .review-text-scroll::-webkit-scrollbar {
     width: 6px;
-    /* Más fina y elegante */
+    /* Thinner and sleeker */
 }
 
 .review-text-scroll::-webkit-scrollbar-track {
     background: rgba(43, 32, 30, 0.5);
-    /* Fondo oscuro semitransparente */
+    /* Semi-transparent dark background */
     border-radius: 4px;
 }
 
 .review-text-scroll::-webkit-scrollbar-thumb {
     background-color: #a58668;
-    /* Tu color dorado corporativo */
+    /* Your corporate gold color */
     border-radius: 4px;
 }
 
 .review-text-scroll::-webkit-scrollbar-thumb:hover {
     background-color: #cbbba6;
-    /* Un tono más claro al pasar el ratón */
+    /* A lighter tone on hover */
 }
 
-/* Para Firefox (estándar más nuevo) */
+/* For Firefox (newer standard) */
 .review-text-scroll {
     scrollbar-width: thin;
     scrollbar-color: #a58668 rgba(43, 32, 30, 0.5);
@@ -1463,24 +1461,24 @@ header .login-link,
 
 #toast {
     visibility: hidden;
-    /* Oculto por defecto */
+    /* Hidden by default */
     min-width: 300px;
     background-color: #2b201e;
-    /* Color oscuro de tu marca */
+    /* Your brand's dark color */
     color: #ebe6d2;
-    /* Color de texto de tu marca */
+    /* Your brand's text color */
     text-align: center;
     border-radius: 12px;
-    /* Bordes redondeados */
+    /* Rounded corners */
     padding: 16px 20px;
     position: fixed;
     z-index: 9999;
     left: 50%;
     bottom: 30px;
     transform: translateX(-50%);
-    /* Centrado horizontalmente */
+    /* Center horizontally */
     border: 1px solid #a58668;
-    /* Borde dorado */
+    /* Golden border */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     font-size: 15px;
     font-weight: 500;
@@ -1492,16 +1490,16 @@ header .login-link,
     gap: 10px;
 }
 
-/* Clase para mostrar el toast */
+/* Class to show the toast */
 #toast.show {
     visibility: visible;
     opacity: 1;
     bottom: 50px;
-    /* Sube un poco al aparecer */
+    /* Move up slightly when appearing */
 }
 /* --- MOBILE FIXES --- */
 @media (max-width: 900px) {
-    /* Romper la grilla de 60/35 a 1 columna */
+    /* Break the 60/35 grid into a single column */
     .main-container {
         display: flex;
         flex-direction: column;
@@ -1572,7 +1570,7 @@ header .login-link,
     .carousel-main { height: 220px; }
     .business-title h1 { font-size: 20px; }
     
-    /* Reestructurar cada servicio para que quepa bien el botón de reserva */
+    /* Reflow each service so the booking button fits well */
     .service-row { 
         flex-direction: column; 
         align-items: flex-start; 

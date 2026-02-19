@@ -420,6 +420,13 @@ include "views/action-switch.php";
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="public/js/script.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      // Reemplaza con tu PUBLIC KEY real de EmailJS
+      emailjs.init("INu1EgB9oa5h78dYt");
+   })();
+</script>
 </body>
 
 </html>

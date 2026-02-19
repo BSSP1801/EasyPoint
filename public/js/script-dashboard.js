@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
        ========================= */
     const calendar = document.getElementById('calendar');
 
-    // Función auxiliar para obtener hoy en formato YYYY-MM-DD sin timezone issues
+    // Helper function to get today in YYYY-MM-DD format without timezone issues
     function getTodayStr() {
         const today = new Date();
         const year = today.getFullYear();
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${year}-${month}-${day}`;
     }
 
-    // Función auxiliar para fecha - SIN conversión de timezone
+    // Helper function for date - NO timezone conversion
     function formatAppointmentDate(dateStr, timeStr) {
         // dateStr format: YYYY-MM-DD
         // timeStr format: HH:MM:SS
@@ -62,15 +62,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return date.toLocaleDateString('en-US', options) + ' - ' + timeFormatted;
     }
 
-    // Definimos la función PRIMERO
+    // Define the function FIRST
     window.renderAppointmentsList = function (appointments, titleText) {
         const container = document.getElementById('appointments-container');
         const title = document.getElementById('appointments-title');
 
         if (title) title.innerText = titleText;
 
-        // Si no existe el contenedor (por ejemplo, estamos en una vista que no lo carga), salimos
-        if (!container) return;
+    // If the container doesn't exist 
+    if (!container) return;
 
         container.innerHTML = '';
 
@@ -92,24 +92,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const isUserView = appt.store_name ? true : false;
             const counterpartName = isUserView ? appt.store_name : appt.client_name;
             const iconClass = isUserView ? 'fas fa-store' : 'far fa-user';
-            let profileUrl = '#'; // Por defecto no lleva a ningún lado
+            let profileUrl = '#'; // By default it doesn't link anywhere
 
             if (isUserView && appt.store_id) {
                 // Si soy usuario, el enlace lleva al perfil de la tienda
                 profileUrl = `index.php?action=view_business&id=${appt.store_id}`;
             }
-            // Lógica de botones
+            // Button logic
             if (appt.appointment_date >= today) {
                 if (appt.status === 'pending') {
                     if (isUserView) {
-                        // El usuario solo puede cancelar
+                        // The user can only cancel
                         buttonsHtml = `
                             <div class="appt-actions">
                                 <button onclick="updateStatus(${appt.id}, 'cancelled')" class="btn-action btn-cancel" title="Cancel Booking"><i class="fas fa-times"></i></button>
                             </div>
                         `;
                     } else {
-                        // La tienda puede confirmar o cancelar
+                        // The store can confirm or cancel
                         buttonsHtml = `
                             <div class="appt-actions">
                                 <button onclick="updateStatus(${appt.id}, 'confirmed')" class="btn-action btn-confirm" title="Confirm"><i class="fas fa-check"></i></button>
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                     }
                 } else if (appt.status === 'confirmed') {
-                    // Ambos pueden cancelar una confirmada (según lógica simple)
+                    // Both can cancel a confirmed one (simple logic)
                     buttonsHtml = `
                         <div class="appt-actions">
                             <button onclick="updateStatus(${appt.id}, 'cancelled')" class="btn-action btn-cancel" title="Cancel"><i class="fas fa-times"></i></button>
@@ -349,18 +349,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* ========================================================
-       5. INICIALIZACIÓN AUTOMÁTICA (MOVIDO AL FINAL)
-       ======================================================== */
-    // Ahora sí funcionará porque renderAppointmentsList ya existe
+     /* ========================================================
+         5. AUTOMATIC INITIALIZATION (MOVED TO THE END)
+         ======================================================== */
+     // Now it will work because renderAppointmentsList already exists
     if (typeof allAppointments !== 'undefined') {
         const upcoming = allAppointments.filter(a => a.appointment_date >= getTodayStr());
         renderAppointmentsList(upcoming, "Upcoming Appointments");
     }
 
-    /* ========================================================
-          6. BUSCAR HISTORIAL DE CLIENTES
-          ======================================================== */
+     /* ========================================================
+             6. SEARCH CLIENT HISTORY
+             ======================================================== */
     window.searchClientHistory = function () {
         const email = document.getElementById('client-search-email').value;
         const resultsContainer = document.getElementById('client-history-results');
@@ -421,8 +421,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /* =========================
-           7. BUSQUEDA ACTIVA DE CLIENTES
-           ========================= */
+        7. ACTIVE CLIENT SEARCH
+        ========================= */
     const searchInput = document.getElementById('client-search-email');
     let debounceTimer;
 
@@ -430,19 +430,19 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.addEventListener('input', function () {
             const term = this.value.trim();
 
-            // Limpiar el temporizador anterior
+            // Clear previous timer
             clearTimeout(debounceTimer);
 
-            // Si hay menos de 3 caracteres, limpiamos resultados y no buscamos
+            // If fewer than 3 characters, clear results and don't search
             if (term.length < 3) {
                 document.getElementById('client-history-results').innerHTML =
                     '<p style="font-style: italic; text-align: center; padding: 20px;">Type at least 3 characters to search...</p>';
                 return;
             }
 
-            // Esperar 500ms después de que el usuario deje de escribir para buscar
+            // Wait 500ms after the user stops typing before searching
             debounceTimer = setTimeout(() => {
-                window.searchClientHistory(); // Llamamos a tu función existente
+                window.searchClientHistory(); // Call your existing function
             }, 500);
         });
     }
@@ -456,7 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function switchMainView(evt, viewId) {
     if (evt) evt.preventDefault();
 
-    // 1. GUARDAR: Memorizamos en qué vista estamos
+    // 1. SAVE: Remember which view we are on
     sessionStorage.setItem('currentView', viewId);
 
     // Ocultar todas las vistas
@@ -469,7 +469,7 @@ function switchMainView(evt, viewId) {
     const target = document.getElementById(viewId);
     if (target) target.style.display = 'block';
 
-    // 2. RECUPERAR ACTIVE: Si hay evento (click) lo usamos, si no (recarga) buscamos el link
+    // 2. RESTORE ACTIVE: If there's an event (click) use it, otherwise (on reload) find the link
     if (evt && evt.currentTarget) {
         evt.currentTarget.classList.add('active');
     } else {
@@ -601,20 +601,20 @@ function escapeHtml(unsafe) {
 const savedView = sessionStorage.getItem('currentView');
 
 if (savedView) {
-    // VERIFICACIÓN EXTRA: ¿Existe realmente ese elemento en el HTML actual?
+    // EXTRA CHECK: Does that element really exist in the current HTML?
     const targetEl = document.getElementById(savedView);
 
-    // Solo cambiamos si el elemento existe (evita que un usuario intente abrir vista de tienda)
+    // Only change if the element exists (prevents a user from trying to open a store view)
     if (targetEl) {
         switchMainView(null, savedView);
     } else {
-        // Si no existe (ej. cambio de rol), limpiamos la memoria
+        // If it doesn't exist (e.g. role change), clear storage
         sessionStorage.removeItem('currentView');
     }
 }
 
 /* =========================
-   8. RESTAURAR VISTA TRAS RECARGA
+   8. RESTORE THE PAGE WHEN RELOADING
    ========================= */
 
 
@@ -667,23 +667,23 @@ window.submitPasswordChange = function (e) {
 
 
 /* =========================
-   9. TOGGLE VISIBILIDAD CONTRASEÑA (EL OJITO)
+   9. TOGGLE PASSWORD VISIBILITY (EL OJITO)
    ========================= */
 window.togglePasswordVisibility = function (iconBtn) {
-    // Encontramos el input que es el hermano anterior del icono dentro del mismo div .password-group
+    // Find the input that is the previous sibling of the icon within the same .password-group
     const inputField = iconBtn.previousElementSibling;
 
     if (!inputField || (inputField.tagName !== 'INPUT')) return;
 
-    // Verificamos el estado actual y cambiamos
+    // Check current state and toggle
     if (inputField.type === "password") {
         inputField.type = "text";
-        // Cambiar icono a ojo tachado (usando Font Awesome 5/6)
+        // Change icon to eye-slash (using Font Awesome 5/6)
         iconBtn.classList.remove("fa-eye");
         iconBtn.classList.add("fa-eye-slash");
     } else {
         inputField.type = "password";
-        // Cambiar icono a ojo normal
+        // Change icon to eye
         iconBtn.classList.remove("fa-eye-slash");
         iconBtn.classList.add("fa-eye");
     }

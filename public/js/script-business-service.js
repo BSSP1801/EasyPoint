@@ -1,12 +1,12 @@
 function showToast(message) {
     const toast = document.getElementById("toast");
-    // Añadimos un icono de advertencia junto al mensaje
+    // Add a warning icon next to the message
     toast.innerHTML = `<i class="fa-solid fa-circle-exclamation" style="color: #a58668; font-size: 1.2em;"></i> <span>${message}</span>`;
     
-    // Añadimos la clase para mostrarlo
+    // Add the class to show it
     toast.classList.add("show");
 
-    // Después de 3 segundos, lo quitamos
+    // Remove it after 3 seconds
     setTimeout(function() {
         toast.classList.remove("show");
     }, 3000);
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(reviewForm);
             
             if (formData.get('rating') === "0") {
-                showToast("Please, select a puntuation."); // Usamos el Toast
+                showToast("Please, select a rating."); // Use the toast
                 return;
             }
 
@@ -62,19 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 1. Crear el Contenedor de Toasts de Bootstrap si no existe
+    // 1. Create the Bootstrap toast container if it doesn't exist
     let toastContainer = document.querySelector('.toast-container');
     if (!toastContainer) {
         toastContainer = document.createElement('div');
-        // Clases de Bootstrap para posicionar arriba a la derecha
+    // Bootstrap classes to position it at the top-right
         toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
         document.body.appendChild(toastContainer);
     }
 
-    // 2. Función para mostrar Toast usando Bootstrap
+    // 2. Function to show a toast using Bootstrap
     function showToast(title, message, iconClass = 'fa-check-circle') {
 
-        // Estructura HTML requerida por Bootstrap
+    // HTML structure required by Bootstrap
         const toastHTML = `
             <div class="toast toast-easypoint align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
@@ -90,15 +90,15 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Convertir string a elemento DOM
+    // Convert string to DOM element
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = toastHTML.trim();
         const toastElement = tempDiv.firstChild;
 
-        // Agregar al contenedor
+    // Append to the container
         toastContainer.appendChild(toastElement);
 
-        // Inicializar con la API de Bootstrap
+    // Initialize with the Bootstrap API
         const bsToast = new bootstrap.Toast(toastElement, {
             animation: true,
             autohide: true,
@@ -107,26 +107,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         bsToast.show();
 
-        // Eliminar del DOM cuando termine de ocultarse para no acumular basura
+        // Remove from DOM when hidden to avoid accumulating garbage
         toastElement.addEventListener('hidden.bs.toast', () => {
             toastElement.remove();
         });
     }
 
-    // 3. Revisar LocalStorage al cargar (para Login/Register exitoso)
+    // 3. Check LocalStorage on load (for successful Login/Register)
     const pendingToast = localStorage.getItem('easyPointToast');
     if (pendingToast) {
         const { title, message, icon } = JSON.parse(pendingToast);
         showToast(title, message, icon);
-        localStorage.removeItem('easyPointToast'); // Limpiar para que no salga al recargar
+        localStorage.removeItem('easyPointToast'); // Clear so it doesn't reappear on reload
     }
 
     // 4. Detectar Logout (Interceptar clics en enlaces de logout)
     document.body.addEventListener('click', function (e) {
-        // Buscar si el clic fue dentro de un enlace con 'action=logout'
+        // Detect if the click happened inside a link with 'action=logout'
         const link = e.target.closest('a');
         if (link && link.href.includes('action=logout')) {
-            // Guardamos el mensaje para mostrarlo en la página de destino (Home)
+            // Save the message to show on the destination page (Home)
             localStorage.setItem('easyPointToast', JSON.stringify({
                 title: 'See you soon',
                 message: 'You have logged out successfully',
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let mouseStartedOnOverlay = false;
 
-        // A. Detectar dónde se PRESIONA el botón
+        // A. Detect where the mouse is PRESSED down
         modal.addEventListener('mousedown', (e) => {
             if (e.target === modal) {
                 mouseStartedOnOverlay = true;
@@ -220,11 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // B. Detectar dónde se SUELTA el botón (USAR MOUSEUP, NO CLICK)
+        // B. Detect where the mouse is RELEASED (USE MOUSEUP, NOT CLICK)
         modal.addEventListener('mouseup', (e) => {
-            // Solo cerramos si:
-            // 1. Se soltó en el fondo (e.target === modal)
-            // 2. Y ADEMÁS se había presionado inicialmente en el fondo
+            // Only close if:
+            // 1. It was released on the overlay (e.target === modal)
+            // 2. And it was initially pressed on the overlay
             if (e.target === modal && mouseStartedOnOverlay) {
                 modal.style.display = 'none';
             }

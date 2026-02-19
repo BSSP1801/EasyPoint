@@ -13,7 +13,7 @@ class User
         $this->conn = $database->getConnection();
     }
 
-    // Crear nuevo usuario
+    // Create new user
     public function create($data)
     {
         try {
@@ -74,7 +74,7 @@ class User
     public function confirmAccount($token)
     {
         try {
-            // Buscamos si existe un usuario con ese token y que no esté confirmado
+                // Look for a user with that token who is not confirmed
             $query = "UPDATE " . $this->table_name . " 
                   SET is_confirmed = 1, token = NULL 
                   WHERE token = :token AND is_confirmed = 0";
@@ -121,7 +121,7 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Guardar Horarios
+    // Save Opening Hours
     public function saveOpeningHours($userId, $jsonSchedule)
     {
         try {
@@ -141,7 +141,7 @@ class User
         }
     }
 
-    // Obtener Perfil Completo (Usuario + Negocio)
+    // Get Full Profile (User + Business)
     public function getFullProfile($userId)
     {
         $query = "SELECT u.*, 
@@ -159,7 +159,7 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Helper para obtener solo el ID del perfil de negocio (útil para subidas rápidas)
+    // Helper to get only the business profile ID (useful for quick uploads)
     public function getBusinessProfileByUserId($userId)
     {
         $query = "SELECT id FROM business_profiles WHERE user_id = :uid LIMIT 1";
@@ -169,13 +169,13 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Actualizar Información de Negocio
+    // Update Business Information
     public function updateBusinessProfile($userId, $data)
     {
         try {
             $this->conn->beginTransaction();
 
-            // ... (El update de la tabla users se mantiene igual) ...
+            // ... (The users table update remains the same) ...
             $queryUser = "UPDATE users SET 
                       business_name = :bname, phone = :phone, address = :address, city = :city, postal_code = :zip 
                       WHERE id = :id";
@@ -189,7 +189,7 @@ class User
             $stmtU->bindParam(':id', $userId);
             $stmtU->execute();
 
-            // Actualizar business_profiles incluyendo business_type
+            // Update business_profiles including business_type
             $queryProfile = "INSERT INTO business_profiles 
                  (user_id, description, business_type, logo_url, banner_url, is_public, website, instagram_link, facebook_link, twitter_link, tiktok_link) 
                  VALUES (:uid, :desc, :type, :logo, :banner, :is_public, :web, :insta, :fb, :tw, :tk) 
@@ -208,7 +208,7 @@ class User
             $stmtP = $this->conn->prepare($queryProfile);
             $stmtP->bindParam(':uid', $userId);
             $stmtP->bindParam(':desc', $data['description']);
-            $stmtP->bindParam(':type', $data['business_type']); // Nuevo campo
+            $stmtP->bindParam(':type', $data['business_type']); // New field
             $stmtP->bindParam(':is_public', $data['is_public']);
             $stmtP->bindParam(':web', $data['website']);
             $stmtP->bindParam(':insta', $data['instagram']);
@@ -233,7 +233,7 @@ class User
         }
     }
 
-    // Tiendas recomendadas (Carrusel Home)
+    // Recommended stores (Home carousel)
     public function getRecommendedStores($category = null)
     {
         try {
@@ -250,7 +250,7 @@ class User
                 $query .= " AND bp.business_type = :category";
             }
 
-            // CAMBIO: Ordenar por valoración media descendente y luego por cantidad de reseñas
+            // CHANGE: Order by average rating descending, then by review count
             $query .= " GROUP BY u.id ORDER BY avg_rating DESC, review_count DESC LIMIT 8";
 
             $stmt = $this->conn->prepare($query);
@@ -267,7 +267,7 @@ class User
         }
     }
 
-    // Galería
+    // Gallery
     public function addGalleryImages($profileId, $imagePaths)
     {
         $query = "INSERT INTO business_gallery (business_profile_id, image_url) VALUES (:pid, :url)";
@@ -323,11 +323,11 @@ class User
         $db = new Database();
         $conn = $db->getConnection();
 
-        // Obtenemos la cita, los detalles del servicio y el nombre del negocio (store)
+    // Get the appointment, service details and the store's name
         $stmt = $conn->prepare("
         SELECT a.id, a.appointment_date, a.appointment_time, a.status,
                s.name as service_name, s.duration, s.price,
-               /* AÑADIR ESTA LÍNEA ABAJO */
+               /* ADD THIS LINE BELOW */
                u_store.id as store_id, 
                u_store.business_name as store_name, u_store.address as store_address,
                u_store.phone as store_phone

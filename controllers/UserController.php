@@ -4,11 +4,11 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 require_once __DIR__ . '/../models/user.php';
-require_once __DIR__ . '/../models/service.php'; // Asegurarse de incluir el modelo de servicio
+require_once __DIR__ . '/../models/service.php'; // Ensure service model is included
 
 class UserController
 {
-    // Registro de usuario
+    // User registration
     public function register()
     {
         $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
@@ -31,90 +31,23 @@ class UserController
                 }
 
                 $user = new User();
-                // Llamamos a create() UNA SOLA VEZ y obtenemos el token generado
+                // Call create() ONCE and get the generated token
                 $token = $user->create($data);
 
                 if ($token) {
-                    // 1. Definimos el enlace de confirmación
-                    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
-                    $confirmLink = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/index.php?action=confirm&token=" . $token;
-
-                    // 2. Intentamos enviar el correo
-                    try {
-                        $subject = "Welcome to EasyPoint - Verify your email";
-
-                        // Variables de estilo extraídas de tu CSS
-                        $bgColor = "#2b201e";      // Tu fondo oscuro
-                        $cardColor = "#362b29";    // Un tono un poco más claro para la tarjeta
-                        $textColor = "#ebe6d2";    // Tu color de texto
-                        $accentColor = "#a58668";  // Tu dorado/marrón
-                        $btnText = "#2b201e";      // Texto oscuro para el botón (para contraste)
-
-                        // Construcción del mensaje HTML
-                        $msg = "
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset='UTF-8'>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    </head>
-    <body style='margin: 0; padding: 0; background-color: {$bgColor}; font-family: Helvetica, Arial, sans-serif; color: {$textColor};'>
-        <div style='background-color: {$bgColor}; padding: 40px 20px;'>
-            
-            <div style='max-width: 600px; margin: 0 auto; background-color: {$cardColor}; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4);'>
                 
-                <div style='background-color: {$bgColor}; padding: 25px; text-align: center; border-bottom: 2px solid {$accentColor};'>
-                    <h1 style='margin: 0; color: {$textColor}; font-size: 28px; letter-spacing: 1px;'>EasyPoint</h1>
-                </div>
-
-                <div style='padding: 40px 30px;'>
-                    <h2 style='color: {$accentColor}; margin-top: 0; font-size: 24px;'>Welcome, " . htmlspecialchars($data['username']) . "!</h2>
-                    
-                    <p style='font-size: 16px; line-height: 1.6; color: {$textColor}; margin-bottom: 25px;'>
-                        Thank you for joining EasyPoint. You are just one step away from booking appointments with the best professionals near you.
-                    </p>
-                    
-                    <p style='font-size: 16px; line-height: 1.6; color: {$textColor}; margin-bottom: 35px;'>
-                        Please confirm your email address to activate your account and start using our platform.
-                    </p>
-
-                    <div style='text-align: center; margin-bottom: 35px;'>
-                        <a href='{$confirmLink}' style='background-color: {$accentColor}; color: {$btnText}; padding: 14px 35px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 15px rgba(165, 134, 104, 0.3);'>
-                            Verify My Account
-                        </a>
-                    </div>
-
-                    <p style='font-size: 13px; color: #999; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;'>
-                        If the button above doesn't work, copy and paste this link into your browser:<br>
-                        <a href='{$confirmLink}' style='color: {$accentColor}; text-decoration: none; word-break: break-all;'>{$confirmLink}</a>
-                    </p>
-                </div>
-
-                <div style='background-color: #231a18; padding: 20px; text-align: center; font-size: 12px; color: #777;'>
-                    <p style='margin: 5px 0;'>&copy; 2026 EasyPoint. All rights reserved.</p>
-                    <p style='margin: 0;'>Valencia, Spain</p>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-    ";
-
-                        $this->sendEmail($data['email'], $subject, $msg);
-                    } catch (Exception $e) {
-                        error_log("Email error: " . $e->getMessage());
-                        // Podrías decidir si lanzar una excepción aquí o dejar que el usuario se registre
-                    }
-
-                    // 3. Respuesta para AJAX o redirección normal
+                    // 3. Response for AJAX or normal redirect
                     if ($isAjax) {
-                        header('Content-Type: application/json');
-                        echo json_encode([
-                            'success' => true,
-                            'message' => "Registration successful! Please check your email to confirm your account."
-                        ]);
-                        exit();
-                    }
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        'success' => true, 
+                        'message' => "Account created! Sending verification email...",
+                        'token' => $token,           // <--- Enviamos el token al JS
+                        'username' => $data['username'], // <--- Enviamos el nombre al JS
+                        'email' => $data['email']    // <--- Enviamos el email al JS
+                    ]);
+                    exit();
+                }
 
                     header("Location: index.php?msg=check_email");
                     exit();
@@ -150,12 +83,12 @@ class UserController
 
         if ($token) {
             $userModel = new User();
-            // Intentamos confirmar
+            // Attempt to confirm
             if ($userModel->confirmAccount($token)) {
 
                 header("Location: index.php?confirmed=1");
             } else {
-                // Token inválido o expirado
+                // Invalid or expired token
                 header("Location: index.php?error=invalid_token");
             }
         } else {
@@ -210,7 +143,7 @@ class UserController
         }
     }
 
-    // Cargar Vista Dashboard
+    // Load Dashboard View
     public function dashboard()
     {
         if (!isset($_SESSION['user_id'])) {
@@ -225,7 +158,7 @@ class UserController
         require_once __DIR__ . '/../views/dashboard.php';
     }
 
-    // Actualizar Horario (AJAX)
+    // Update Schedule (AJAX)
     public function updateSchedule()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id'])) {
@@ -254,7 +187,7 @@ class UserController
         exit();
     }
 
-    // Actualizar Info de Negocio e Imágenes (AJAX)
+    // Update Business Info and Images (AJAX)
     public function updateBusinessInfo()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
@@ -266,7 +199,7 @@ class UserController
                 mkdir($uploadDir, 0777, true);
             }
 
-            // Helper para subidas únicas
+            // Helper for single uploads
             $handleUpload = function ($fileKey) use ($uploadDir) {
                 if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
                     $maxFileSize = 5 * 1024 * 1024; // 5MB
@@ -312,7 +245,7 @@ class UserController
                     throw new Exception("Database error updating profile.");
                 }
 
-                // Galería
+                // Gallery
                 if (isset($_FILES['gallery'])) {
                     $galleryPaths = [];
                     foreach ($_FILES['gallery']['name'] as $key => $val) {
@@ -343,7 +276,7 @@ class UserController
         }
     }
 
-    // Añadir Servicio (AJAX)
+    // Add Service (AJAX)
     public function addService()
     {
         header('Content-Type: application/json');
@@ -367,7 +300,7 @@ class UserController
         }
     }
 
-    // Borrar Servicio (AJAX)
+    // Delete Service (AJAX)
     public function deleteService()
     {
         header('Content-Type: application/json');
@@ -423,10 +356,10 @@ class UserController
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->SMTPAuth = true;
             $mail->Port = 587;
-            $mail->Username = 'brunosalcedo1801@gmail.com';
-            $mail->Password = 'bskBRvreynkfOv3';
+            $mail->Username = 'easypointproyect@gmail.com';
+            $mail->Password = 'INu1EgB9oa5h78dYt';
             $mail->Timeout = 10;
-            $mail->setFrom('brunosalcedo1801@gmail.com', 'EasyPoint Support');
+            $mail->setFrom('easypointproyect@gmail.com', 'EasyPoint Support');
             $mail->addAddress($to);
             $mail->isHTML(true);
             $mail->Subject = $subject;
@@ -444,7 +377,7 @@ class UserController
     {
         header('Content-Type: application/json');
 
-        // 1. Solo verificamos si la sesión está iniciada (sin bloquear el rol todavía)
+    // 1. Only check if session is started (don't enforce role yet)
         if (!isset($_SESSION['user_id'])) {
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
             exit();
@@ -454,13 +387,13 @@ class UserController
             $id = $_POST['id'] ?? null;
             $status = $_POST['status'] ?? null;
 
-            // 2. Seguridad: Si es un cliente regular ('user'), SOLAMENTE puede cancelar citas
+            // 2. Security: If a regular customer ('user'), they can ONLY cancel appointments
             if ($_SESSION['role'] === 'user' && $status !== 'cancelled') {
                 echo json_encode(['success' => false, 'message' => 'Unauthorized: Users can only cancel appointments']);
                 exit();
             }
 
-            // 3. Procesar si el estado es válido
+            // 3. Process if the status is valid
             if ($id && $status && in_array($status, ['confirmed', 'cancelled'])) {
                 $userModel = new User();
                 $success = $userModel->updateAppointmentStatus($id, $status, $_SESSION['user_id']);
@@ -480,7 +413,7 @@ class UserController
     {
         header('Content-Type: application/json');
 
-        // ... verificaciones de sesión (igual que antes) ...
+    // ... session checks (same as before) ...
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'store') {
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
             exit();
@@ -489,7 +422,7 @@ class UserController
         $email = $_GET['email'] ?? '';
         $storeId = $_SESSION['user_id'];
 
-        // Permitir búsquedas de al menos 3 caracteres para no sobrecargar
+    // Allow searches of at least 3 characters to avoid overload
         if (strlen($email) < 3) {
             echo json_encode(['success' => false, 'message' => 'Type at least 3 characters']);
             exit();
@@ -499,7 +432,7 @@ class UserController
         $conn = $db->getConnection();
 
         try {
-            // CAMBIO PRINCIPAL: Usamos LIKE y concatenamos '%'
+            // MAIN CHANGE: Use LIKE and concatenate '%'
             $stmt = $conn->prepare("
             SELECT a.appointment_date, a.appointment_time, a.status, s.name as service_name, u.email, u.username
             FROM appointments a
@@ -529,17 +462,17 @@ class UserController
 
     public function search()
     {
-        // Capturamos todos los filtros posibles
+    // Capture all possible filters
         $query = $_GET['q'] ?? '';
         $location = $_GET['loc'] ?? '';
         $category = $_GET['category'] ?? '';
 
         $userModel = new User();
 
-        // Llamamos a la función unificada del modelo
+    // Call the model's unified function
         $stores = $userModel->searchStores($query, $location, $category);
 
-        // Cargar la vista
+    // Load the view
         require_once __DIR__ . '/../views/search-services.php';
     }
 
@@ -563,7 +496,7 @@ class UserController
         $new = $_POST['new_password'] ?? '';
         $confirm = $_POST['confirm_password'] ?? '';
 
-        // Validaciones básicas
+    // Basic validations
         if (empty($current) || empty($new) || empty($confirm)) {
             echo json_encode(['success' => false, 'message' => 'All fields are required']);
             exit();
@@ -580,7 +513,7 @@ class UserController
         }
 
         $userModel = new User();
-        // Obtenemos el usuario actual para verificar su contraseña hash
+    // Get current user to verify password hash
         $user = $userModel->getById($_SESSION['user_id']);
 
         if (!$user || !password_verify($current, $user['password'])) {
@@ -588,7 +521,7 @@ class UserController
             exit();
         }
 
-        // Hasheamos la nueva contraseña y guardamos
+    // Hash the new password and save
         $newHash = password_hash($new, PASSWORD_BCRYPT);
 
         if ($userModel->updatePassword($_SESSION['user_id'], $newHash)) {
@@ -598,6 +531,8 @@ class UserController
         }
         exit();
     }
+
+
 
 public function forgotPassword() {
     header('Content-Type: application/json');
@@ -611,58 +546,49 @@ public function forgotPassword() {
         }
 
         $userModel = new User();
+    // Generate a secure token
         $token = bin2hex(random_bytes(32));
 
-        // Solo enviamos el correo si el email existe en la DB
+    // Save the token in the database
         if ($userModel->saveResetToken($email, $token)) {
             
-            // Construir enlace
+            // Build the recovery link
             $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
             $resetLink = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/index.php?action=reset_password_view&token=" . $token;
 
-            // Enviar Email (Usando tu diseño Dark & Gold)
-            $subject = "Reset your EasyPoint Password";
-            
-            // Estilos (mismos que usaste en registro)
-            $bgColor = "#2b201e"; $cardColor = "#362b29"; $textColor = "#ebe6d2"; $accentColor = "#a58668";
-            
-            $msg = "
-            <div style='background-color: {$bgColor}; padding: 40px 20px; font-family: Arial, sans-serif; color: {$textColor};'>
-                <div style='max-width: 600px; margin: 0 auto; background-color: {$cardColor}; border-radius: 12px; padding: 30px;'>
-                    <h2 style='color: {$accentColor}; text-align: center;'>Reset Password Request</h2>
-                    <p>We received a request to reset your password. Click the button below to choose a new one:</p>
-                    <div style='text-align: center; margin: 30px 0;'>
-                        <a href='{$resetLink}' style='background-color: {$accentColor}; color: #2b201e; padding: 12px 30px; text-decoration: none; border-radius: 50px; font-weight: bold;'>Reset Password</a>
-                    </div>
-                    <p style='font-size: 12px; color: #999;'>This link expires in 1 hour. If you didn't ask for this, ignore this email.</p>
-                </div>
-            </div>";
-
-            $this->sendEmail($email, $subject, $msg);
+            // --- KEY CHANGE ---
+            // Return the link and email to JavaScript for EmailJS to use.
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Token generated',
+                'reset_link' => $resetLink, 
+                'email' => $email        
+            ]);
+        } else {
+            // If the email doesn't exist, return a fake success for security,
+            // with a flag so the JS knows what to do (or do nothing).
+            echo json_encode(['success' => true, 'fake_success' => true]);
         }
-
-        // Por seguridad, SIEMPRE decimos que se envió (para no revelar qué emails existen)
-        echo json_encode(['success' => true, 'message' => 'If that email exists, we have sent a reset link.']);
         exit();
     }
 }
 
-// 2. Mostrar vista de cambio de contraseña (GET)
+// 2. Show password change view (GET)
 public function resetPasswordView() {
     $token = $_GET['token'] ?? null;
     $userModel = new User();
     
-    // Validar token antes de cargar la vista
+    // Validate token before loading the view
     if (!$token || !$userModel->getUserByResetToken($token)) {
         header("Location: index.php?error=invalid_token");
         exit();
     }
     
-    // Cargar una vista específica para poner la nueva pass
+    // Load a specific view to set the new password
     require_once __DIR__ . '/../views/reset-password.php';
 }
 
-// 3. Procesar el cambio de contraseña (POST)
+// 3. Process password change (POST)
 public function resetPasswordAction() {
     header('Content-Type: application/json');
     
