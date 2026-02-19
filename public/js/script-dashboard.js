@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (title) title.innerText = titleText;
 
-    // If the container doesn't exist (e.g., we're on a view that doesn't load it), exit
+    // If the container doesn't exist 
     if (!container) return;
 
         container.innerHTML = '';
@@ -614,7 +614,7 @@ if (savedView) {
 }
 
 /* =========================
-   8. RESTAURAR VISTA TRAS RECARGA
+   8. RESTORE THE PAGE WHEN RELOADING
    ========================= */
 
 
@@ -667,7 +667,7 @@ window.submitPasswordChange = function (e) {
 
 
 /* =========================
-   9. TOGGLE VISIBILIDAD CONTRASEÑA (EL OJITO)
+   9. TOGGLE PASSWORD VISIBILITY (EL OJITO)
    ========================= */
 window.togglePasswordVisibility = function (iconBtn) {
     // Find the input that is the previous sibling of the icon within the same .password-group
