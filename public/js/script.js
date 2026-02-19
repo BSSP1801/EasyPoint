@@ -221,7 +221,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             message: 'Login successful',
                             icon: 'fa-check-circle'
                         }));
-                        window.location.href = 'index.php';
+                        // Check if there's a return URL stored (for booking page)
+                        const returnUrl = sessionStorage.getItem('returnUrl');
+                        sessionStorage.removeItem('returnUrl');
+                        window.location.href = returnUrl || 'index.php';
                     } else {
                         if (loginError) {
                             loginError.textContent = data.message;
