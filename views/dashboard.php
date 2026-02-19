@@ -68,7 +68,7 @@ foreach ($myAppointments as $appt) {
     }
 }
 
-$
+
 // --- DEFAULT VIEW LOGIC ---
 $role = $_SESSION['role'] ?? 'user';
 
@@ -139,12 +139,7 @@ $dashboardClass = ($role === 'store' || $role === 'admin') ? 'main-view' : 'main
         <div id="view-calendar" class="main-view hidden">
             <header class="header">
                 <div class="welcome">Welcome back. Here is a summary of your schedule.</div>
-                <div class="header-tools">
-                    <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle sidebar"><i
-                            class="fas fa-bars"></i></button>
-                    <input type="text" placeholder="Search..." class="search-input">
-                    <i class="fas fa-bell notification-icon"></i>
-                </div>
+               
             </header>
 
             <section class="summary-cards">
