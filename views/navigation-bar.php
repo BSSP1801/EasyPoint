@@ -9,9 +9,6 @@
                 display: flex; 
                 align-items: center; 
                 box-shadow: 0 4px 20px rgba(0,0,0,0.2); 
-                flex: 1;
-                max-width: 600px;
-                margin: 0 20px;
                 backdrop-filter: blur(5px);">
 
                 <input type="hidden" name="action" value="search">
@@ -72,7 +69,6 @@
                     <div class="dropdown">
                         <span class="user-link dropdown-toggle">
                             Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                            <i class="fa-solid fa-caret-down" style="margin-left: 5px;"></i>
                         </span>
                         <div class="dropdown-menu">
                             <a href="../index.php?action=dashboard" class="dropdown-item">
