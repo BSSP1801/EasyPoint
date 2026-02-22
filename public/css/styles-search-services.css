@@ -1,4 +1,3 @@
-/* --- ESTILOS PROPORCIONADOS (Header, Footer, Modales) --- */
 * {
     margin: 0;
     padding: 0;
@@ -13,7 +12,6 @@
     --card-bg: #3a2b28;
     --soft-text: #cfc7b5;
     --footer-bg: #231917;
-    /* Añadido para consistencia */
 }
 
 body {
@@ -157,7 +155,6 @@ header {
     font-weight: 500;
 }
 
-/* Dropdown for user menu (copied from main styles) */
 .dropdown {
     position: relative;
     display: inline-block;
@@ -471,7 +468,6 @@ header {
         align-items: center;
         width: 100%;
         flex-wrap: wrap;
-        /* permitir que la search-bar baje a su propia fila */
     }
 
     .logo {
@@ -483,12 +479,12 @@ header {
         flex-basis: 100%;
         order: 10;
         max-width: 420px;
-        /* no demasiado grande */
+    
         width: 100%;
         padding: 0 12px;
         height: 38px;
         margin: 10px auto 0;
-        /* centrar horizontalmente */
+    
     }
 
     .search-input {
@@ -582,7 +578,7 @@ header {
         flex-basis: 100%;
         order: 10;
         max-width: 360px;
-        /* ligeramente más pequeña en móvil */
+       
         width: 100%;
         padding: 0 10px;
         height: 32px;
@@ -749,14 +745,12 @@ header {
     letter-spacing: 1px;
 }
 
-/* Dashboard link should inherit color and not use purple */
 .dashboard-link,
 .dashboard-link:hover {
     color: inherit;
     text-decoration: none;
 }
 
-/* Ensure logo links inherit color (remove purple link color) */
 .logo a,
 .sticky-logo a {
     color: inherit;
@@ -770,14 +764,14 @@ header {
 
 
 
-/* Footer Styles */
+
 .main-footer {
     background-color: #231917;
     color: var(--text-main);
     padding: 60px 50px 20px;
     font-size: 14px;
     margin-top: auto;
-    /* Empujar footer al fondo */
+  
 }
 
 .footer-container {
@@ -1002,7 +996,6 @@ header {
     display: none;
 }
 
-/* --- ESTILOS ADICIONALES PARA LA CUADRÍCULA DE RESULTADOS (Mantener lo que tenías) --- */
 
 .main-container {
     flex: 1;
@@ -1038,7 +1031,6 @@ header {
 
 }
 
-/* Tarjeta de Tienda (Estilo unificado) */
 .shop-card {
     background-color: var(--card-bg);
     border-radius: 12px;
@@ -1125,7 +1117,6 @@ header {
     text-transform: uppercase;
 }
 
-/* No Results */
 .no-results {
     text-align: center;
     padding: 80px 20px;
@@ -1162,9 +1153,7 @@ a:hover {
     color: #a58668;
 }
 
-/* --- MOBILE FIXES --- */
 @media (max-width: 900px) {
-    /* Romper la grilla de 60/35 a 1 columna */
     .main-container {
         display: flex;
         flex-direction: column;
@@ -1236,7 +1225,6 @@ a:hover {
         padding: 0 15px;
     }
 
-    /* Forzar 1 sola columna para una lectura fácil */
     .results-grid {
         grid-template-columns: 1fr;
     }

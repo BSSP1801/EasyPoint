@@ -1,5 +1,5 @@
 html {
-    scroll-behavior: smooth; /* Smooth scroll when clicking links */
+    scroll-behavior: smooth; 
 }
 
 .company-container {
@@ -9,14 +9,13 @@ html {
 }
 
 .content-section {
-    background-color: var(--card-bg); /* #3a2b28 */
+    background-color: var(--card-bg);
     border-radius: 12px;
     padding: 40px;
     margin-bottom: 60px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     border: 1px solid rgba(165, 134, 104, 0.1);
     
-    /* Esto asegura que el sticky header no tape el título al hacer scroll */
     scroll-margin-top: 100px; 
 }
 
@@ -27,7 +26,7 @@ html {
 }
 
 .section-header h2 {
-    color: var(--accent); /* #a58668 */
+    color: var(--accent);
     font-size: 32px;
     font-weight: 600;
 }
@@ -66,7 +65,6 @@ html {
     text-align: center;
 }
 
-/* Reuse form styles with adjustments */
 .contact-form label {
     display: block;
     color: var(--soft-text);
@@ -110,25 +108,18 @@ html {
     color: white;
 }
 
-/* =========================================
-   BOOTSTRAP TOAST OVERRIDES (Dark Theme)
-   ========================================= */
 
-/* Fixed container in the top-right corner */
 .toast-container {
-    z-index: 10000; /* Ensure it sits above everything */
+    z-index: 10000; 
 }
 
-/* Bootstrap toast customization */
 .toast-easypoint {
-    background-color: var(--card-bg) !important; /* #3a2b28 */
-    color: var(--text-main);
-    border: 1px solid var(--accent); /* Golden border */
-    border-left: 5px solid var(--accent); /* Thicker side accent */
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--accent); 
+    border-left: 5px solid var(--accent); 
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
-/* Close (X) button needs to be white/light */
 .toast-easypoint .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
     opacity: 0.8;
@@ -137,7 +128,6 @@ html {
     opacity: 1;
 }
 
-/* Internal typography */
 .toast-title-text {
     color: var(--accent);
     font-weight: bold;
@@ -147,7 +137,6 @@ html {
     font-size: 13px;
     color: #ebe6d2;
 }
-/* --- MOBILE FIXES --- */
 @media (max-width: 768px) {
     .company-container { padding: 20px 15px; }
     .content-section { padding: 25px 20px; margin-bottom: 30px; }

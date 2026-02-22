@@ -1,8 +1,8 @@
 :root{
     --bg-main: #2b201e;
-    --bg-panel: #342623;      /* panel oscuro */
-    --bg-card: #3b2b28;       /* cards */
-    --bg-soft: #a58668;       /* acento */
+    --bg-panel: #342623;     
+    --bg-card: #3b2b28;       
+    --bg-soft: #a58668;      
     --text-main: #ebe6d2;
     --text-soft: rgba(235,230,210,0.75);
     --border-soft: rgba(165,134,104,0.22);
@@ -18,7 +18,6 @@ body {
     color: var(--text-main);
 }
 
-/* Enlaces globales coherentes con el tema del dashboard */
 a {
     color: #ebe6d2;
     text-decoration: none;
@@ -51,7 +50,6 @@ a:hover, a:focus {
     letter-spacing: 0.5px;
 }
 
-/* Dashboard link should inherit color and not use purple */
 .dashboard-link,
 .dashboard-link:hover {
     color: inherit;
@@ -59,7 +57,6 @@ a:hover, a:focus {
 }
 
 
-/* Logo links: inherit main color (prevent purple link color) */
 .logo a {
     color: inherit;
     text-decoration: none;
@@ -71,7 +68,6 @@ a:hover, a:focus {
     color: var(--bg-soft);
 }
 
-/* Sidebar collapsed state */
 .sidebar {
     transition: width 0.25s ease;
 }
@@ -81,7 +77,6 @@ a:hover, a:focus {
     transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 
-/* Toggle button in header */
 .sidebar-toggle {
     background: transparent;
     border: none;
@@ -375,7 +370,6 @@ a:hover, a:focus {
 }
 
 .calendar-day:hover {
-    /* background-color: rgba(165,134,104,0.30); */
     background-color: var(--text-main);
     color: #2b201e;
 }
@@ -588,7 +582,6 @@ textarea.form-input {
     filter: brightness(1.06);
 }
 
-/* Base styles for debug-info: centered and with full-width flex layout */
 .debug-info {
     margin-bottom: 20px;
     padding: 10px 20px;
@@ -617,13 +610,11 @@ textarea.form-input {
     }
 }
 
-/* Sidebar collapsed state (applies to all viewports) */
 .sidebar.collapsed { width: 72px; }
 .sidebar.collapsed .logo-text { display: none; }
 .sidebar.collapsed .menu-text { display: none; }
 .sidebar.collapsed .menu-item { justify-content: center; }
 
-/* Collapsed sidebar styling: apply mobile-like styles when sidebar is collapsed */
 .sidebar.collapsed .logo { justify-content: center; }
 .sidebar.collapsed .logo i { font-size: 1.6rem; }
 .sidebar.collapsed .menu-item i { font-size: 1.25rem; width: 32px; margin-right: 0; text-align: center; }
@@ -632,18 +623,15 @@ textarea.form-input {
 .sidebar.collapsed .backhome { padding: 6px 8px; display: flex; justify-content: center; align-items: center; }
 .sidebar.collapsed .backhome a { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; }
 
-/* When sidebar has explicit class 'open' ensure full width */
 .sidebar.open { width: 250px; }
 .sidebar.open .logo-text { display: inline; }
 .sidebar.open .menu-text { display: inline; }
 
-/* Breakpoints: Móvil / Tablet / Escritorio */
 @media (max-width: 600px) {
     .sidebar { width: 72px; padding: 12px; }
     .logo { font-size: 1rem; margin-bottom: 18px; justify-content: center; }
     .logo i { font-size: 1.6rem; }
     .menu-item { padding: 10px; gap: 8px; font-size: 13px; }
-    /* Hacer los iconos más visibles y centrados en móvil */
     .menu-item i { font-size: 1.25rem; width: 32px; margin-right: 0; text-align: center; }
     .menu-item { justify-content: center; }
     .content { padding: 16px; overflow-x: hidden; }
@@ -651,7 +639,6 @@ textarea.form-input {
     .main-section { flex-direction: column; gap: 18px; }
     .right-sidebar { width: 100%; }
     .page-title { font-size: 1.2rem; }
-    /* Asegurar que la palabra completa se vea: reducimos la fuente para que entre en la barra */
     .debug-info { padding: 8px 6px !important; }
     .debug-info .debug-name { font-size: 0.9rem !important; }
     .backhome { padding: 6px 8px; display:flex; justify-content:center; align-items:center; }
@@ -660,11 +647,9 @@ textarea.form-input {
 }
 
 @media (min-width: 601px) and (max-width: 900px) {
-    /* Mostrar nombre completo */
     .debug-info { padding: 8px 6px !important; }
     .debug-info .debug-name { font-size: 0.8rem !important; white-space: nowrap; }
 
-    /* Aumentar y centrar iconos en la sidebar para tablet */
     .logo { justify-content: center; }
     .logo i { font-size: 1.6rem; }
     .menu-item i { font-size: 1.35rem; width: 32px; margin-right: 0; text-align: center; }
@@ -672,7 +657,6 @@ textarea.form-input {
 }
 
 @media (min-width: 601px) and (max-width: 900px) {
-    /* En tablet y menor, colapsar el sidebar por defecto */
     .sidebar { width: 72px; }
     .sidebar .logo-text { display: none; }
     .menu-item { justify-content: center; }
@@ -823,9 +807,8 @@ input:checked + .slider:before {
     display: block;
 }
 
-/* Estilos para días con citas */
 .calendar-day {
-    position: relative; /* Necesario para posicionar el punto */
+    position: relative; 
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -835,21 +818,19 @@ input:checked + .slider:before {
 .appointment-dot {
     height: 5px;
     width: 5px;
-    background-color: #2b201e; /* Usa tu color de acento */
+    background-color: #2b201e; 
     border-radius: 50%;
     margin-top: 2px;
     display: block;
 }
 
-/* Opcional: Cambiar el fondo ligeramente si tiene cita */
 .calendar-day.has-appointment {
     font-weight: bold;
     color: var(--text-main);
 }
 
-/* Asegurar que el hover siga funcionando bien */
 .calendar-day:hover .appointment-dot {
-    background-color: #2b201e; /* Color oscuro al hacer hover para contraste */
+    background-color: #2b201e;
 
 }
 
@@ -857,17 +838,15 @@ input:checked + .slider:before {
     background-color: var(--bg-soft);
     color: #fff;
     font-weight: bold;
-    box-shadow: 0 0 0 2px var(--bg-main); /* Anillo de contraste */
+    box-shadow: 0 0 0 2px var(--bg-main); 
 }
 
-/* Ajuste para que el punto se vea bien en el seleccionado */
 .calendar-day.selected .appointment-dot {
     background-color: #fff;
 }
 
 
 .appointment {
-    /* Aseguramos que appointment use flex para separar info de botones */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -893,7 +872,7 @@ input:checked + .slider:before {
 }
 
 .btn-confirm {
-    background-color: rgba(76, 175, 80, 0.15); /* Verde suave */
+    background-color: rgba(76, 175, 80, 0.15); 
     color: #2e7d32;
     border: 1px solid rgba(76, 175, 80, 0.3);
 }
@@ -904,7 +883,7 @@ input:checked + .slider:before {
 }
 
 .btn-cancel {
-    background-color: rgba(244, 67, 54, 0.15); /* Rojo suave */
+    background-color: rgba(244, 67, 54, 0.15); 
     color: #c62828;
     border: 1px solid rgba(244, 67, 54, 0.3);
 }
@@ -914,7 +893,7 @@ input:checked + .slider:before {
     color: white;
 }
 
-/* Estilo para status Cancelled que faltaba */
+
 .status.cancelled {
     background-color: rgba(158, 158, 158, 0.2);
     color: #616161;
@@ -1008,7 +987,6 @@ input:checked + .slider:before {
         position: relative;
     }
 
-    /* El icono del ojo */
     .toggle-password-icon {
         position: absolute;
         right: 10px;
@@ -1019,7 +997,6 @@ input:checked + .slider:before {
         z-index: 2;
     }
 
-    /* Asegurar que el texto no se escriba debajo del icono */
     .password-group input[type="password"],
     .password-group input[type="text"] {
         padding-right: 35px;
@@ -1028,7 +1005,6 @@ input:checked + .slider:before {
     .toggle-password-icon:hover {
         color: #333;
     }
-    /* --- MOBILE FIXES --- */
 @media (max-width: 600px) {
     .content { padding: 15px; }
     .settings-card { border-radius: 8px; }
@@ -1037,15 +1013,12 @@ input:checked + .slider:before {
     .settings-tabs { padding-bottom: 5px; margin-bottom: 15px; }
     .tab-btn { padding: 8px 15px; font-size: 0.85rem; }
     
-    /* Ajuste de calendario de Dashboard */
     .calendar-grid { gap: 2px; }
     .calendar-day { padding: 8px 5px; font-size: 0.85rem; }
     
-    /* Formularios en vertical */
     .form-row { flex-direction: column; gap: 15px; }
     
-    /* Citas */
     .appointment { flex-direction: column; align-items: flex-start; gap: 15px; }
     .appt-actions { width: 100%; justify-content: flex-end; }
-    .btn-action { flex: 1; height: 40px; } /* Botones más grandes y fáciles de tocar */
+    .btn-action { flex: 1; height: 40px; }
 }

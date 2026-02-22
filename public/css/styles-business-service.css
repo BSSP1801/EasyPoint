@@ -152,7 +152,6 @@ header {
     font-weight: 500;
 }
 
-/* Dropdown for user menu (copied from main styles) */
 .dropdown {
     position: relative;
     display: inline-block;
@@ -466,7 +465,6 @@ header {
         align-items: center;
         width: 100%;
         flex-wrap: wrap;
-    /* allow the search-bar to drop to its own row */
     }
 
     .logo {
@@ -478,12 +476,10 @@ header {
         flex-basis: 100%;
         order: 10;
         max-width: 420px;
-    /* not too large */
         width: 100%;
         padding: 0 12px;
         height: 38px;
         margin: 10px auto 0;
-    /* center horizontally */
     }
 
     .search-input {
@@ -565,7 +561,6 @@ header {
         flex-direction: row;
         width: 100%;
         flex-wrap: wrap;
-    /* allow the search-bar to occupy its own row */
     }
 
     .logo {
@@ -577,7 +572,6 @@ header {
         flex-basis: 100%;
         order: 10;
         max-width: 360px;
-    /* slightly smaller on mobile */
         width: 100%;
         padding: 0 10px;
         height: 32px;
@@ -744,14 +738,12 @@ header {
     letter-spacing: 1px;
 }
 
-/* Dashboard link should inherit color and not use purple */
 .dashboard-link,
 .dashboard-link:hover {
     color: inherit;
     text-decoration: none;
 }
 
-/* Ensure logo links inherit color (remove purple link color) */
 .logo a,
 .sticky-logo a {
     color: inherit;
@@ -1022,15 +1014,12 @@ header {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.65);
-    /* match main site */
     justify-content: center;
     align-items: center;
 }
 
 .modal-box {
     background-color: #2b201e;
-    /* dark modal like index */
-    /* Unified sizing */
     padding: 28px;
     border-radius: 12px;
     width: min(92%, 520px);
@@ -1060,7 +1049,6 @@ header {
     font-size: 28px;
     font-weight: bold;
     color: #a58668;
-    /* accent color */
     cursor: pointer;
 }
 
@@ -1073,7 +1061,6 @@ header {
     font-weight: 600;
     margin-bottom: 5px;
     color: #a58668;
-    /* accent */
     text-align: center;
 }
 
@@ -1109,7 +1096,6 @@ header {
     font-size: 14px;
 
     background-color: #ebe6d2;
-    /* light input */
     color: #2b201e;
 
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
@@ -1126,7 +1112,6 @@ header {
 .modal-btn {
     width: 100%;
     background-color: #a58668;
-    /* accent */
     color: #2b201e;
     padding: 11px 12px;
     border: none;
@@ -1166,15 +1151,12 @@ header {
     display: none;
 }
 
-/* Main carousel container */
 .gallery-carousel-wrapper {
     width: 100%;
     margin: 0 0 30px 0;
-    /* Remove side margins to use full width */
     border-radius: 12px;
     overflow: hidden;
     background: #000;
-    /* Black background so it doesn't show white if the image loads slowly */
 }
 
 .carousel-main {
@@ -1190,14 +1172,11 @@ header {
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -ms-overflow-style: none;
-    /* Hide scrollbar in IE */
     scrollbar-width: none;
-    /* Hide scrollbar in Firefox */
 }
 
 .carousel-track::-webkit-scrollbar {
     display: none;
-    /* Hide scrollbar in Chrome/Safari */
 }
 
 .carousel-slide {
@@ -1209,12 +1188,10 @@ header {
 .carousel-slide img {
     width: 100%;
     height: 100%;
-    /* Keep cover, but now with less height more of the sides will be seen */
     object-fit: cover;
     display: block;
 }
 
-/* Navigation buttons */
 .carousel-control {
     position: absolute;
     top: 50%;
@@ -1328,10 +1305,6 @@ a {
     margin-right: 8px;
 }
 
-/* Final rules: visibility and spacing adjustments
-    - make login/link more visible in headers
-    - ensure separation between day and time in .schedule-row
-    - reserve space for price/duration/button in .service-meta */
 
 header .login-link,
 .sticky-header .login-link,
@@ -1349,7 +1322,6 @@ header .login-link,
 
 .schedule-row span:first-child {
     flex: 0 0 90px;
-    /* reserve space for the day */
     text-transform: capitalize;
 }
 
@@ -1361,14 +1333,12 @@ header .login-link,
 
 .service-meta {
     min-width: 150px;
-    /* aprovechar la zona derecha para separar del nombre */
     display: flex;
     gap: 10px;
     align-items: center;
     justify-content: flex-end;
 }
 
-/* Ajustes más finos en pantallas muy pequeñas */
 @media (max-width: 420px) {
     .schedule-row span:first-child {
         flex: 0 0 70px;
@@ -1419,30 +1389,24 @@ header .login-link,
     color: #ebe6d2;
 }
 
-/* Estilo para la barra de desplazamiento en las reseñas */
 .review-text-scroll::-webkit-scrollbar {
     width: 6px;
-    /* Thinner and sleeker */
 }
 
 .review-text-scroll::-webkit-scrollbar-track {
     background: rgba(43, 32, 30, 0.5);
-    /* Semi-transparent dark background */
     border-radius: 4px;
 }
 
 .review-text-scroll::-webkit-scrollbar-thumb {
     background-color: #a58668;
-    /* Your corporate gold color */
     border-radius: 4px;
 }
 
 .review-text-scroll::-webkit-scrollbar-thumb:hover {
     background-color: #cbbba6;
-    /* A lighter tone on hover */
 }
 
-/* For Firefox (newer standard) */
 .review-text-scroll {
     scrollbar-width: thin;
     scrollbar-color: #a58668 rgba(43, 32, 30, 0.5);
@@ -1450,15 +1414,11 @@ header .login-link,
 
 #toast {
     visibility: hidden;
-    /* Hidden by default */
     min-width: 300px;
     background-color: #2b201e;
-    /* Your brand's dark color */
     color: #ebe6d2;
-    /* Your brand's text color */
     text-align: center;
     border-radius: 12px;
-    /* Rounded corners */
     padding: 16px 20px;
     position: fixed;
     z-index: 9999;
