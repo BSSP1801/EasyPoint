@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: db
--- Tiempo de generación: 18-02-2026 a las 11:34:40
+-- Tiempo de generación: 22-02-2026 a las 15:46:13
 -- Versión del servidor: 8.0.45
 -- Versión de PHP: 8.3.26
 
@@ -100,7 +100,7 @@ CREATE TABLE `business_profiles` (
 --
 
 INSERT INTO `business_profiles` (`id`, `user_id`, `description`, `business_type`, `logo_url`, `banner_url`, `opening_hours`, `website`, `instagram_link`, `facebook_link`, `twitter_link`, `tiktok_link`, `created_at`, `updated_at`, `is_public`) VALUES
-(1, 61, 'Somo una enpreza que colta pelo', 'Barbershop', 'assets/uploads/img_6979cff56df83.jpg', 'assets/uploads/img_6978a245c9128.jpg', '{\"friday\": {\"open\": null, \"close\": null, \"active\": false}, \"monday\": {\"open\": null, \"close\": null, \"active\": false}, \"sunday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"tuesday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"saturday\": {\"open\": null, \"close\": null, \"active\": false}, \"thursday\": {\"open\": \"12:00\", \"close\": \"16:00\", \"active\": true}, \"wednesday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}}', 'https://empresaejemplo.com', 'https://www.instagram.com/', 'https://www.facebook.com/', '', '@EmpresaEjemplo', '2026-01-27 10:56:58', '2026-02-18 11:15:42', 1),
+(1, 61, 'Somos tu Barberia de confianza.', 'Barbershop', 'assets/uploads/img_6979cff56df83.jpg', 'assets/uploads/img_6978a245c9128.jpg', '{\"friday\": {\"open\": null, \"close\": null, \"active\": false}, \"monday\": {\"open\": null, \"close\": null, \"active\": false}, \"sunday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"tuesday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"saturday\": {\"open\": null, \"close\": null, \"active\": false}, \"thursday\": {\"open\": \"12:00\", \"close\": \"16:00\", \"active\": true}, \"wednesday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}}', 'https://empresaejemplo.com', 'https://www.instagram.com/', 'https://www.facebook.com/', '', '@EmpresaEjemplo', '2026-01-27 10:56:58', '2026-02-22 15:45:49', 1),
 (28, 101, 'Expertos en colorimetría y cortes modernos en el corazón de Madrid.', 'Hair Salon', NULL, NULL, '{\"friday\": {\"open\": \"09:00\", \"close\": \"21:00\", \"active\": true}, \"monday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"sunday\": {\"active\": false}, \"tuesday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"saturday\": {\"open\": \"10:00\", \"close\": \"14:00\", \"active\": true}, \"thursday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}, \"wednesday\": {\"open\": \"09:00\", \"close\": \"20:00\", \"active\": true}}', NULL, NULL, NULL, NULL, NULL, '2026-02-04 10:55:01', '2026-02-04 10:55:01', 1),
 (29, 102, 'Salón de peluquería vanguardista. Tu imagen es nuestra prioridad.', 'Hair Salon', NULL, NULL, '{\"friday\": {\"open\": \"10:00\", \"close\": \"20:00\", \"active\": true}, \"monday\": {\"open\": \"10:00\", \"close\": \"19:00\", \"active\": true}, \"sunday\": {\"active\": false}, \"tuesday\": {\"open\": \"10:00\", \"close\": \"19:00\", \"active\": true}, \"saturday\": {\"open\": \"10:00\", \"close\": \"14:00\", \"active\": true}, \"thursday\": {\"open\": \"10:00\", \"close\": \"19:00\", \"active\": true}, \"wednesday\": {\"open\": \"10:00\", \"close\": \"19:00\", \"active\": true}}', NULL, NULL, NULL, NULL, NULL, '2026-02-04 10:55:01', '2026-02-04 10:55:01', 1),
 (30, 103, 'Barbería clásica con toques modernos. Afeitado a navaja y degradados.', 'Barbershop', NULL, NULL, '{\"friday\": {\"open\": \"09:30\", \"close\": \"21:00\", \"active\": true}, \"monday\": {\"active\": false}, \"sunday\": {\"active\": false}, \"tuesday\": {\"open\": \"09:30\", \"close\": \"20:30\", \"active\": true}, \"saturday\": {\"open\": \"09:30\", \"close\": \"14:00\", \"active\": true}, \"thursday\": {\"open\": \"09:30\", \"close\": \"20:30\", \"active\": true}, \"wednesday\": {\"open\": \"09:30\", \"close\": \"20:30\", \"active\": true}}', NULL, NULL, NULL, NULL, NULL, '2026-02-04 10:55:01', '2026-02-04 10:55:01', 1),
@@ -131,7 +131,7 @@ CREATE TABLE `reviews` (
   `rating` int NOT NULL,
   `comment` text,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `reviews`
@@ -160,7 +160,6 @@ CREATE TABLE `services` (
 --
 
 INSERT INTO `services` (`id`, `user_id`, `name`, `price`, `duration`, `created_at`) VALUES
-(2, 61, 'Cortesito', 100.00, 2, '2026-02-02 07:44:12'),
 (3, 61, 'Corte Clásico', 15.00, 30, '2026-02-02 10:20:01'),
 (4, 61, 'Rapada', 20.00, 5, '2026-02-02 13:27:51'),
 (5, 61, 'Barba', 10.50, 20, '2026-02-02 13:28:19'),
@@ -308,13 +307,13 @@ ALTER TABLE `business_gallery`
 -- AUTO_INCREMENT de la tabla `business_profiles`
 --
 ALTER TABLE `business_profiles`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT de la tabla `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `services`

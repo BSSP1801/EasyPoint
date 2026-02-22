@@ -64,13 +64,12 @@ $categoryFilter = $_GET['category'] ?? '';
                     $image = !empty($store['logo_url']) ? 'public/' . htmlspecialchars($store['logo_url']) : 'public/assets/images/tienda-1.png';
                     $type = !empty($store['business_type']) ? htmlspecialchars($store['business_type']) : 'Service';
 
-                    // --- NUEVO: Lógica de puntuación ---
-                    $ratingVal = isset($store['avg_rating']) ? number_format($store['avg_rating'], 1) : '5.0';
+          
+                    $ratingVal = isset($store['avg_rating']) ? number_format($store['avg_rating'], 1) : '0.0';
                     $reviewCount = isset($store['review_count']) ? $store['review_count'] : 0;
                     
-                    // Si hay reseñas mostramos (12), si no "New"
+               
                     $reviewText = ($reviewCount > 0) ? "($reviewCount)" : "New";
-                    // -----------------------------------
                     ?>
                     <a href="index.php?action=view_business&id=<?php echo $store['id']; ?>" class="shop-card">
                         <div class="image-container">
@@ -78,7 +77,7 @@ $categoryFilter = $_GET['category'] ?? '';
                             
                             <div class="rating-label">
                                 <i class="fas fa-star" style="margin-right: 3px;"></i> 
-                                <?php echo $ratingVal; ?> 
+                              <?php echo number_format($store['avg_rating'], 1); ?>
                                 <span class="reviews-text" style="margin-left: 3px;">
                                     <?php echo $reviewText; ?>
                                 </span>

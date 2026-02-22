@@ -1,5 +1,31 @@
 
+<div id="cookie-consent-modal" class="cookie-consent-modal">
+    <div class="cookie-content">
+        <p>We use third-party cookies to improve your experience on <strong>EasyPoint</strong>. If you continue browsing, we consider that you accept their use.</p>
+        <button id="accept-cookies-btn" class="btn-accept-cookies">Accept cookies</button>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const cookieModal = document.getElementById("cookie-consent-modal");
+        const acceptBtn = document.getElementById("accept-cookies-btn");
 
+        if (cookieModal && acceptBtn) {
+            // Si no existen las cookies aceptadas, mostrar el modal
+            if (!localStorage.getItem("cookiesAccepted")) {
+                setTimeout(() => {
+                    cookieModal.classList.add("show");
+                }, 500);
+            }
+
+            // Al hacer clic, guardar en el navegador y ocultar
+            acceptBtn.addEventListener("click", function() {
+                localStorage.setItem("cookiesAccepted", "true");
+                cookieModal.classList.remove("show");
+            });
+        }
+    });
+</script>
     <div id="confirmationModal" class="modal-overlay">
         <div class="modal-box booking-modal">
             <button class="close-btn" id="closeConfirmBtn" onclick="closeConfirmationModal()">×</button>

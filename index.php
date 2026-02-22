@@ -238,6 +238,7 @@ include "views/action-switch.php";
                                 <div class="image-container">
                                     <img src="<?php echo $image; ?>" alt="<?php echo $name; ?>" class="shop-image">
                                     <div class="rating-label">
+                                         <i class="fas fa-star" style="margin-right: 3px;"></i> 
                                         <?php echo number_format($store['avg_rating'], 1); ?>
                                         <span class="reviews-text">
                                             <?php echo ($store['review_count'] > 0) ? '(' . $store['review_count'] . ')' : 'New'; ?>

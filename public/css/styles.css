@@ -1225,3 +1225,57 @@ header {
     .social-icons { justify-content: center; }
     .footer-logo, .footer-desc { text-align: center; }
 }
+
+
+
+
+.cookie-consent-modal {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    max-width: 320px;
+    background-color: #ffffff;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 9999;
+    
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease-in-out;
+}
+
+
+.cookie-consent-modal.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.cookie-content p {
+    font-size: 14px;
+    color: #555;
+    margin-top: 0;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.btn-accept-cookies {
+    background-color: #3a2b28;
+    color: #ebe6d2; 
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.btn-accept-cookies:hover {
+    background-color: #0056b3;
+}

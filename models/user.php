@@ -74,7 +74,7 @@ class User
     public function confirmAccount($token)
     {
         try {
-                // Look for a user with that token who is not confirmed
+            // Look for a user with that token who is not confirmed
             $query = "UPDATE " . $this->table_name . " 
                   SET is_confirmed = 1, token = NULL 
                   WHERE token = :token AND is_confirmed = 0";
@@ -323,7 +323,7 @@ class User
         $db = new Database();
         $conn = $db->getConnection();
 
-    // Get the appointment, service details and the store's name
+        // Get the appointment, service details and the store's name
         $stmt = $conn->prepare("
         SELECT a.id, a.appointment_date, a.appointment_time, a.status,
                s.name as service_name, s.duration, s.price,
@@ -491,11 +491,11 @@ class User
 
     public function saveResetToken($email, $token)
     {
-        // El token expira en 1 hora
+        // The token will expire in 1 hour
         $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
         $query = "UPDATE " . $this->table_name . " 
-              SET reset_token = :token, reset_expires = :expires 
+              SET reset_token = :token, reset_token_expires = :expires 
               WHERE email = :email";
 
         $stmt = $this->conn->prepare($query);
@@ -503,17 +503,16 @@ class User
         $stmt->bindParam(':expires', $expires);
         $stmt->bindParam(':email', $email);
 
-        // Devolvemos true si se actualizó al menos una fila (el email existe)
         $stmt->execute();
         return $stmt->rowCount() > 0;
     }
 
-    // Verificar token y obtener usuario
+    // Verify token and get user
     public function getUserByResetToken($token)
     {
         $query = "SELECT id, username, email FROM " . $this->table_name . " 
               WHERE reset_token = :token 
-              AND reset_expires > NOW() 
+              AND reset_token_expires > NOW() 
               LIMIT 1";
 
         $stmt = $this->conn->prepare($query);
@@ -523,11 +522,11 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Actualizar contraseña tras el reseteo
+    // Update password using reset token (also clears the token and expiration)
     public function updatePasswordByToken($userId, $newHash)
     {
-        $query = "UPDATE " . $this->table_name . " 
-              SET password = :password, reset_token = NULL, reset_expires = NULL 
+       $query = "UPDATE " . $this->table_name . " 
+              SET password = :password, reset_token = NULL, reset_token_expires = NULL 
               WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);

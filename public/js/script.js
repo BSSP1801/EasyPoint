@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+   
 
     let toastContainer = document.querySelector('.toast-container');
     if (!toastContainer) {
@@ -491,4 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+
+   
 });
