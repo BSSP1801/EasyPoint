@@ -466,7 +466,7 @@ header {
         align-items: center;
         width: 100%;
         flex-wrap: wrap;
-        /* permitir que la search-bar baje a su propia fila */
+    /* allow the search-bar to drop to its own row */
     }
 
     .logo {
@@ -478,12 +478,12 @@ header {
         flex-basis: 100%;
         order: 10;
         max-width: 420px;
-        /* no demasiado grande */
+    /* not too large */
         width: 100%;
         padding: 0 12px;
         height: 38px;
         margin: 10px auto 0;
-        /* centrar horizontalmente */
+    /* center horizontally */
     }
 
     .search-input {
@@ -565,7 +565,7 @@ header {
         flex-direction: row;
         width: 100%;
         flex-wrap: wrap;
-        /* permitir que la search-bar ocupe su propia fila */
+    /* allow the search-bar to occupy its own row */
     }
 
     .logo {
@@ -577,7 +577,7 @@ header {
         flex-basis: 100%;
         order: 10;
         max-width: 360px;
-        /* ligeramente más pequeña en móvil */
+    /* slightly smaller on mobile */
         width: 100%;
         padding: 0 10px;
         height: 32px;
@@ -1328,10 +1328,10 @@ a {
     margin-right: 8px;
 }
 
-/* Ultimas reglas: ajustes de visibilidad y separación
-   - login/link más visibles en headers
-   - garantizar separación día/horario en .schedule-row
-   - asegurar espacio para precio/duración/botón en .service-meta */
+/* Final rules: visibility and spacing adjustments
+    - make login/link more visible in headers
+    - ensure separation between day and time in .schedule-row
+    - reserve space for price/duration/button in .service-meta */
 
 header .login-link,
 .sticky-header .login-link,
@@ -1349,7 +1349,7 @@ header .login-link,
 
 .schedule-row span:first-child {
     flex: 0 0 90px;
-    /* reservar espacio para el día */
+    /* reserve space for the day */
     text-transform: capitalize;
 }
 
@@ -1386,29 +1386,19 @@ header .login-link,
     }
 }
 
-/* =========================================
-   BOOTSTRAP TOAST OVERRIDES (Dark Theme)
-   ========================================= */
 
-/* Fixed container in the top-right corner */
 .toast-container {
     z-index: 10000;
-    /* Ensure it sits above everything */
 }
 
-/* Bootstrap toast customization */
 .toast-easypoint {
     background-color: var(--card-bg) !important;
-    /* #3a2b28 */
     color: var(--text-main);
     border: 1px solid var(--accent);
-    /* Golden border */
     border-left: 5px solid var(--accent);
-    /* Thicker side accent */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
-/* Close (X) button needs to be white/light */
 .toast-easypoint .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
     opacity: 0.8;
@@ -1418,7 +1408,6 @@ header .login-link,
     opacity: 1;
 }
 
-/* Tipografía interna */
 .toast-title-text {
     color: var(--accent);
     font-weight: bold;
@@ -1476,9 +1465,7 @@ header .login-link,
     left: 50%;
     bottom: 30px;
     transform: translateX(-50%);
-    /* Center horizontally */
     border: 1px solid #a58668;
-    /* Golden border */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     font-size: 15px;
     font-weight: 500;
@@ -1495,9 +1482,7 @@ header .login-link,
     opacity: 1;
     bottom: 50px;
 }
-/* --- MOBILE FIXES --- */
 @media (max-width: 900px) {
-    /* Break the 60/35 grid into a single column */
     .main-container {
         display: flex;
         flex-direction: column;
@@ -1568,7 +1553,6 @@ header .login-link,
     .carousel-main { height: 220px; }
     .business-title h1 { font-size: 20px; }
     
-    /* Reflow each service so the booking button fits well */
     .service-row { 
         flex-direction: column; 
         align-items: flex-start; 

@@ -130,7 +130,7 @@ class BookingController {
             $booked = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $time = $row['appointment_time'];
-                $duration = (int)$row['duration']; // Ej: 60 minutos
+                $duration = (int)$row['duration']; // E.g.: 60 minutes
                 
                 list($h, $m, $s) = explode(':', $time);
                 $startMinutes = ($h * 60) + $m;

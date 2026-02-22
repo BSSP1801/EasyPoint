@@ -17,7 +17,7 @@ class User
     public function create($data)
     {
         try {
-            // Evaluamos exactamente qué campo está duplicado
+            // Determine exactly which field is duplicated
             $checkQuery = "SELECT username, email FROM " . $this->table_name . " WHERE username = :username OR email = :email LIMIT 1";
             $checkStmt = $this->conn->prepare($checkQuery);
             $checkStmt->bindParam(":username", $data['username']);
@@ -152,7 +152,6 @@ class User
               FROM " . $this->table_name . " u 
               LEFT JOIN business_profiles bp ON u.id = bp.user_id 
               WHERE u.id = :id LIMIT 1";
-        // ... resto de la función igual
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $userId);
         $stmt->execute();
@@ -179,7 +178,7 @@ class User
             $queryUser = "UPDATE users SET 
                       business_name = :bname, phone = :phone, address = :address, city = :city, postal_code = :zip 
                       WHERE id = :id";
-            // ... (binding de users igual) ...
+            // ... (user bindings unchanged) ...
             $stmtU = $this->conn->prepare($queryUser);
             $stmtU->bindParam(':bname', $data['business_name']);
             $stmtU->bindParam(':phone', $data['phone']);
@@ -345,8 +344,8 @@ class User
     public function updateAppointmentStatus($appointmentId, $newStatus, $userId)
     {
         try {
-            // Permitimos la actualización si quien lo solicita es el dueño del 
-            // servicio (tienda: s.user_id) O el cliente dueño de la cita (a.user_id)
+            // Allow update if the requester is the owner of the
+            // service (store: s.user_id) OR the client who owns the appointment (a.user_id)
             $query = "UPDATE appointments a 
                       INNER JOIN services s ON a.service_id = s.id 
                       SET a.status = :status 
@@ -358,7 +357,7 @@ class User
             $stmt->bindParam(':user_id', $userId);
 
             if ($stmt->execute()) {
-                // Verificar si realmente se modificó alguna fila
+                // Verify whether any row was actually modified
                 return $stmt->rowCount() > 0;
             }
             return false;
@@ -386,7 +385,7 @@ class User
                 $sql .= " AND (u.business_name LIKE :search OR u.city LIKE :search)";
             }
 
-            $sql .= " ORDER BY u.created_at DESC"; // Sin LIMIT
+            $sql .= " ORDER BY u.created_at DESC"; // No LIMIT
 
             $stmt = $this->conn->prepare($sql);
 
@@ -407,11 +406,11 @@ class User
     }
 
 
-    // Búsqueda de tiendas por servicio, nombre o ubicación
-    // Búsqueda de tiendas por servicio, nombre o ubicación - CON MEDIA Y CONTEO
+    // Search stores by service, name or location
+    // Search stores by service, name or location - WITH AVERAGE RATING AND COUNT
     public function searchStores($searchTerm = null, $location = null, $category = null)
     {
-        // Usamos GROUP BY en lugar de DISTINCT para poder usar funciones de agregación (AVG, COUNT)
+    // We use GROUP BY instead of DISTINCT so we can use aggregation functions (AVG, COUNT)
         $query = "SELECT u.id, u.business_name, u.address, u.city, u.postal_code, u.created_at, 
                          bp.logo_url, bp.business_type, bp.description,
                          COALESCE(AVG(r.rating), 5) as avg_rating, 
@@ -424,7 +423,7 @@ class User
 
         $params = [];
 
-        // Filtro por texto
+    // Text filter
         if (!empty($searchTerm)) {
             $query .= " AND (s.name LIKE :search OR u.business_name LIKE :business_search OR bp.business_type LIKE :type_search)";
             $params[':search'] = "%" . $searchTerm . "%";
@@ -432,19 +431,19 @@ class User
             $params[':type_search'] = "%" . $searchTerm . "%";
         }
 
-        // Filtro por ubicación
+    // Location filter
         if (!empty($location)) {
             $query .= " AND u.city LIKE :location";
             $params[':location'] = "%" . $location . "%";
         }
 
-        // Filtro por categoría
+    // Category filter
         if (!empty($category) && $category !== 'All') {
             $query .= " AND bp.business_type = :category";
             $params[':category'] = $category;
         }
 
-        // Agrupamos por ID de usuario para calcular la media única por tienda
+    // Group by user ID to compute a single average per store
         $query .= " GROUP BY u.id ORDER BY u.created_at DESC";
 
         $stmt = $this->conn->prepare($query);

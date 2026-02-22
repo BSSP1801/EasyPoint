@@ -56,7 +56,7 @@ Navigate to config/config.php.
 
 Update the database credentials (DB_HOST, DB_USER, DB_PASS) to match your local environment.
 
-Run the App: Open your browser and go to http://localhost/EasyPoint.
+Run the App: Open your browser and go to http://localhost:8080.
 
 ### Option 2: Using Docker
 Ensure you have Docker and Docker Compose installed.
@@ -67,7 +67,7 @@ Run the following command to build and start the containers:
 
 Bash<- docker-compose up -d ->
 
-Access the application at http://localhost. (Note: Database credentials inside config.php should use 'db' as the host when running via Docker).
+Access the application at http://localhost/8080. (Note: Database credentials inside config.php should use 'db' as the host when running via Docker).
 
 ## 🔒 Environment Variables & Credentials
 For full functionality (like email sending), ensure you configure your SMTP credentials and EmailJS public keys.
