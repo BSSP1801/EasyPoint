@@ -100,7 +100,7 @@ class BookingController {
         $conn = $db->getConnection();
 
         try {
-            // 1. Obtener a qué tienda pertenece el servicio que estamos mirando
+            // 1. Obtain which store the service belongs to
             $stmtStore = $conn->prepare("SELECT user_id FROM services WHERE id = :service_id LIMIT 1");
             $stmtStore->execute([':service_id' => $serviceId]);
             $storeId = $stmtStore->fetchColumn();
@@ -111,7 +111,7 @@ class BookingController {
                 exit();
             }
 
-            // 2. Obtener TODAS las citas activas DE ESA TIENDA (sin importar el servicio)
+            // 2. Obtain all appointments for that store on the given date, along with their durations
             $stmt = $conn->prepare("
                 SELECT a.appointment_time, s.duration 
                 FROM appointments a 
@@ -132,11 +132,9 @@ class BookingController {
                 $time = $row['appointment_time'];
                 $duration = (int)$row['duration']; // Ej: 60 minutos
                 
-                // Extraer hora y minutos
                 list($h, $m, $s) = explode(':', $time);
                 $startMinutes = ($h * 60) + $m;
                 
-                // Si la cita dura 60 mins, bloqueará el inicio y el intervalo de 30 mins siguiente.
                 for ($i = 0; $i < $duration; $i += 30) {
                     $blockedMinutes = $startMinutes + $i;
                     $blockedH = floor($blockedMinutes / 60);
@@ -145,7 +143,6 @@ class BookingController {
                 }
             }
 
-            // Remover posibles bloques duplicados
             $booked = array_values(array_unique($booked));
 
             http_response_code(200);

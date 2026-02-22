@@ -376,12 +376,12 @@ class User
               INNER JOIN business_profiles bp ON u.id = bp.user_id 
               WHERE u.role = 'store' AND bp.is_public = 1";
 
-            // Filtro por categoría
+            // Category filter
             if ($category && $category !== 'All') {
                 $sql .= " AND bp.business_type = :category";
             }
 
-            // Filtro por texto (búsqueda por nombre o ciudad)
+            // Text search filter (business name or city)
             if ($searchQuery) {
                 $sql .= " AND (u.business_name LIKE :search OR u.city LIKE :search)";
             }

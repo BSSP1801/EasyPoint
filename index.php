@@ -13,7 +13,7 @@ require_once __DIR__ . '/models/service.php';
 session_start();
 
 $action = $_GET['action'] ?? 'home';
-$controller = new UserController();
+$controller = new UserController(); 
 $userModel = new User();
 
 $stores = [];

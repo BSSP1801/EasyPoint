@@ -25,24 +25,12 @@
         p {
             font-size: 1.2rem;
         }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #3498db;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        a:hover {
-            background-color: #2980b9;
-        }
+       
     </style>
 </head>
 <body>
     <h1>404</h1>
     <h2>¡Ups! Page not found</h2>
     <p>Sorry, the page you are looking for does not exist or has been moved.</p>
-    <a href="/">Go back to homepage</a>
 </body>
 </html>

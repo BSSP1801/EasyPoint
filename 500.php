@@ -25,18 +25,7 @@
         p {
             font-size: 1.2rem;
         }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #34495e;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        a:hover {
-            background-color: #2c3e50;
-        }
+       
     </style>
 </head>
 <body>
@@ -44,6 +33,6 @@
     <h2>Server Error</h2>
     <p>Sorry, an internal server error occurred.</p>
     <p>Please try again later.</p>
-    <a href="/">Go back to homepage</a>
+    
 </body>
 </html>

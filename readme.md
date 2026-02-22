@@ -39,8 +39,9 @@ EasyPoint/
 ├── views/              # UI templates and layout files
 ├── index.php           # Main entry point and router
 └── docker-compose.yml  # Docker environment configuration
-⚙️ Installation & Setup
-Option 1: Using XAMPP / WAMP / MAMP
+```
+## ⚙️ Installation & Setup
+ ### Option 1: Using XAMPP / WAMP / MAMP
 Clone the repository to your local server directory (e.g., htdocs or www).
 
 Database Setup: * Open phpMyAdmin.
@@ -49,7 +50,7 @@ Create a new database named easy_point.
 
 Import the provided SQL file located at sql/easy_point.sql.
 
-Configuration:
+ Configuration:
 
 Navigate to config/config.php.
 
@@ -57,7 +58,7 @@ Update the database credentials (DB_HOST, DB_USER, DB_PASS) to match your local 
 
 Run the App: Open your browser and go to http://localhost/EasyPoint.
 
-Option 2: Using Docker
+### Option 2: Using Docker
 Ensure you have Docker and Docker Compose installed.
 
 Navigate to the project root directory in your terminal.
@@ -68,16 +69,15 @@ Bash<- docker-compose up -d ->
 
 Access the application at http://localhost. (Note: Database credentials inside config.php should use 'db' as the host when running via Docker).
 
-🔒 Environment Variables & Credentials
+## 🔒 Environment Variables & Credentials
 For full functionality (like email sending), ensure you configure your SMTP credentials and EmailJS public keys.
 
 EmailJS: Replace the public key in index.php and script.js with your actual key.
 
 PHPMailer: Update the SMTP credentials inside controllers/UserController.php (sendEmail function).
 
-🤝 Contributing
+## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
 
-📝 License
+## 📝 License
 This project is for educational and portfolio purposes.
-
