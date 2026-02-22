@@ -27,9 +27,9 @@
 
                 <div class="footer-column">
                     <h3>Legal</h3>
-                    <a href="index.php?action=legal">Privacy Policy</a>
+                    <a href="index.php?action=legal#privacy">Privacy Policy</a>
                     <a href="index.php?action=legal#terms">Terms of Service</a>
-                    <a href="#">Cookies Settings</a>
+                    <a href="index.php?action=legal#cookies">Cookie Policy</a>
                 </div>
             </div>
         </div>
